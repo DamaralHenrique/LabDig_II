@@ -26,11 +26,16 @@ entity tx_serial_8N2 is
         partida       : in  std_logic;
         dados_ascii   : in  std_logic_vector (7 downto 0);
         saida_serial  : out std_logic;
-        pronto        : out std_logic
+        pronto        : out std_logic;
+        -- Sinais de depuração
+        d_tick        : out std_logic;
+        d_estado      : out integer
     );
 end entity;
 
 architecture tx_serial_8N2_arch of tx_serial_8N2 is
+
+    signal s_estado: integer;
      
     component tx_serial_uc 
     port ( 
@@ -43,7 +48,8 @@ architecture tx_serial_8N2_arch of tx_serial_8N2 is
         conta   : out std_logic;
         carrega : out std_logic;
         desloca : out std_logic;
-        pronto  : out std_logic
+        pronto  : out std_logic;
+        d_estado: out integer
     );
     end component;
 
@@ -104,7 +110,8 @@ begin
                conta   => s_conta, 
                carrega => s_carrega, 
                desloca => s_desloca, 
-               pronto  => pronto
+               pronto  => pronto,
+               d_estado=> s_estado
            );
 
     U2_FD: tx_serial_8N2_fd 
@@ -145,6 +152,10 @@ begin
     
     -- saida
     saida_serial <= s_saida_serial;
+
+    -- sinais de depuração
+    d_estado <= s_estado;
+    d_tick <= s_tick;
 
 end architecture;
 
