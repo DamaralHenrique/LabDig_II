@@ -1,9 +1,9 @@
 ------------------------------------------------------------------
--- Arquivo   : tx_serial_8N2_fd.vhd
+-- Arquivo   : tx_serial_7E2_fd.vhd
 -- Projeto   : Experiencia 2 - Transmissao Serial Assincrona
 ------------------------------------------------------------------
 -- Descricao : fluxo de dados do circuito da experiencia 2 
---             > implementa configuracao 8N2
+--             > implementa configuracao 7E2
 --             > 
 ------------------------------------------------------------------
 -- Revisoes  :
@@ -18,7 +18,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 
-entity tx_serial_8N2_fd is
+entity tx_serial_7E2_fd is
     port (
         clock        : in  std_logic;
         reset        : in  std_logic;
@@ -32,7 +32,7 @@ entity tx_serial_8N2_fd is
     );
 end entity;
 
-architecture tx_serial_8N2_fd_arch of tx_serial_8N2_fd is
+architecture tx_serial_7E2_fd_arch of tx_serial_7E2_fd is
      
     component deslocador_n
     generic (

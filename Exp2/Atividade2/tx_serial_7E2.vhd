@@ -1,9 +1,9 @@
 ------------------------------------------------------------------
--- Arquivo   : tx_serial_8N2.vhd
+-- Arquivo   : tx_serial_7E2.vhd
 -- Projeto   : Experiencia 2 - Transmissao Serial Assincrona
 ------------------------------------------------------------------
 -- Descricao : circuito base da experiencia 2 
---             > implementa configuracao 8N2
+--             > implementa configuracao 7E2
 --             > 
 --             > componente edge_detector (U4) trata pulsos largos
 --             > da entrada PARTIDA (veja linha 139)
@@ -12,6 +12,7 @@
 --     Data        Versao  Autor             Descricao
 --     09/09/2021  1.0     Edson Midorikawa  versao inicial
 --     31/08/2022  2.0     Edson Midorikawa  revisao do codigo
+--     04/09/2022  3.0     Henrique Matheus  refatoracao do codigo
 ------------------------------------------------------------------
 --
 
@@ -19,18 +20,18 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity tx_serial_8N2 is
+entity tx_serial_7E2 is
     port (
         clock         : in  std_logic;
         reset         : in  std_logic;
         partida       : in  std_logic;
-        dados_ascii   : in  std_logic_vector (7 downto 0);
+        dados_ascii   : in  std_logic_vector (6 downto 0); -- Redução do tamanho da entrada
         saida_serial  : out std_logic;
         pronto        : out std_logic
     );
 end entity;
 
-architecture tx_serial_8N2_arch of tx_serial_8N2 is
+architecture tx_serial_7E2_arch of tx_serial_7E2 is
      
     component tx_serial_uc 
     port ( 
@@ -47,7 +48,7 @@ architecture tx_serial_8N2_arch of tx_serial_8N2 is
     );
     end component;
 
-    component tx_serial_8N2_fd 
+    component tx_serial_7E2_fd 
     port (
         clock        : in  std_logic;
         reset        : in  std_logic;
@@ -86,12 +87,16 @@ architecture tx_serial_8N2_arch of tx_serial_8N2 is
     signal s_reset, s_partida, s_partida_ed: std_logic;
     signal s_zera, s_conta, s_carrega, s_desloca, s_tick, s_fim: std_logic;
     signal s_saida_serial: std_logic;
+    signal s_dados_ascii: std_logic_vector (7 downto 0);
 
 begin
 
     -- sinais reset e partida ativos em alto
     s_reset   <= reset;
     s_partida <= partida;
+    s_dados_ascii(7 downto 1) <= dados_ascii; -- Dados a serem enviados
+    s_dados_ascii(0) <= dados_ascii(0) and dados_ascii(1) and dados_ascii(2) and dados_ascii(3) -- Sinal de pareamento par
+	                    and dados_ascii(4) and dados_ascii(5) and dados_ascii(6); 
 
     U1_UC: tx_serial_uc 
            port map (
@@ -107,7 +112,7 @@ begin
                pronto  => pronto
            );
 
-    U2_FD: tx_serial_8N2_fd 
+    U2_FD: tx_serial_7E2_fd 
            port map (
                clock        => clock, 
                reset        => s_reset, 
@@ -115,7 +120,7 @@ begin
                conta        => s_conta, 
                carrega      => s_carrega, 
                desloca      => s_desloca, 
-               dados_ascii  => dados_ascii, 
+               dados_ascii  => s_dados_ascii, 
                saida_serial => s_saida_serial, 
                fim          => s_fim
            );
@@ -125,7 +130,7 @@ begin
     -- fator de divisao para 115.200 bauds (434=50M/115200)
     U3_TICK: contador_m 
              generic map (
-                 M => 5208, -- 9600 bauds
+                 M => 434, -- 115.200 bauds
                  N => 13
              ) 
              port map (

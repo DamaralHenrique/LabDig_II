@@ -6,7 +6,7 @@
 --             > modelo de testbench para simulacao do circuito
 --             > de transmissao serial assincrona
 --             > 
---             > simula a entidade fornecida tx_serial_8N2
+--             > simula a entidade fornecida tx_serial_7E2
 --             > 
 ------------------------------------------------------------------
 -- Revisoes  :
@@ -25,12 +25,12 @@ end entity;
 architecture tb of tx_serial_tb is
   
   -- Componente a ser testado (Device Under Test -- DUT)
-  component tx_serial_8N2
+  component tx_serial_7E2
     port (
         clock         : in  std_logic;
         reset         : in  std_logic;
         partida       : in  std_logic;
-        dados_ascii   : in  std_logic_vector (7 downto 0);
+        dados_ascii   : in  std_logic_vector (6 downto 0);
         saida_serial  : out std_logic;
         pronto        : out std_logic
     );
@@ -41,8 +41,7 @@ architecture tb of tx_serial_tb is
   signal clock_in         : std_logic := '0';
   signal reset_in         : std_logic := '0';
   signal partida_in       : std_logic := '0';
-  -- signal dados_ascii_7_in : std_logic_vector (6 downto 0) := "0000000";
-  signal dados_ascii_8_in : std_logic_vector (7 downto 0) := "00000000";
+  signal dados_ascii_7_in : std_logic_vector (6 downto 0) := "0000000";
   signal saida_serial_out : std_logic := '1';
   signal pronto_out       : std_logic := '0';
 
@@ -57,13 +56,13 @@ begin
   clock_in <= (not clock_in) and keep_simulating after clockPeriod/2;
   
   -- Conecta DUT (Device Under Test)
-  dut: tx_serial_8N2
+  dut: tx_serial_7E2
        port map
        ( 
            clock        => clock_in,
            reset        => reset_in,
            partida      => partida_in,
-           dados_ascii  => dados_ascii_8_in,
+           dados_ascii  => dados_ascii_7_in,
            saida_serial => saida_serial_out,
            pronto       => pronto_out
       );
@@ -84,7 +83,7 @@ begin
     wait for 50*clockPeriod;
 
     ---- dado de entrada da simulacao (caso de teste #1)
-    dados_ascii_8_in <= "00110101"; -- x35 = '5'	
+    dados_ascii_7_in <= "0110101"; -- x35 = '5'	
     wait for 20*clockPeriod;
 
     ---- acionamento da partida (inicio da transmissao)
