@@ -27,7 +27,8 @@ entity tx_serial_uc is
         conta   : out std_logic;
         carrega : out std_logic;
         desloca : out std_logic;
-        pronto  : out std_logic
+        pronto  : out std_logic;
+        d_estado: out integer
     );
 end entity;
 
@@ -93,5 +94,13 @@ begin
 
   with Eatual select
       pronto <= '1' when final, '0' when others;
+
+    with Eatual select
+        d_estado <= 1 when inicial,           
+                    2 when preparacao,   
+                    3 when espera,            
+                    4 when transmissao,              
+                    5 when final, 
+                    0 when others;            
 
 end architecture tx_serial_uc_arch;

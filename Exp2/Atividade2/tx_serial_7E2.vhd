@@ -27,11 +27,16 @@ entity tx_serial_7E2 is
         partida       : in  std_logic;
         dados_ascii   : in  std_logic_vector (6 downto 0); -- Redução do tamanho da entrada
         saida_serial  : out std_logic;
-        pronto        : out std_logic
+        pronto        : out std_logic;
+        -- Sinais de depuração
+        d_tick        : out std_logic;
+        d_estado      : out integer
     );
 end entity;
 
 architecture tx_serial_7E2_arch of tx_serial_7E2 is
+     
+    signal s_estado: integer;
      
     component tx_serial_uc 
     port ( 
@@ -44,7 +49,8 @@ architecture tx_serial_7E2_arch of tx_serial_7E2 is
         conta   : out std_logic;
         carrega : out std_logic;
         desloca : out std_logic;
-        pronto  : out std_logic
+        pronto  : out std_logic;
+        d_estado: out integer
     );
     end component;
 
@@ -94,22 +100,23 @@ begin
     -- sinais reset e partida ativos em alto
     s_reset   <= reset;
     s_partida <= partida;
-    s_dados_ascii(7 downto 1) <= dados_ascii; -- Dados a serem enviados
-    s_dados_ascii(0) <= dados_ascii(0) and dados_ascii(1) and dados_ascii(2) and dados_ascii(3) -- Sinal de pareamento par
-	                    and dados_ascii(4) and dados_ascii(5) and dados_ascii(6); 
+    s_dados_ascii(6 downto 0) <= dados_ascii; -- Dados a serem enviados
+    s_dados_ascii(7) <= dados_ascii(0) xor dados_ascii(1) xor dados_ascii(2) xor dados_ascii(3) -- Sinal de pareamento par
+	                    xor dados_ascii(4) xor dados_ascii(5) xor dados_ascii(6); 
 
     U1_UC: tx_serial_uc 
            port map (
-               clock   => clock, 
-               reset   => s_reset, 
-               partida => s_partida_ed, 
-               tick    => s_tick, 
-               fim     => s_fim,
-               zera    => s_zera, 
-               conta   => s_conta, 
-               carrega => s_carrega, 
-               desloca => s_desloca, 
-               pronto  => pronto
+               clock    => clock, 
+               reset    => s_reset, 
+               partida  => s_partida_ed, 
+               tick     => s_tick, 
+               fim      => s_fim,
+               zera     => s_zera, 
+               conta    => s_conta, 
+               carrega  => s_carrega, 
+               desloca  => s_desloca, 
+               pronto   => pronto,
+               d_estado => s_estado
            );
 
     U2_FD: tx_serial_7E2_fd 
@@ -150,6 +157,10 @@ begin
     
     -- saida
     saida_serial <= s_saida_serial;
+
+    -- sinais de depuração
+    d_estado <= s_estado;
+    d_tick <= s_tick;
 
 end architecture;
 
