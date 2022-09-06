@@ -98,10 +98,37 @@ begin
 	---- final do caso de teste 1
 
     -- intervalo entre casos de teste
-    wait for 5000*clockPeriod;
+    wait for 500*clockPeriod;
 	
     ----
-    ---- colocar aqui outros casos de teste
+    
+    ---- inicio da simulacao: reset ----------------
+    partida_in <= '0';
+    reset_in <= '1'; 
+    wait for 20*clockPeriod;  -- pulso largo de reset com 20 periodos de clock
+    reset_in <= '0';
+    wait until falling_edge(clock_in);
+    wait for 50*clockPeriod;
+
+    ---- dado de entrada da simulacao (caso de teste #1)
+    dados_ascii_7_in <= "0110110"; -- '6'	0110110
+    wait for 20*clockPeriod;
+
+    ---- acionamento da partida (inicio da transmissao)
+    partida_in <= '1';
+    wait until rising_edge(clock_in);
+    wait for 25*clockPeriod; -- pulso partida com 25 periodos de clock
+    partida_in <= '0';
+
+    ---- espera final da transmissao (pulso pronto em 1)
+	wait until pronto_out='1';
+
+
+
+
+
+
+
     ----
 
 
