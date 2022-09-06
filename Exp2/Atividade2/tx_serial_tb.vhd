@@ -32,10 +32,7 @@ architecture tb of tx_serial_tb is
         partida       : in  std_logic;
         dados_ascii   : in  std_logic_vector (6 downto 0);
         saida_serial  : out std_logic;
-        pronto        : out std_logic;
-        -- Sinais de depuração
-        d_tick        : out std_logic;
-        d_estado      : out integer
+        pronto        : out std_logic
     );
   end component;
   
@@ -47,11 +44,6 @@ architecture tb of tx_serial_tb is
   signal dados_ascii_7_in : std_logic_vector (6 downto 0) := "0000000";
   signal saida_serial_out : std_logic := '1';
   signal pronto_out       : std_logic := '0';
-  signal d_tick_out       : std_logic := '0';
-  signal d_estado_out     : integer := 0;
-
-  -- Identificacao de casos de teste
-  signal caso     : integer := 0;
 
   -- Configurações do clock
   signal keep_simulating : std_logic := '0'; -- delimita o tempo de geração do clock
@@ -72,9 +64,7 @@ begin
            partida      => partida_in,
            dados_ascii  => dados_ascii_7_in,
            saida_serial => saida_serial_out,
-           pronto       => pronto_out,
-           d_tick       => d_tick_out,
-           d_estado     => d_estado_out
+           pronto       => pronto_out
       );
 
   -- geracao dos sinais de entrada (estimulos)
@@ -93,7 +83,6 @@ begin
     wait for 50*clockPeriod;
 
     ---- dado de entrada da simulacao (caso de teste #1)
-    caso <= 1;
     dados_ascii_7_in <= "0110101"; -- x35 = '5'	
     wait for 20*clockPeriod;
 
@@ -109,15 +98,20 @@ begin
 	---- final do caso de teste 1
 
     -- intervalo entre casos de teste
-    wait for 5000*clockPeriod;
+    wait for 500*clockPeriod;
 	
     ----
-    ---- colocar aqui outros casos de teste
-    ----
+    
+    ---- inicio da simulacao: reset ----------------
+    partida_in <= '0';
+    reset_in <= '1'; 
+    wait for 20*clockPeriod;  -- pulso largo de reset com 20 periodos de clock
+    reset_in <= '0';
+    wait until falling_edge(clock_in);
+    wait for 50*clockPeriod;
 
-    ---- dado de entrada da simulacao (caso de teste #2)
-    caso <= 2;
-    dados_ascii_7_in <= "0110111"; -- x37 = '7'	
+    ---- dado de entrada da simulacao (caso de teste #1)
+    dados_ascii_7_in <= "0110110"; -- '6'	0110110
     wait for 20*clockPeriod;
 
     ---- acionamento da partida (inicio da transmissao)
@@ -128,9 +122,14 @@ begin
 
     ---- espera final da transmissao (pulso pronto em 1)
 	wait until pronto_out='1';
-	
-	---- final do caso de teste 2
 
+
+
+
+
+
+
+    ----
 
 
     ---- final dos casos de teste da simulacao
