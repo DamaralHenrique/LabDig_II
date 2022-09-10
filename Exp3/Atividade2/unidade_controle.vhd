@@ -1,3 +1,6 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+
 entity unidade_controle is
     port (
         clock       : in std_logic;
@@ -13,12 +16,12 @@ entity unidade_controle is
         registraRP  : out std_logic;
         pronto      : out std_logic;
         tem_dado    : out std_logic;
-        db_estado   : out std_logic_vector(3 downto 0);
+        db_estado   : out std_logic_vector(3 downto 0)
     );
 end entity;
 
 architecture rtl of unidade_controle is
--- Declaração dos estados
+    -- Declaração dos estados
     type t_estado is (inicial,
                       preparacao,
                       espera,
@@ -94,11 +97,11 @@ begin
     -- Adicao da saida para o estado de "esperaJogada"
     with Eatual select
         db_estado <= "0000" when inicial,       -- 00
-                        "0010" when preparacao,    -- 02
-                        "0100" when espera,        -- 04
-                        "0110" when recepcao,      -- 06
-                        "1000" when armazenamento, -- 08
-                        "1010" when final,         -- 0A
-                        "1100" when others;        -- 0C (dado_presente)
+                     "0010" when preparacao,    -- 02
+                     "0100" when espera,        -- 04
+                     "0110" when recepcao,      -- 06
+                     "1000" when armazenamento, -- 08
+                     "1010" when final,         -- 0A
+                     "1100" when others;        -- 0C (dado_presente)
 
 end architecture rtl;
