@@ -12,6 +12,7 @@
 --     Data        Versao  Autor             Descricao
 --     09/09/2021  1.0     Edson Midorikawa  versao inicial
 --     03/09/2022  1.1     Edson Midorikawa  revisao
+--     10/09/2022  1.2     Eduardo Hiroshi   adicao de casos de teste
 --------------------------------------------------------------------
 --
 library ieee;
@@ -23,7 +24,7 @@ end entity;
 
 architecture tb of rx_serial_tb is
   
-    -- Declaração de sinais para conectar o componente a ser testado (DUT)
+    -- Declaracao de sinais para conectar o componente a ser testado (DUT)
     signal clock_in              : std_logic  := '0';
     signal reset_in              : std_logic  := '0';
     -- saidas
@@ -36,7 +37,7 @@ architecture tb of rx_serial_tb is
     signal entrada_serial_in : std_logic := '1';
     signal serialData        : std_logic_vector(7 downto 0) := "00000000";
   
-    -- Configurações do clock
+    -- Configuracoes do clock
     constant clockPeriod : time := 20 ns;            -- 50MHz
     -- constant bitPeriod   : time := 5208*clockPeriod; -- 5208 clocks por bit (9.600 bauds)
     constant bitPeriod   : time := 434*clockPeriod;  -- 434 clocks por bit (115.200 bauds)
@@ -77,13 +78,14 @@ architecture tb of rx_serial_tb is
     constant casos_teste : casos_teste_array :=
         (
             (1, "00110101"), -- 35H (paridade=0 + dado=35H) teste ok para 7E2
-            (2, "10110101")  -- B5H (paridade=1 + dado=35H) teste com erro para 7E2
-            -- inserir aqui outros casos de teste (inserir "," na linha anterior)
+            (2, "10110101"), -- B5H (paridade=1 + dado=35H) teste com erro para 7E2
+            (3, "01101110"), -- 6EH (paridade=1 + dado=6EH) teste ok para 7E2
+            (4, "11101110")  -- EEH (paridade=0 + dado=6EH) teste com erro para 7E2
         );
     signal caso : natural;
   
     ---- controle do clock e simulacao
-    signal keep_simulating: std_logic := '0'; -- delimita o tempo de geração do clock
+    signal keep_simulating: std_logic := '0'; -- delimita o tempo de geracao do clock
   
   
 begin
@@ -91,7 +93,7 @@ begin
     ---- Gerador de Clock
     clock_in <= (not clock_in) and keep_simulating after clockPeriod/2;
     
-    -- Instanciação direta DUT (Device Under Test)
+    -- Instanciacao direta DUT (Device Under Test)
     DUT: entity work.rx_serial_7E2 (estrutural)
          port map (  
              clock             => clock_in, 
@@ -147,7 +149,7 @@ begin
         assert false report "fim da simulacao" severity note;
         keep_simulating <= '0';
         
-        wait; -- fim da simulação: aguarda indefinidamente
+        wait; -- fim da simulacao: aguarda indefinidamente
     
     end process stimulus;
 
