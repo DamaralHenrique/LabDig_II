@@ -65,7 +65,16 @@ architecture rtl of fluxo_dados is
         );
     end component registrador_n;
 
-    signal s_dados, s_saida: std_logic_vector(7 downto 0);
+    component testador_paridade is
+        port (
+            dado     : in  std_logic_vector (6 downto 0);
+            paridade : in  std_logic;
+            par_ok   : out std_logic;
+            impar_ok : out std_logic
+        );
+    end component testador_paridade;
+
+    signal s_dados, s_saida: std_logic_vector(9 downto 0);
 begin
 
     -- gerador de tick
@@ -87,7 +96,7 @@ begin
 
     CONTADOR_DADOS: contador_m 
         generic map (
-            M => 13, 
+            M => 12,
             N => 4
         ) 
         port map (
@@ -101,7 +110,7 @@ begin
 
     DESLOCADOR: deslocador_n 
         generic map (
-            N => 8
+            N => 10
         ) 
         port map (
             clock          => clock, 
@@ -109,13 +118,13 @@ begin
             carrega        => carrega, 
             desloca        => desloca, 
             entrada_serial => dado_serial, 
-            dados          => "00000000", 
+            dados          => "0000000000", 
             saida          => s_saida
         );
 
     REGISTRADOR: registrador_n 
         generic map (
-            N => 8
+            N => 10
         ) 
         port map (
             clock  => clock, 
@@ -125,11 +134,16 @@ begin
             Q      => s_dados
         );
 
+    PARIDADE: testador_paridade
+        port map(
+            dado     => s_dados(6 downto 0), 
+            paridade => s_dados(7), 
+            par_ok   => paridade_ok, 
+            impar_ok => open
+        );
+
     paridade_recebida <= s_dados(7);
 
-    paridade_ok <= not(s_dados(0) xor s_dados(1) xor s_dados(2) xor s_dados(3) xor
-                       s_dados(4) xor s_dados(5) xor s_dados(6) xor s_dados(7));
-
-    dados <= s_dados;
+    dados <= s_dados(7 downto 0);
 
 end architecture rtl;

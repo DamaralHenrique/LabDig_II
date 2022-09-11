@@ -115,7 +115,7 @@ begin
     UC: unidade_controle 
         port map (
             clock       => clock, 
-            reset       => reset, 
+            reset       => reset,
             dado_serial => dado_serial,
             tick        => s_tick, 
             fim         => s_fim,
