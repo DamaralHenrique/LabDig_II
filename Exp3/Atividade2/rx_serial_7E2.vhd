@@ -107,7 +107,8 @@ architecture rtl of rx_serial_7E2 is
     end component registrador_n;
 
     signal s_tick, s_fim, s_limpaRP, s_zeraC, s_carregaRDS, s_deslocaRDS, s_contaC, s_registraRP, s_tem_dado: std_logic;
-    signal s_dados: std_logic_vector(7 downto 0);
+    signal s_dados:     std_logic_vector(7 downto 0);
+    signal s_hexa_in:   std_logic_vector(3 downto 0);
     signal s_db_estado: std_logic_vector(3 downto 0);
 begin
 
@@ -161,10 +162,11 @@ begin
 
     DATA_HEX2: hex7seg
         port map(
-            hexa => '0' & s_dados(6 downto 4),
+            hexa => s_hexa_in,
             sseg => dado_recebido1
         );
-
+    
+    s_hexa_in <= '0' & s_dados(6 downto 4);
     tem_dado <= s_tem_dado;
 
 end architecture rtl;
