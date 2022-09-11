@@ -77,10 +77,10 @@ architecture tb of rx_serial_tb is
     type casos_teste_array is array (natural range <>) of caso_teste_type;
     constant casos_teste : casos_teste_array :=
         (
-            (1, "00110101"), -- 35H (paridade=0 + dado=35H) teste ok para 7E2
-            (2, "10110101"), -- B5H (paridade=1 + dado=35H) teste com erro para 7E2
-            (3, "01101110"), -- 6EH (paridade=1 + dado=6EH) teste ok para 7E2
-            (4, "11101110")  -- EEH (paridade=0 + dado=6EH) teste com erro para 7E2
+            (1, "01101010"), -- 35H (paridade=0 + dado=35H) teste ok para 7E2
+            (2, "11101010"), -- B5H (paridade=1 + dado=35H) teste com erro para 7E2
+            (3, "01101111"), -- 6EH (paridade=1 + dado=6EH) teste ok para 7E2
+            (4, "11101111")  -- EEH (paridade=0 + dado=6EH) teste com erro para 7E2
         );
     signal caso : natural;
   
@@ -94,7 +94,7 @@ begin
     clock_in <= (not clock_in) and keep_simulating after clockPeriod/2;
     
     -- Instanciacao direta DUT (Device Under Test)
-    DUT: entity work.rx_serial_7E2 (estrutural)
+    DUT: entity work.rx_serial_7E2
          port map (  
              clock             => clock_in, 
              reset             => reset_in,
@@ -154,3 +154,4 @@ begin
     end process stimulus;
 
 end architecture tb;
+
