@@ -106,8 +106,8 @@ architecture rtl of rx_serial_7E2 is
         );
     end component registrador_n;
 
-    signal s_dado_serial, s_tick, s_fim, s_limpaRP, s_zeraC, s_carregaRDS, s_deslocaRDS, s_contaC, s_registraRP, s_tem_dado: std_logic;
-    signal s_dados, s_saida: std_logic_vector(7 downto 0);
+    signal s_tick, s_fim, s_limpaRP, s_zeraC, s_carregaRDS, s_deslocaRDS, s_contaC, s_registraRP, s_tem_dado: std_logic;
+    signal s_dados: std_logic_vector(7 downto 0);
     signal s_db_estado: std_logic_vector(3 downto 0);
 begin
 
@@ -125,7 +125,7 @@ begin
             contaC      => s_contaC,
             registraRP  => s_registraRP,
             pronto      => pronto_rx,
-            tem_dado    => tem_dado,
+            tem_dado    => s_tem_dado,
             db_estado   => s_db_estado
         );
 
@@ -164,5 +164,7 @@ begin
             hexa => '0' & s_dados(6 downto 4),
             sseg => dado_recebido1
         );
+
+    tem_dado <= s_tem_dado;
 
 end architecture rtl;

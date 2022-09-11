@@ -65,9 +65,7 @@ architecture rtl of fluxo_dados is
         );
     end component registrador_n;
 
-    signal s_fim, s_limpaRP, s_registraRP, s_tem_dado: std_logic;
     signal s_dados, s_saida: std_logic_vector(7 downto 0);
-    signal s_db_estado: std_logic_vector(3 downto 0);
 begin
 
     -- gerador de tick
@@ -111,7 +109,7 @@ begin
             carrega        => carrega, 
             desloca        => desloca, 
             entrada_serial => dado_serial, 
-            dados          => s_dados, 
+            dados          => "00000000", 
             saida          => s_saida
         );
 
@@ -131,5 +129,7 @@ begin
 
     paridade_ok <= not(s_dados(0) xor s_dados(1) xor s_dados(2) xor s_dados(3) xor
                        s_dados(4) xor s_dados(5) xor s_dados(6) xor s_dados(7));
+
+    dados <= s_dados;
 
 end architecture rtl;
