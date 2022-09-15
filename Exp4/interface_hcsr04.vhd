@@ -3,13 +3,13 @@ use IEEE.std_logic_1164.all;
 
 entity interface_hcsr04 is
     port (
-        clock : in std_logic;
-        reset : in std_logic;
-        medir : in std_logic;
-        echo : in std_logic;
-        trigger : out std_logic;
-        medida : out std_logic_vector(11 downto 0); -- 3 digitos BCD
-        pronto : out std_logic;
+        clock     : in  std_logic;
+        reset     : in  std_logic;
+        medir     : in  std_logic;
+        echo      : in  std_logic;
+        trigger   : out std_logic;
+        medida    : out std_logic_vector(11 downto 0); -- 3 digitos BCD
+        pronto    : out std_logic;
         db_estado : out std_logic_vector(3 downto 0) -- estado da UC
     );
 end entity interface_hcsr04;

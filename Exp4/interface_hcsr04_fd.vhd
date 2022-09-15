@@ -1,25 +1,20 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 
-entity fluxo_dados is
+entity interface_hcsr04_fd is
     port (
-        clock        : in std_logic;
-        reset        : in std_logic;
-        zera_pulso   : in std_logic;
-        zera_medida  : in std_logic;
-        trigger      : in std_logic;
-        conta_pulso  : in std_logic;
-        conta_medida : in std_logic;
-        pronto       : in std_logic;
-
-
-        digito0      : out std_logic_vector(3 downto 0);
-        digito1      : out std_logic_vector(3 downto 0);
-        digito2      : out std_logic_vector(3 downto 0);
+        clock      : in  std_logic;
+        zera       : in  std_logic;
+        pulso      : in  std_logic;
+        gera       : in  std_logic;
+        registra   : in  std_logic;
+        distancia  : out std_logic_vector(11 downto 0);
+        fim_medida : out std_logic;
+        trigger    : out std_logic
     );
 end entity;
 
-architecture rtl of fluxo_dados is
+architecture rtl of interface_hcsr04_fd is
 
     component contador_bcd_3digitos is 
     port ( 

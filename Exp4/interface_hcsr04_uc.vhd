@@ -1,24 +1,22 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 
-entity unidade_controle is
+entity interface_hcsr04_uc is
     port (
-        clock       : in std_logic;
-        reset       : in std_logic;
-        medir       : in std_logic;
-        fim_gatilho : in std_logic;
-        fim_pulso   : in std_logic;
-        echo        : in std_logic;
-        zera_pulso   : out std_logic;
-        zera_medida  : out std_logic;
-        trigger      : out std_logic;
-        conta_pulso  : out std_logic;
-        conta_medida : out std_logic;
-        pronto       : out std_logic;
+        clock      : in  std_logic;
+        reset      : in  std_logic;
+        medir      : in  std_logic;
+        fim_medida : in  std_logic;
+        echo       : in  std_logic;
+        db_estado  : out std_logic_vector(3 downto 0);
+        gera       : out std_logic;
+        pronto     : out std_logic;
+        registra   : out std_logic;
+        zera       : out std_logic
     );
 end entity;
 
-architecture rtl of unidade_controle is
+architecture rtl of interface_hcsr04_uc is
     -- Declaração dos estados
     type t_estado is (inicial,
                       preparacao,
@@ -62,28 +60,25 @@ begin
     -- logica de saída (maquina de Moore)
     -- As saídas correspondentes recebem 1 nos estados declarados, e 0 caso contrário
     with Eatual select
-        zera_pulso   <= '1' when preparacao,
+        zera      <= '1' when preparacao,
                      '0' when others;
 
     with Eatual select
-        zera_medida  <= '1' when preparacao,
+        trigger   <= '1' when gatilho,
                      '0' when others;
 
     with Eatual select
-        trigger      <= '1' when gatilho,
-                     '0' when others;
+        gera     <= '1' when pulso,
+                    '0' when others;
 
     with Eatual select
-        conta_pulso  <= '1' when pulso,
-                     '0' when others;
+        registra <= '1' when medida,
+                    '0' when others;
 
     with Eatual select
-        conta_medida <= '1' when medida,
-                     '0' when others;
+        pronto   <= '1' when fim,
+                    '0' when others;
 
-    with Eatual select
-        pronto       <= '1' when fim,
-                     '0' when others;
 
     -- saida de depuracao (db_estado)
     -- Adicao da saida para o estado de "esperaJogada"
