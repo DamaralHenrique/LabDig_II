@@ -46,52 +46,65 @@ architecture rtl of interface_hcsr04_fd is
         );
     end component gerador_pulso;
 
+    component registrador_n is
+        generic (
+           constant N: integer := 11
+        );
+        port (
+           clock  : in  std_logic;
+           clear  : in  std_logic;
+           enable : in  std_logic;
+           D      : in  std_logic_vector (N-1 downto 0);
+           Q      : out std_logic_vector (N-1 downto 0) 
+        );
+    end component registrador_n;
 
-    -- registrador
 
-
-
-
-
-    -- signal s_dados: std_logic_vector(9 downto 0);
+    signal s_D: std_logic_vector(11 downto 0);
     signal s_digito0, s_digito1, s_digito2 : std_logic_vector(3 downto 0);
-
-
 
 begin
 
     CONTADOR_CM: contador_cm
         generic map (
-            R => 1,
-            N => 1
+            R => 1, -- dummy
+            N => 1  -- dummy
         );
         port (
-            clock   =>
-            reset   =>
-            pulso   =>
-            digito0 =>
-            digito1 =>
-            digito2 =>
-            pronto  =>
+            clock   => clock,
+            reset   => zera,
+            pulso   => pulso,
+            digito0 => s_digito0,
+            digito1 => s_digito1,
+            digito2 => s_digito2,
+            pronto  => fim_medida
         );
 
     GERADOR_DE_PULSO: gerador_pulso
         generic map (
-            largura => 25
+            largura => 10 -- dummy
         );
         port map (
             clock  => clock,
-            reset  => reset,
+            reset  => zera,
             gera   => gera,
-            para   => open, --???
+            para   => '0',
             pulso  => trigger,
-            pronto => pronto
+            pronto => open
         );
     
+        REGISTRADOR: registrador_n 
+        generic map (
+            N => 10
+        ) 
+        port map (
+            clock  => clock, 
+            clear  => zera, 
+            enable => registra, 
+            D      => s_D, 
+            Q      => distancia
+        );
 
-        -- registrador
-
-
-    distancia <= s_digito2 & s_digito1 & s_digito0;
+    s_D <= s_digito2 & s_digito1 & s_digito0;
 
 end architecture rtl;
