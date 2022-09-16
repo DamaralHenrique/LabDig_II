@@ -56,7 +56,7 @@ architecture arch of contador_cm is
            s_conta_tick, s_zera_bcd, s_conta_bcd : std_logic;
 
 begin
-    UC: interface_hcsr04_uc 
+    UC: contador_cm_uc 
         port map (
             clock        => clock,
             reset        => reset,
@@ -71,7 +71,7 @@ begin
             db_estado    => db_estado
         );
 
-    FD: interface_hcsr04_fd
+    FD: contador_cm_fd
         port map ( 
             clock      => clock,
             conta_bcd  => s_conta_bcd,

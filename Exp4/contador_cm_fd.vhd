@@ -31,7 +31,7 @@ architecture rtl of contador_cm_fd is
     );
     end component contador_bcd_3digitos;
 
-    component contador_m
+    component contador_m is
         generic (
             constant M : integer;
             constant N : integer
@@ -43,7 +43,7 @@ architecture rtl of contador_cm_fd is
             Q     : out std_logic_vector (N-1 downto 0);
             fim   : out std_logic
         );
-    end component;
+    end component contador_m;
 
     component analisa_m is
         generic (
@@ -74,7 +74,7 @@ begin
             fim     => fim
         );
 
-    CONTADOR_M: contador_m 
+    CONTADOR_TICK: contador_m 
         generic map (
             M => 2941,
             N => 12
@@ -89,9 +89,9 @@ begin
     
     ANALISA_MODULO_DE_ENTRADA: analisa_m
         generic map (
-            M => 2941;  
+            M => 2941,
             N => 12 
-        );
+        )
         port map (
             valor            => s_valor,
             zero             => open,
