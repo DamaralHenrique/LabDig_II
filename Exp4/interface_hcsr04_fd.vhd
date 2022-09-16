@@ -58,6 +58,7 @@ architecture rtl of interface_hcsr04_fd is
 
 
     -- signal s_dados: std_logic_vector(9 downto 0);
+    signal s_digito0, s_digito1, s_digito2 : std_logic_vector(3 downto 0);
 
 
 
@@ -65,13 +66,13 @@ begin
 
     CONTADOR_BITS: contador_bcd_3digitos
     port map ( 
-        clock   => clock;
-        zera    => reset;
-        conta   : in  std_logic;
-        digito0 : out std_logic_vector(3 downto 0);
-        digito1 : out std_logic_vector(3 downto 0);
-        digito2 : out std_logic_vector(3 downto 0);
-        fim     : out std_logic
+        clock   => clock,
+        zera    => zera,
+        conta   => pulso, -- Valor do echo
+        digito0 => s_digito0,
+        digito1 => s_digito1,
+        digito2 => s_digito2,
+        fim     => open
     );
 
     ANALISA_MODULO_DE_ENTRADA: analisa_m
@@ -92,18 +93,14 @@ begin
             largura => 25
         );
         port map (
-            clock  => clock;
-            reset  => reset;
-            gera   : in  std_logic;
-            para   : in  std_logic;
-            pulso  : out std_logic;
-            pronto : out std_logic
+            clock  => clock,
+            reset  => reset,
+            gera   => gera,
+            para   => open, --???
+            pulso  => trigger,
+            pronto => pronto
         );
     
-    
-    
-    
-    -- paridade_recebida <= s_dados(7);
-    -- dados <= s_dados(7 downto 0);
+        distancia <= s_digito2 & s_digito1 & s_digito0;
 
 end architecture rtl;
