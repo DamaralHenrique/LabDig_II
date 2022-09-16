@@ -13,91 +13,77 @@ entity contador_cm is
         digito0 : out std_logic_vector(3 downto 0);
         digito1 : out std_logic_vector(3 downto 0);
         digito2 : out std_logic_vector(3 downto 0);
-        pronto  : out std_logic
+        fim     : out std_logic;
+        pronto  : out std_logic;
+        db_estado : out std_logic_vector(3 downto 0) -- estado da UC
     );
 end entity;
 
-architecture rtl of interface_hcsr04_fd is
-
-    component contador_bcd_3digitos is 
+architecture arch of contador_cm is
+    component contador_cm_uc is 
         port ( 
-            clock   : in  std_logic;
-            zera    : in  std_logic;
-            conta   : in  std_logic;
-            digito0 : out std_logic_vector(3 downto 0);
-            digito1 : out std_logic_vector(3 downto 0);
-            digito2 : out std_logic_vector(3 downto 0);
-            fim     : out std_logic
-    );
-    end component contador_bcd_3digitos;
-
-    component contador_m
-        generic (
-            constant M : integer;
-            constant N : integer
-        );
-        port (
-            clock : in  std_logic;
-            zera  : in  std_logic;
-            conta : in  std_logic;
-            Q     : out std_logic_vector (N-1 downto 0);
-            fim   : out std_logic
+            clock        : in  std_logic;
+            reset        : in  std_logic;
+            pulso        : in  std_logic; -- echo
+            tick         : in  std_logic;
+            arredonda    : in  std_logic;
+            s_zera_tick  : out std_logic;
+            s_conta_tick : out std_logic;
+            s_zera_bcd   : out std_logic;
+            s_conta_bcd  : out std_logic;
+            fim          : out std_logic;
+            db_estado    : out std_logic_vector(3 downto 0) 
         );
     end component;
 
-    component analisa_m is
-        generic (
-            constant M : integer := 50;  
-            constant N : integer := 6 
-        );
+    component contador_cm_fd is
         port (
-            valor            : in  std_logic_vector (N-1 downto 0);
-            zero             : out std_logic;
-            meio             : out std_logic;
-            fim              : out std_logic;
-            metade_superior  : out std_logic
+            clock     : in  std_logic;
+            conta_bcd : in  std_logic;
+            zera_bcd  : in  std_logic;
+            conta_tick: in  std_logic;
+            zera_tick : in  std_logic;
+            digito0   : out std_logic_vector(3 downto 0);
+            digito1   : out std_logic_vector(3 downto 0);
+            digito2   : out std_logic_vector(3 downto 0);
+            fim       : out std_logic;
+            arredonda : out std_logic;
+            tick      : out std_logic
         );
-    end component analisa_m;
+    end component;
 
-    signal s_valor : std_logic_vector(11 downto 0);
+    signal s_tick, s_arredonda, s_zera_tick, 
+           s_conta_tick, s_zera_bcd, s_conta_bcd : std_logic;
 
 begin
+    UC: interface_hcsr04_uc 
+        port map (
+            clock        => clock,
+            reset        => reset,
+            pulso        => pulso,
+            tick         => s_tick,
+            arredonda    => s_arredonda,
+            s_zera_tick  => s_zera_tick,
+            s_conta_tick => s_conta_tick,
+            s_zera_bcd   => s_zera_bcd,
+            s_conta_bcd  => s_conta_bcd,
+            fim          => pronto,
+            db_estado    => db_estado
+        );
 
-    CONTADOR_BCD: contador_bcd_3digitos
+    FD: interface_hcsr04_fd
         port map ( 
-            clock   => clock,
-            zera    => zera,
-            conta   => pulso, -- Valor do echo
-            digito0 => s_digito0,
-            digito1 => s_digito1,
-            digito2 => s_digito2,
-            fim     => fim
+            clock      => clock,
+            conta_bcd  => s_conta_bcd,
+            zera_bcd   => s_zera_bcd,
+            conta_tick => s_conta_tick,
+            zera_tick  => s_zera_tick,
+            digito0    => digito0,
+            digito1    => digito1,
+            digito2    => digito2,
+            fim        => fim,
+            arredonda  => s_arredonda,
+            tick       => s_tick
         );
 
-    CONTADOR_M: contador_m 
-        generic map (
-            M => 13, -- dummy
-            N => 4   -- dummy
-        ) 
-        port map (
-            clock => clock, 
-            zera  => zera, 
-            conta => conta, 
-            Q     => s_valor, 
-            fim   => tick
-        );
-    
-    ANALISA_MODULO_DE_ENTRADA: analisa_m
-        generic map (
-            M => 50;  
-            N => 6 
-        );
-        port map (
-            valor            => s_valor,
-            zero             => open,
-            meio             => open,
-            fim              => open,
-            metade_superior  => arredonda
-        );
-
-end architecture rtl;
+end architecture arch;
