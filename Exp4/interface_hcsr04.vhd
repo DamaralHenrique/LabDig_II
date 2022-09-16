@@ -30,7 +30,7 @@ architecture rtl of rx_serial_7E2 is
             pronto     : out std_logic;
             db_estado  : out std_logic_vector(3 downto 0) 
         );
-    end interface_hcsr04_uc;
+    end component;
 
     component interface_hcsr04_fd is
         port (
