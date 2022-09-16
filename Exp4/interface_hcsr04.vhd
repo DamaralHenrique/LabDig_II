@@ -17,48 +17,62 @@ end entity interface_hcsr04;
 
 architecture rtl of rx_serial_7E2 is
 
+    component interface_hcsr04_uc is 
+        port ( 
+            clock      : in  std_logic;
+            reset      : in  std_logic;
+            medir      : in  std_logic;
+            echo       : in  std_logic;
+            fim_medida : in  std_logic;
+            zera       : out std_logic;
+            gera       : out std_logic;
+            registra   : out std_logic;
+            pronto     : out std_logic;
+            db_estado  : out std_logic_vector(3 downto 0) 
+        );
+    end interface_hcsr04_uc;
 
-
-
-    component hex7seg is
+    component interface_hcsr04_fd is
         port (
-            hexa : in  std_logic_vector(3 downto 0);
-            sseg : out std_logic_vector(6 downto 0)
+            clock      : in  std_logic;
+            zera       : in  std_logic;
+            pulso      : in  std_logic; -- echo
+            gera       : in  std_logic;
+            registra   : in  std_logic;
+            distancia  : out std_logic_vector(11 downto 0);
+            fim_medida : out std_logic;
+            trigger    : out std_logic
         );
     end component;
 
-
-
+    signal s_fim_medida, s_zera, s_gera, s_registra : std_logic;
 
 begin
 
-    UC: unidade_controle 
+    UC: interface_hcsr04_uc 
         port map (
-
+            clock      => clock,
+            reset      => reset,
+            medir      => medir,
+            echo       => echo,
+            fim_medida => s_fim_medida,
+            zera       => s_zera,
+            gera       => s_gera,
+            registra   => s_registra,
+            pronto     => pronto,
+            db_estado  => db_estado
         );
 
-    FD: fluxo_dados
-        port map (
-
+    FD: interface_hcsr04_fd
+        port map ( 
+            clock       => clock,
+            zera        => s_zera,
+            pulso       => s_pulso, -- echo
+            gera        => s_gera,
+            registra    => s_registra,
+            distancia   => medida,
+            fim_medida  => s_fim_medida,
+            trigger     => trigger,
         );
-
-    STATE_HEX: hex7seg
-        port map(
-            hexa => s_db_estado,
-            sseg => db_estado
-        );
-    
-    DATA_HEX1: hex7seg
-        port map(
-            hexa => s_dados(3 downto 0),
-            sseg => dado_recebido0
-        );
-
-    DATA_HEX2: hex7seg
-        port map(
-            hexa => s_hexa_in,
-            sseg => dado_recebido1
-        );
-
 
 end architecture rtl;
