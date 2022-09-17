@@ -28,9 +28,11 @@ architecture rtl of interface_hcsr04_fd is
             digito0 : out std_logic_vector(3 downto 0);
             digito1 : out std_logic_vector(3 downto 0);
             digito2 : out std_logic_vector(3 downto 0);
-            pronto  : out std_logic
+            fim     : out std_logic;
+            pronto  : out std_logic;
+            db_estado : out std_logic_vector(3 downto 0) 
         );
-      end component contador_cm;
+    end component contador_cm;
 
     component gerador_pulso is
         generic (
@@ -67,8 +69,8 @@ begin
 
     CONTADOR_CENTIMETROS: contador_cm
         generic map (
-            R => 1, -- dummy
-            N => 1  -- dummy
+            R => 2941,
+            N => 12
         )
         port map(
             clock   => clock,
@@ -77,12 +79,14 @@ begin
             digito0 => s_digito0,
             digito1 => s_digito1,
             digito2 => s_digito2,
+            fim     => open, -- usado pra testes no contador_cm
             pronto  => fim_medida
+            db_estado => open, -- usado para testes no contador_cm
         );
 
     GERADOR_DE_PULSO: gerador_pulso
         generic map (
-            largura => 10 -- dummy
+            largura => 500 -- 10u/20n = 500 ciclos de clock
         )
         port map (
             clock  => clock,
