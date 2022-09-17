@@ -19,8 +19,8 @@ entity contador_cm_uc is
 end contador_cm_uc;
 
 architecture fsm_arch of contador_cm_uc is
-    type tipo_estado is (inicial, conta_tick, conta_bcd, 
-                         verifica_arredonda, valor_maximo, final);
+    type tipo_estado is (inicial, conta_tick, conta_bcd, verifica_arredonda, 
+                         verifica_maximo, valor_maximo, final);
     signal Eatual, Eprox: tipo_estado;
 begin
 
@@ -35,22 +35,24 @@ begin
     end process;
 
     -- logica de proximo estado
-    process (pulso, tick, arredonda, Eatual) 
+    process (pulso, tick, arredonda, Eatual, fim_cont_bcd) 
     begin
       case Eatual is
         when inicial =>             if pulso='1' then Eprox <= conta_tick;
                                     else              Eprox <= inicial;
                                     end if;
-        when conta_tick =>          if pulso='1' and tick='1' then Eprox <= conta_bcd;
+        when conta_tick =>          if pulso='1' and tick='1' then Eprox <= verifica_maximo;
                                     elsif pulso='0' then           Eprox <= verifica_arredonda;
                                     else                           Eprox <= conta_tick;
                                     end if;
-        when conta_bcd =>           if pulso='0' then            Eprox <= final;
-                                    elsif fim_conta_bcd='0' then Eprox <= conta_tick;
-                                    else                         Eprox <= valor_maximo;
+        when conta_bcd =>           if pulso='0' then Eprox <= final;
+                                    else              Eprox <= conta_tick;
                                     end if;
         when verifica_arredonda =>  if arredonda='0' then Eprox <= final;
-                                    else                  Eprox <= conta_bcd;
+                                    else                  Eprox <= verifica_maximo;
+                                    end if;
+        when verifica_maximo =>     if fim_cont_bcd='0' then Eprox <= conta_bcd;
+                                    else                      Eprox <= valor_maximo;
                                     end if;
         when valor_maximo =>        if pulso='0' then Eprox <= final;
                                     else              Eprox <= valor_maximo;
@@ -84,5 +86,6 @@ begin
                    "0011" when verifica_arredonda,
                    "0100" when valor_maximo,
                    "0101" when final, 
-                   "0110" when others;
+                   "0110" when verifica_maximo,
+                   "0111" when others;
 end architecture fsm_arch;
