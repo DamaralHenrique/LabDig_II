@@ -52,8 +52,9 @@ begin
         when verifica_arredonda =>  if arredonda='0' then Eprox <= final;
                                     else                  Eprox <= conta_bcd;
                                     end if;
-        when valor_maximo =>        if pulso='0' then Eprox <= final
+        when valor_maximo =>        if pulso='0' then Eprox <= final;
                                     else              Eprox <= valor_maximo;
+                                    end if;
         when final =>               Eprox <= inicial;
         when others =>              Eprox <= inicial;
       end case;
