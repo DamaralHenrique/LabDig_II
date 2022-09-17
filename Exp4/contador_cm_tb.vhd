@@ -35,7 +35,9 @@ architecture tb of contador_cm_tb is
         digito0 : out std_logic_vector(3 downto 0);
         digito1 : out std_logic_vector(3 downto 0);
         digito2 : out std_logic_vector(3 downto 0);
-        pronto  : out std_logic
+        fim     : out std_logic;
+        pronto  : out std_logic;
+        db_estado : out std_logic_vector(3 downto 0) -- estado da UC
     );
   end component;
   
@@ -47,8 +49,9 @@ architecture tb of contador_cm_tb is
   signal digito0_out   : std_logic_vector (3 downto 0) := "0000";
   signal digito1_out   : std_logic_vector (3 downto 0) := "0000";
   signal digito2_out   : std_logic_vector (3 downto 0) := "0000";
+  signal fim_out       : std_logic := '0';
   signal pronto_out    : std_logic := '0';
-  -- signal db_estado_out : std_logic_vector (3 downto 0) := "0000";
+  signal db_estado_out : std_logic_vector (3 downto 0) := "0000";
 
   -- Configurações do clock
   signal keep_simulating: std_logic := '0'; -- delimita o tempo de geração do clock
@@ -66,8 +69,11 @@ architecture tb of contador_cm_tb is
         (1, 5882),  -- 5882us (100cm)
         (2, 4353),  -- 4353us (74cm)
         (3, 5899),  -- 5899us (100,29cm) truncar para 100cm 
-        (4, 4399)   -- 4399us (74,79cm)  arredondar para 75cm
-        -- inserir aqui outros casos de teste (inserir "," na linha anterior)
+        (4, 4399),  -- 4399us (74,79cm)  arredondar para 75cm
+        -- inserir aqui outros casos de teste
+        (5, 4381),  -- 4381us (74,48cm)  truncar para 74cm
+        (6, 58789), -- 58789us (999,47cm) truncar para 999cm
+        (7, 59000)  -- 59000us (1003,06cm) Valor acima do permitido (10,03m > 10m). Truncar para 999cm e ativar sinal de 'fim' no contador
       );
   signal caso  : integer := 0;
 
@@ -87,8 +93,9 @@ begin
            digito0 => digito0_out,
            digito1 => digito1_out,
            digito2 => digito2_out,
-           pronto  => pronto_out 
-           -- db_estado => db_estado_out
+           fim     => fim_out,
+           pronto  => pronto_out,
+           db_estado => db_estado_out
        );
 
   -- geracao dos sinais de entrada (estimulos)
