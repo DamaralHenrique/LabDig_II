@@ -27,11 +27,12 @@ architecture arch of contador_cm is
             pulso        : in  std_logic; -- echo
             tick         : in  std_logic;
             arredonda    : in  std_logic;
+            fim_cont_bcd : in  std_logic;
             s_zera_tick  : out std_logic;
             s_conta_tick : out std_logic;
             s_zera_bcd   : out std_logic;
             s_conta_bcd  : out std_logic;
-            fim          : out std_logic;
+            pronto       : out std_logic;
             db_estado    : out std_logic_vector(3 downto 0) 
         );
     end component;
@@ -52,8 +53,8 @@ architecture arch of contador_cm is
         );
     end component;
 
-    signal s_tick, s_arredonda, s_zera_tick, 
-           s_conta_tick, s_zera_bcd, s_conta_bcd : std_logic;
+    signal s_tick, s_arredonda, s_zera_tick, s_conta_tick, 
+           s_zera_bcd, s_conta_bcd, s_fim_contador_bcd : std_logic;
 
 begin
     UC: contador_cm_uc 
@@ -63,11 +64,12 @@ begin
             pulso        => pulso,
             tick         => s_tick,
             arredonda    => s_arredonda,
+            fim_cont_bcd => s_fim_contador_bcd,
             s_zera_tick  => s_zera_tick,
             s_conta_tick => s_conta_tick,
             s_zera_bcd   => s_zera_bcd,
             s_conta_bcd  => s_conta_bcd,
-            fim          => pronto,
+            pronto       => pronto,
             db_estado    => db_estado
         );
 
@@ -81,9 +83,10 @@ begin
             digito0    => digito0,
             digito1    => digito1,
             digito2    => digito2,
-            fim        => fim,
+            fim        => s_fim_contador_bcd,
             arredonda  => s_arredonda,
             tick       => s_tick
         );
 
+    fim <= s_fim_contador_bcd;
 end architecture arch;
