@@ -65,12 +65,12 @@ architecture rtl of interface_hcsr04_fd is
 
 begin
 
-    CONTADOR_CM: contador_cm
+    CONTADOR_CENTIMETROS: contador_cm
         generic map (
             R => 1, -- dummy
             N => 1  -- dummy
-        );
-        port (
+        )
+        port map(
             clock   => clock,
             reset   => zera,
             pulso   => pulso,
@@ -83,7 +83,7 @@ begin
     GERADOR_DE_PULSO: gerador_pulso
         generic map (
             largura => 10 -- dummy
-        );
+        )
         port map (
             clock  => clock,
             reset  => zera,
@@ -93,9 +93,9 @@ begin
             pronto => open
         );
     
-        REGISTRADOR: registrador_n 
+    REGISTRADOR: registrador_n 
         generic map (
-            N => 10
+            N => 12
         ) 
         port map (
             clock  => clock, 

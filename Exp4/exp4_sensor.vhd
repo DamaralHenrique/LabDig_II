@@ -67,8 +67,8 @@ begin
             db_estado  => s_db_estado
         );
 
-    EDGE_DETECTOR: edge_detector
-        port (  
+    EDGEDETECTOR: edge_detector
+        port map(  
             clock     => clock,
             signal_in => medir,
             output    => s_medir
@@ -102,6 +102,5 @@ begin
     db_trigger <= s_trigger;
     trigger <= s_trigger;
     db_echo <= echo;
-
 
 end architecture rtl;

@@ -15,7 +15,7 @@ entity interface_hcsr04 is
 end entity interface_hcsr04;
 
 
-architecture rtl of rx_serial_7E2 is
+architecture rtl of interface_hcsr04 is
 
     component interface_hcsr04_uc is 
         port ( 
@@ -67,12 +67,12 @@ begin
         port map ( 
             clock       => clock,
             zera        => s_zera,
-            pulso       => s_pulso, -- echo
+            pulso       => echo,
             gera        => s_gera,
             registra    => s_registra,
             distancia   => medida,
             fim_medida  => s_fim_medida,
-            trigger     => trigger,
+            trigger     => trigger
         );
 
 end architecture rtl;
