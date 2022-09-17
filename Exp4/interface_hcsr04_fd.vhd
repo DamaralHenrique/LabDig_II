@@ -80,8 +80,8 @@ begin
             digito1 => s_digito1,
             digito2 => s_digito2,
             fim     => open, -- usado pra testes no contador_cm
-            pronto  => fim_medida
-            db_estado => open, -- usado para testes no contador_cm
+            pronto  => fim_medida,
+            db_estado => open -- usado para testes no contador_cm
         );
 
     GERADOR_DE_PULSO: gerador_pulso
