@@ -45,7 +45,7 @@ architecture arch of exp5_trena is
             partida       : out std_logic;
             escolha_ascii : out std_logic_vector (1 downto 0);
             -- Saidas pro exp5_trena
-            fim           : out std_logic;
+            fim           : out std_logic
         );
     end component exp5_uc;
 
@@ -62,7 +62,7 @@ architecture arch of exp5_trena is
             -- Sinais de saida
             medida       : out std_logic_vector(11 downto 0);
             hcdsr_pronto : out std_logic;
-            tx_pronto    : out std_logic;
+            tx_pronto    : out std_logic
         );
     end component exp5_fd;
     
