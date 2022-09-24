@@ -15,6 +15,7 @@ entity exp5_uc is
         escolha_ascii : out std_logic_vector (1 downto 0);
         -- Saidas pro exp5_trena
         fim           : out std_logic;
+        db_estado     : out std-std_logic_vector(3 downto 0)
     );
 end exp5_uc;
 

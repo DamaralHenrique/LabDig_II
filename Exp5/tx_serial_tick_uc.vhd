@@ -28,7 +28,7 @@ entity tx_serial_uc is
         carrega : out std_logic;
         desloca : out std_logic;
         pronto  : out std_logic;
-        d_estado: out integer
+        d_estado: out std_logic_vector(3 downto 0)
     );
 end entity;
 
@@ -96,11 +96,11 @@ begin
       pronto <= '1' when final, '0' when others;
 
     with Eatual select
-        d_estado <= 1 when inicial,           
-                    2 when preparacao,   
-                    3 when espera,            
-                    4 when transmissao,              
-                    5 when final, 
-                    0 when others;            
+        d_estado <= "0001" when inicial,           
+                    "0010" when preparacao,   
+                    "0011" when espera,            
+                    "0100" when transmissao,              
+                    "0101" when final, 
+                    "0000" when others;            
 
 end architecture tx_serial_uc_arch;

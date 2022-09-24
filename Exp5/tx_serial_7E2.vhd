@@ -30,7 +30,7 @@ entity tx_serial_7E2 is
         pronto        : out std_logic;
         -- Sinais de depuração
         d_tick        : out std_logic;
-        d_estado      : out integer
+        d_estado      : out std_logic_vector(3 downto 0)
     );
 end entity;
 
