@@ -21,8 +21,8 @@ end exp5_uc;
 
 architecture fsm_arch of exp5_uc is
     type tipo_estado is (inicial, aguarda_medida, transmite_centena, espera_centena,
-                         transmite_dezena, espera_dezena, transmite_unidade, espera_unidade,
-								 envia_unidade, transmite_hashtag, espera_hashtag, final);
+                         transmite_dezena, espera_dezena, transmite_unidade, espera_unidade, 
+                         transmite_hashtag, espera_hashtag, final);
     signal Eatual, Eprox: tipo_estado;
 begin
 
@@ -102,7 +102,7 @@ begin
                    "0100" when transmite_dezena, 
                    "0101" when espera_dezena, 
                    "0110" when transmite_unidade,
-                   "0111" when envia_unidade,
+                   "0111" when espera_unidade,
                    "1000" when transmite_hashtag,
                    "1001" when espera_hashtag,
                    "1111" when final, 
