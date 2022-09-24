@@ -67,7 +67,7 @@ architecture arch of exp5_trena is
         );
     end component;
     
-    signal s_medir, s_partida, s_fim: std_logic;
+    signal s_medir, s_partida: std_logic;
     signal s_escolha: std_logic_vector (1 downto 0);
     signal s_dados_ascii: std_logic_vector (6 downto 0);
     signal s_medida: std_logic_vector(11 downto 0);
@@ -85,7 +85,7 @@ begin
             medir         => s_medir,
             partida       => s_partida,
             escolha_ascii => s_escolha,
-            fim           => s_fim,
+            fim           => pronto,
             db_estado     => s_db_estado
         );
 
