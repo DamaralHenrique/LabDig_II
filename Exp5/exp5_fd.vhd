@@ -64,8 +64,9 @@ architecture rtl of exp5_fd is
         );
     end component mux_4x1_n;
 
-    signal s_dados_ascii: std_logic_vector (6 downto 0);
-    signal s_medida: std_logic_vector (11 downto 0);
+    signal s_dados_ascii     : std_logic_vector (6 downto 0);
+    signal s_medida          : std_logic_vector (11 downto 0);
+    signal s_D1, s_D2, s_D3 : std_logic_vector (6 downto 0);
 
 begin
     -- TODO: Adicionar instancias dos componentes
@@ -98,14 +99,17 @@ begin
         BITS => 7
     )
     port map( 
-        D3      => "011" & s_medida(11 downto 8), -- Adiciona "110000" = 30 em hexadecimal (Idem para os abaixo)
-        D2      => "011" & s_medida(7 downto 4),
-        D1      => "011" & s_medida(3 downto 0),
+        D3      => s_D1, -- Adiciona "110000" = 30 em hexadecimal (Idem para os abaixo)
+        D2      => s_D1,
+        D1      => s_D1,
         D0      => "0100011", -- # em hexadecimal (23H)
         SEL     => mux_escolha,
         MUX_OUT => s_dados_ascii
     );
-
+    
+    s_D1 <= "011" & s_medida(11 downto 8); -- Adiciona "110000" = 30 em hexadecimal (Idem para os abaixo)
+    s_D2 <= "011" & s_medida(7 downto 4);
+    s_D3 <= "011" & s_medida(3 downto 0);
     medida <= s_medida;
 
 end architecture rtl;
