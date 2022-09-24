@@ -1,26 +1,24 @@
 --------------------------------------------------------------------
--- Arquivo   : interface_hcsr04_tb.vhd
--- Projeto   : Experiencia 4 - Interface com sensor de distancia
+-- Arquivo   : exp5_trena_tb.vhd
+-- Projeto   : Experiencia 5 - TB trena digital com saida serial
 --------------------------------------------------------------------
--- Descricao : testbench para circuito de interface com HC-SR04 
---
---             1) array de casos de teste contém valores de  
---                largura de pulso de echo do sensor
+-- Descricao : testbench para circuito da trena digital 
 -- 
 --------------------------------------------------------------------
 -- Revisoes  :
 --     Data        Versao  Autor             Descricao
 --     19/09/2021  1.0     Edson Midorikawa  versao inicial
 --     12/09/2022  1.1     Edson Midorikawa  revisao
+--     23/09/2022  2.0     Eduardo Hiroshi   adaptacao para exp 5
 --------------------------------------------------------------------
 --
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity interface_hcsr04_tb is
+entity exp5_trena_tb is
 end entity;
 
-architecture tb of interface_hcsr04_tb is
+architecture tb of exp5_trena_tb is
   
   -- Componente a ser testado (Device Under Test -- DUT)
   component interface_hcsr04
@@ -60,14 +58,14 @@ architecture tb of interface_hcsr04_tb is
   type casos_teste_array is array (natural range <>) of caso_teste_type;
   constant casos_teste : casos_teste_array :=
       (
-        (1, 5882),  -- 5882us (100cm)
-        (2, 5899),  -- 5899us (100,29cm) truncar para 100cm
-        (3, 4353),  -- 4353us (74cm)
-        (4, 4399),  -- 4399us (74,79cm)  arredondar para 75cm
-        -- inserir aqui outros casos de teste 
-        (5, 4381),  -- 4381us (74,48cm)  truncar para 74cm
-        (6, 58789), -- 58789us (999,47cm) truncar para 999cm
-        (7, 59000)  -- 59000us (1003,06cm) Valor acima do permitido (10,03m > 10m). Truncar para 999cm
+        (1, 176),   --   176us (   3   cm)
+        (2, 190),   --   190us (   3,23cm) truncar para 3cm
+        (3, 764),   --   764us (  13   cm)
+        (4, 800),   --   800us (  13,6 cm) arredondar para 14cm
+        (5, 2352),  --  2352us (  40   cm)
+        (6, 5899),  --  2380us (  40,46cm) truncar para 100cm
+        (6, 58789), -- 58789us ( 999,47cm) truncar para 999cm
+        (7, 59000)  -- 59000us (1003,06cm) valor acima do permitido (10,03m > 10m). Truncar para 999cm
       );
 
   signal larguraPulso: time := 1 ns;
