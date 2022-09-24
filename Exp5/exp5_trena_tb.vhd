@@ -64,8 +64,8 @@ architecture tb of exp5_trena_tb is
         (4, 800),   --   800us (  13,6 cm) arredondar para 14cm
         (5, 2352),  --  2352us (  40   cm)
         (6, 5899),  --  2380us (  40,46cm) truncar para 100cm
-        (6, 58789), -- 58789us ( 999,47cm) truncar para 999cm
-        (7, 59000)  -- 59000us (1003,06cm) valor acima do permitido (10,03m > 10m). Truncar para 999cm
+        (7, 58789), -- 58789us ( 999,47cm) truncar para 999cm
+        (8, 59000)  -- 59000us (1003,06cm) valor acima do permitido (10,03m > 10m). Truncar para 999cm
       );
 
   signal larguraPulso: time := 1 ns;
