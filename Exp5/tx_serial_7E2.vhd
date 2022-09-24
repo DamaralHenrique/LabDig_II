@@ -36,7 +36,7 @@ end entity;
 
 architecture tx_serial_7E2_arch of tx_serial_7E2 is
      
-    signal s_estado: integer;
+    signal s_estado: std_logic_vector(3 downto 0);
      
     component tx_serial_uc 
     port ( 
@@ -50,7 +50,7 @@ architecture tx_serial_7E2_arch of tx_serial_7E2 is
         carrega : out std_logic;
         desloca : out std_logic;
         pronto  : out std_logic;
-        d_estado: out integer
+        d_estado: out std_logic_vector(3 downto 0)
     );
     end component;
 
@@ -68,7 +68,7 @@ architecture tx_serial_7E2_arch of tx_serial_7E2 is
     );
     end component;
     
-    component contador_m
+    component tx_contador_m
     generic (
         constant M : integer; 
         constant N : integer 
@@ -135,7 +135,7 @@ begin
     -- gerador de tick
     -- fator de divisao para 9600 bauds (5208=50M/9600)
     -- fator de divisao para 115.200 bauds (434=50M/115200)
-    U3_TICK: contador_m 
+    U3_TICK: tx_contador_m 
              generic map (
                  M => 434, -- 115.200 bauds
                  N => 13

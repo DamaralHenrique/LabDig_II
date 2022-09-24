@@ -35,7 +35,7 @@ architecture arch of exp5_trena is
             escolha_ascii : out std_logic_vector (1 downto 0);
             -- Saidas pro exp5_trena
             fim           : out std_logic;
-            db_estado     : out std-std_logic_vector(3 downto 0)
+            db_estado     : out std_logic_vector(3 downto 0)
         );
     end component exp5_uc;
 
@@ -60,12 +60,12 @@ architecture arch of exp5_trena is
         );
     end component exp5_fd;
 
-    entity hex7seg is
+    component hex7seg is
         port (
             hexa : in  std_logic_vector(3 downto 0);
             sseg : out std_logic_vector(6 downto 0)
         );
-    end entity;
+    end component;
     
     signal s_medir, s_partida, s_fim: std_logic;
     signal s_escolha: std_logic_vector (1 downto 0);
@@ -110,45 +110,39 @@ begin
         );
 
     STATE_HEX: hex7seg
-        port (
+        port map (
             hexa => s_db_estado,
             sseg => db_estado
         );
-    end entity;
 
     HCRS_STATE_HEX: hex7seg
-        port (
+        port map (
             hexa => s_db_hcrs_estado,
             sseg => db_hcrs_estado
         );
-    end entity;
 
     TX_STATE_HEX: hex7seg
-        port (
+        port map (
             hexa => s_db_tx_estado,
             sseg => db_tx_estado
         );
-    end entity;
 
     MEDIDA0_HEX: hex7seg
-        port (
+        port map (
             hexa => s_medida(3 downto 0),
             sseg => medida0
         );
-    end entity;
 
     MEDIDA1_HEX: hex7seg
-        port (
+        port map(
             hexa => s_medida(7 downto 4),
             sseg => medida1
         );
-    end entity;
 
     MEDIDA2_HEX: hex7seg
-        port (
+        port map (
             hexa => s_medida(11 downto 8),
             sseg => medida2
         );
-    end entity;
 
 end architecture;

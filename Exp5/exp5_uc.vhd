@@ -15,14 +15,14 @@ entity exp5_uc is
         escolha_ascii : out std_logic_vector (1 downto 0);
         -- Saidas pro exp5_trena
         fim           : out std_logic;
-        db_estado     : out std-std_logic_vector(3 downto 0)
+        db_estado     : out std_logic_vector(3 downto 0)
     );
 end exp5_uc;
 
 architecture fsm_arch of exp5_uc is
     type tipo_estado is (inicial, aguarda_medida, transmite_centena, espera_centena,
-                         transmite_dezena, espera_dezena, transmite_unidade, envia_unidade,
-                         transmite_#, espera_#, final);
+                         transmite_dezena, espera_dezena, transmite_unidade, espera_unidade,
+								 envia_unidade, transmite_hashtag, espera_hashtag, final);
     signal Eatual, Eprox: tipo_estado;
 begin
 
@@ -40,8 +40,8 @@ begin
     process (mensurar, hcdsr_pronto, tx_pronto, Eatual) 
     begin
       case Eatual is
-        when inicial => if meensurar='1' then Eprox <= aguarda_medida;
-                        else                  Eprox <= inicial;
+        when inicial => if mensurar='1' then Eprox <= aguarda_medida;
+                        else                 Eprox <= inicial;
                         end if;
 
         when aguarda_medida => if hcdsr_pronto='1' then Eprox <= transmite_centena;
@@ -62,14 +62,14 @@ begin
 
         when transmite_unidade => Eprox <= espera_unidade;
 
-        when espera_unidade => if tx_pronto='1' then Eprox <= transmite_#;
+        when espera_unidade => if tx_pronto='1' then Eprox <= transmite_hashtag;
                                else                  Eprox <= espera_unidade;
                                end if;
 
-        when transmite_# => Eprox <= espera_#;
+        when transmite_hashtag => Eprox <= espera_hashtag;
 
-        when espera_# => if tx_pronto='1' then Eprox <= final;
-                         else                  Eprox <= espera_#;
+        when espera_hashtag => if tx_pronto='1' then Eprox <= final;
+                         else                  Eprox <= espera_hashtag;
                          end if;
 
         when final =>           Eprox <= inicial;
@@ -83,13 +83,13 @@ begin
         medir <= '1' when aguarda_medida, 
                  '0' when others;
     with Eatual select 
-        partida <= '1' when transmite_centena | transmite_dezena | transmite_unidade | transmite_#, 
+        partida <= '1' when transmite_centena | transmite_dezena | transmite_unidade | transmite_hashtag, 
                    '0' when others;
     with Eatual select
-        escolha_ascii <= '11' when transmite_centena | espera_centena, -- Centena
-                         '10' when transmite_dezena | espera_dezena, -- Dezena
-                         '01' when transmite_unidade | espera_unidade, -- Unidade
-                         '00' when others; -- #
+        escolha_ascii <= "11" when transmite_centena | espera_centena, -- Centena
+                         "10" when transmite_dezena | espera_dezena, -- Dezena
+                         "01" when transmite_unidade | espera_unidade, -- Unidade
+                         "00" when others; -- #
     with Eatual select
         fim <= '1' when final, 
                '0' when others;
@@ -103,8 +103,8 @@ begin
                    "0101" when espera_dezena, 
                    "0110" when transmite_unidade,
                    "0111" when envia_unidade,
-                   "1000" when transmite_#,
-                   "1001" when espera_#,
+                   "1000" when transmite_hashtag,
+                   "1001" when espera_hashtag,
                    "1111" when final, 
                    "1110" when others;
 

@@ -82,7 +82,7 @@ begin
         );
 
     TX_SERIAL: tx_serial_7E2
-        port (
+        port map (
             clock         => clock,
             reset         => reset,
             partida       => partida,
@@ -92,17 +92,16 @@ begin
             d_tick        => open,
             d_estado      => db_tx_estado
         );
-    end component tx_serial_7E2;
 
     mux_4x1: mux_4x1_n
     generic map(
         BITS => 7
-    );
+    )
     port map( 
-        D3      => "11" & s_medida(11 downto 8), -- Adiciona "110000" = 30 em hexadecimal (Idem para os abaixo)
-        D2      => "11" & s_medida(7 downto 4),
-        D1      => "11" & s_medida(3 downto 0),
-        D0      => "100011", -- # em hexadecimal (23H)
+        D3      => "011" & s_medida(11 downto 8), -- Adiciona "110000" = 30 em hexadecimal (Idem para os abaixo)
+        D2      => "011" & s_medida(7 downto 4),
+        D1      => "011" & s_medida(3 downto 0),
+        D0      => "0100011", -- # em hexadecimal (23H)
         SEL     => mux_escolha,
         MUX_OUT => s_dados_ascii
     );
