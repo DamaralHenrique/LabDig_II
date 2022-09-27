@@ -66,8 +66,16 @@ architecture arch of exp5_trena is
             sseg : out std_logic_vector(6 downto 0)
         );
     end component;
+	 
+	 component edge_detector 
+    port (  
+        clock     : in  std_logic;
+        signal_in : in  std_logic;
+        output    : out std_logic
+    );
+    end component;
     
-    signal s_medir, s_partida: std_logic;
+    signal s_medir, s_partida, s_mensurar_ed: std_logic;
     signal s_escolha: std_logic_vector (1 downto 0);
     signal s_dados_ascii: std_logic_vector (6 downto 0);
     signal s_medida: std_logic_vector(11 downto 0);
@@ -79,7 +87,7 @@ begin
         port map (
             clock         => clock,
             reset         => reset,
-            mensurar      => mensurar,
+            mensurar      => s_mensurar_ed,
             hcdsr_pronto  => s_hcdsr_pronto,
             tx_pronto     => s_tx_pronto,
             medir         => s_medir,
@@ -108,6 +116,13 @@ begin
             -- Sinais do mux
             mux_escolha  => s_escolha
         );
+		  
+	 ED: edge_detector 
+		 port map (  
+			  clock     => clock,
+			  signal_in => mensurar,
+			  output    => s_mensurar_ed
+		 );
 
     STATE_HEX: hex7seg
         port map (

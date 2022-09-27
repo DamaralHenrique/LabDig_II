@@ -64,7 +64,7 @@ begin
                                 else                   Eprox <= medida;
                                 end if;
         when armazenamento =>   Eprox <= final;
-        when final =>           Eprox <= inicial;
+		  when final =>           Eprox <= inicial;
         when others =>          Eprox <= inicial;
       end case;
     end process;
