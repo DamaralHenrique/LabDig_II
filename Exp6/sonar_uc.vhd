@@ -1,7 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity interface_hcsr04_uc is 
+entity sonar_uc is 
     port ( 
         clock            : in  std_logic;
         reset            : in  std_logic;
@@ -20,9 +20,9 @@ entity interface_hcsr04_uc is
         conta_ang    : out std_logic;
         db_estado    : out std_logic_vector(3 downto 0) 
     );
-end interface_hcsr04_uc;
+end sonar_uc;
 
-architecture fsm_arch of interface_hcsr04_uc is
+architecture fsm_arch of sonar_uc is
     type tipo_estado is (inicial, preparacao, aguarda_servo, 
                          mede_distancia, transmite_digito, espera_digito,
                          fim_digito, proximo_digito, verifica_angulo,
