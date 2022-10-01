@@ -22,22 +22,20 @@ use ieee.numeric_std.all;
 
 entity tx_serial_7E2 is
     port (
-        clock         : in  std_logic;
-        reset         : in  std_logic;
-        partida       : in  std_logic;
-        dados_ascii   : in  std_logic_vector (6 downto 0); -- Redução do tamanho da entrada
-        saida_serial  : out std_logic;
-        pronto        : out std_logic;
+        clock           : in  std_logic;
+        reset           : in  std_logic;
+        partida         : in  std_logic;
+        dados_ascii     : in  std_logic_vector (6 downto 0);
+        saida_serial    : out std_logic;
+        pronto          : out std_logic;
         -- Sinais de depuração
-        d_tick        : out std_logic;
-        d_estado      : out std_logic_vector(3 downto 0)
+        db_partida      : out std_logic;
+        db_saida_serial : out std_logic;
+        db_estado       : out std_logic_vector(3 downto 0)
     );
 end entity;
 
-architecture tx_serial_7E2_arch of tx_serial_7E2 is
-     
-    signal s_estado: std_logic_vector(3 downto 0);
-     
+architecture tx_serial_7E2_arch of tx_serial_7E2 is     
     component tx_serial_uc 
     port ( 
         clock   : in  std_logic;
@@ -82,18 +80,11 @@ architecture tx_serial_7E2_arch of tx_serial_7E2 is
     );
     end component;
     
-    component edge_detector 
-    port (  
-        clock     : in  std_logic;
-        signal_in : in  std_logic;
-        output    : out std_logic
-    );
-    end component;
-    
     signal s_reset, s_partida, s_partida_ed: std_logic;
     signal s_zera, s_conta, s_carrega, s_desloca, s_tick, s_fim: std_logic;
     signal s_saida_serial: std_logic;
     signal s_dados_ascii: std_logic_vector (7 downto 0);
+    signal s_estado: std_logic_vector(3 downto 0);
 
 begin
 
@@ -147,20 +138,14 @@ begin
                  Q     => open, 
                  fim   => s_tick
              );
- 
-    U4_ED: edge_detector 
-           port map (
-               clock     => clock,
-               signal_in => s_partida,
-               output    => s_partida_ed
-           );
     
     -- saida
     saida_serial <= s_saida_serial;
 
     -- sinais de depuração
-    d_estado <= s_estado;
-    d_tick <= s_tick;
+    db_estado <= s_estado;
+    db_partida <= partida;
+    db_saida_serial <= s_saida_serial;
 
 end architecture;
 

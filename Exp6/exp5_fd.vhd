@@ -38,15 +38,16 @@ architecture rtl of exp5_fd is
     
     component tx_serial_7E2 is
         port (
-            clock         : in  std_logic;
-            reset         : in  std_logic;
-            partida       : in  std_logic;
-            dados_ascii   : in  std_logic_vector (6 downto 0); -- Redução do tamanho da entrada
-            saida_serial  : out std_logic;
-            pronto        : out std_logic;
+            clock           : in  std_logic;
+            reset           : in  std_logic;
+            partida         : in  std_logic;
+            dados_ascii     : in  std_logic_vector (6 downto 0);
+            saida_serial    : out std_logic;
+            pronto          : out std_logic;
             -- Sinais de depuração
-            d_tick        : out std_logic;
-            d_estado      : out std_logic_vector(3 downto 0)
+            db_partida      : out std_logic;
+            db_saida_serial : out std_logic;
+            db_estado       : out std_logic_vector(3 downto 0)
         );
     end component tx_serial_7E2;
 
@@ -83,14 +84,15 @@ begin
 
     TX_SERIAL: tx_serial_7E2
         port map (
-            clock         => clock,
-            reset         => reset,
-            partida       => partida,
-            dados_ascii   => s_dados_ascii,
-            saida_serial  => saida_serial,
-            pronto        => tx_pronto,
-            d_tick        => open,
-            d_estado      => db_tx_estado
+            clock           => clock,
+            reset           => reset,
+            partida         => partida,
+            dados_ascii     => s_dados_ascii,
+            saida_serial    => saida_serial,
+            pronto          => tx_pronto,
+            db_partida      => open,
+            db_saida_serial => open,
+            db_estado       => db_tx_estado
         );
 
     mux_4x1: mux_4x1_n
