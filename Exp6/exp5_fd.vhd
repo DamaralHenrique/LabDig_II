@@ -32,6 +32,8 @@ architecture rtl of exp5_fd is
             trigger   : out std_logic;
             medida    : out std_logic_vector(11 downto 0); -- 3 digitos BCD
             pronto    : out std_logic;
+            db_reset  : out std_logic;
+            db_medir  : out std_logic;
             db_estado : out std_logic_vector(3 downto 0) -- estado da UC
         );
     end component interface_hcsr04;
@@ -79,6 +81,8 @@ begin
             trigger   => trigger,
             medida    => s_medida,
             pronto    => hcsr_pronto,
+            db_reset  => open,
+            db_medir  => open,
             db_estado => db_hcrs_estado
         );
 
