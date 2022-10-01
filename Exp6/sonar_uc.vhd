@@ -9,7 +9,7 @@ entity sonar_uc is
         fim_conta_digito : in  std_logic;
         ligar            : in  std_logic;
         fim_espera_servo : in  std_logic;
-        hcdsr_pronto     : in  std_logic;
+        hcsr_pronto      : in  std_logic;
         fim_ang          : in  std_logic;
         partida      : out std_logic;
         conta_digito : out std_logic;
@@ -51,7 +51,7 @@ begin
         when aguarda_servo =>   if fim_espera_servo='1' then Eprox <= mede_distancia;
                                 else                         Eprox <= aguarda_servo;
                                 end if;
-        when mede_distancia =>  if hcdsr_pronto='1' then Eprox <= transmite_digito;
+        when mede_distancia =>  if hcsr_pronto='1' then Eprox <= transmite_digito;
                                 else              Eprox <= mede_distancia;
                                 end if;
         when transmite_digito => Eprox <= espera_digito;
