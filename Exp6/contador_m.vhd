@@ -1,16 +1,18 @@
 ------------------------------------------------------------------
 -- Arquivo   : contador_m.vhd
--- Projeto   : Experiencia 2 - Transmissao Serial Assincrona
+-- Projeto   : Experiencia 3 - Recepcao Serial Assincrona
 ------------------------------------------------------------------
 -- Descricao : contador binario  
 --             > parametro M: modulo de contagem
 --             > parametro N: numero de bits da saida
 --
+--             saidas fim de contagem e meio de contagem
+--
 ------------------------------------------------------------------
 -- Revisoes  :
 --     Data        Versao  Autor             Descricao
 --     09/09/2021  1.0     Edson Midorikawa  versao inicial
---     31/08/2022  2.0     Edson Midorikawa  revisao
+--     31/08/2022  2.0     Edson Midorikawa  revisao do codigo
 ------------------------------------------------------------------
 --
 
@@ -28,7 +30,8 @@ entity contador_m is
         zera  : in  std_logic;
         conta : in  std_logic;
         Q     : out std_logic_vector (N-1 downto 0);
-        fim   : out std_logic
+        fim   : out std_logic;
+        meio  : out std_logic
     );
 end entity contador_m;
 
@@ -47,11 +50,17 @@ begin
             end if;
         end if;
         
+        -- fim de contagem    
         if IQ=M-1 then fim <= '1'; 
         else fim <= '0'; 
         end if;
 	    
+        -- meio da contagem
+        if IQ=M/2-1 then meio <= '1'; 
+        else meio <= '0'; 
+        end if;
+
         Q <= std_logic_vector(to_unsigned(IQ, Q'length));
     
     end process;
-end architecture contador_m_arch;
+end architecture;

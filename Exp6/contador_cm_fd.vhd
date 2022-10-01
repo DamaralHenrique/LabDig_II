@@ -41,7 +41,8 @@ architecture rtl of contador_cm_fd is
             zera  : in  std_logic;
             conta : in  std_logic;
             Q     : out std_logic_vector (N-1 downto 0);
-            fim   : out std_logic
+            fim   : out std_logic;
+            meio  : out std_logic
         );
     end component contador_m;
 
@@ -84,7 +85,8 @@ begin
             zera  => zera_tick, 
             conta => conta_tick, 
             Q     => s_valor,
-            fim   => tick
+            fim   => tick,
+            meio  => open
         );
     
     ANALISA_MODULO_DE_ENTRADA: analisa_m

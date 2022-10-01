@@ -59,7 +59,8 @@ architecture tx_serial_7E2_fd_arch of tx_serial_7E2_fd is
         zera  : in  std_logic;
         conta : in  std_logic;
         Q     : out std_logic_vector (N-1 downto 0);
-        fim   : out std_logic
+        fim   : out std_logic;
+        meio  : out std_logic
     );
     end component;
     
@@ -97,7 +98,8 @@ begin
             zera  => zera, 
             conta => conta, 
             Q     => open, 
-            fim   => fim
+            fim   => fim,
+            meio  => open
         );
 
     saida_serial <= s_saida(0);
