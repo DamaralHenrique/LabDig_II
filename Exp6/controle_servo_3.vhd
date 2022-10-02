@@ -30,7 +30,8 @@ entity controle_servo_3 is
       pwm        : out std_logic;
       db_reset   : out std_logic;
       db_pwm     : out std_logic;
-	    db_posicao : out std_logic_vector(2 downto 0)
+	    db_posicao : out std_logic_vector(2 downto 0);
+      angle      : out std_logic_vector(11 downto 0)
     );
 end controle_servo_3;
 
@@ -45,7 +46,7 @@ architecture rtl of controle_servo_3 is
 
 begin
 
-  process(clock,reset,s_posicao)
+  process(clock, reset, s_posicao)
   begin
     -- inicia contagem e largura
     if(reset='1') then
@@ -84,7 +85,8 @@ begin
     end case;
   end process;
 
-  pwm <= s_pwm;
+  pwm   <= s_pwm;
+  angle <= std_logic_vector(to_unsigned(s_posicao, angle'length));
 
   db_posicao <= posicao;
   db_reset <= reset;
