@@ -29,6 +29,7 @@ architecture fsm_arch of sonar is
             partida      : out std_logic;
             conta_digito : out std_logic;
             reset_servo  : out std_logic;
+            conta_servo  : out std_logic;
             zera_ang     : out std_logic;
             medir        : out std_logic;
             fim_posicao  : out std_logic;
@@ -45,6 +46,7 @@ architecture fsm_arch of sonar is
             partida      : in std_logic;
             conta_digito : in std_logic;
             reset_servo  : in std_logic;
+            conta_servo  : in std_logic;
             zera_ang     : in std_logic;
             medir        : in std_logic;
             fim_posicao  : in std_logic;
@@ -71,7 +73,7 @@ architecture fsm_arch of sonar is
 
     signal s_tx_pronto, s_fim_conta_digito, s_fim_espera_servo, s_hcsr_pronto, s_fim_ang: std_logic;
     signal s_partida, s_conta_digito, s_reset_servo, s_zera_ang, s_medir, s_fim_posicao: std_logic;
-    signal s_conta_ang, s_zera_digito: std_logic;
+    signal s_conta_ang, s_zera_digito, s_conta_servo: std_logic;
     signal s_db_estado: std_logic_vector(3 downto 0);
 begin
     UC: sonar_uc 
@@ -87,6 +89,7 @@ begin
             partida          => s_partida,
             conta_digito     => s_conta_digito,
             reset_servo      => s_reset_servo,
+            conta_servo      => s_conta_servo,
             zera_ang         => s_zera_ang,
             medir            => s_medir,
             fim_posicao      => s_fim_posicao,
@@ -102,6 +105,7 @@ begin
             partida          => s_partida,
             conta_digito     => s_conta_digito,
             reset_servo      => s_reset_servo,
+            conta_servo      => s_conta_servo,
             zera_ang         => s_zera_ang,
             medir            => s_medir,
             fim_posicao      => s_fim_posicao,
@@ -123,5 +127,7 @@ begin
             hexa => s_db_estado,
             sseg => db_estado
         );
+
+    fim_posicao <= s_fim_posicao;
     
 end architecture fsm_arch;

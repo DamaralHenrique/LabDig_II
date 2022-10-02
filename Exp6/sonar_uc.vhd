@@ -14,6 +14,7 @@ entity sonar_uc is
         partida      : out std_logic;
         conta_digito : out std_logic;
         reset_servo  : out std_logic;
+        conta_servo  : out std_logic;
         zera_ang     : out std_logic;
         medir        : out std_logic;
         fim_posicao  : out std_logic;
@@ -42,7 +43,7 @@ begin
     end process;
 
     -- logica de proximo estado
-    process (ligar, Eatual) 
+    process (ligar, fim_espera_servo, hcsr_pronto, tx_pronto, fim_conta_digito, fim_ang, Eatual) 
     begin
       case Eatual is
         when inicial =>         if ligar='1' then Eprox <= preparacao;
@@ -81,6 +82,8 @@ begin
         conta_digito <= '1' when proximo_digito, '0' when others;
     with Eatual select
         reset_servo <= '1' when preparacao | conta_angulo, '0' when others;
+    with Eatual select
+        conta_servo <= '1' when aguarda_servo, '0' when others;
     with Eatual select
         zera_ang <= '1' when preparacao, '0' when others;
     with Eatual select 

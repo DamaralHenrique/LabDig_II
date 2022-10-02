@@ -8,6 +8,7 @@ entity sonar_fd is
         partida      : in std_logic;
         conta_digito : in std_logic;
         reset_servo  : in std_logic;
+        conta_servo  : in std_logic;
         zera_ang     : in std_logic;
         medir        : in std_logic;
         fim_posicao  : in std_logic;
@@ -159,7 +160,7 @@ begin
             D6 => s_D6,
             D7 => "0100011", -- # em hexadecimal (23H)
             SEL     => s_mux_sel,
-            MUX_OUT => open
+            MUX_OUT => s_dados_ascii
         );
     
     -- Sinais auxiliares para o MUX
@@ -193,6 +194,20 @@ begin
             conta => conta_ang,
             Q     => s_posicao,
             fim   => fim_ang,
+            meio  => open
+        );
+
+    CONT_ESPERA_SERVO: contador_m
+        generic map (
+            M => 100000000,
+            N => 27
+        )
+        port map (
+            clock => clock,
+            zera  => reset_servo,
+            conta => conta_servo,
+            Q     => open,
+            fim   => fim_espera_servo,
             meio  => open
         );
 
