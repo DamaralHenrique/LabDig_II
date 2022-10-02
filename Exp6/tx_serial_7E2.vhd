@@ -81,7 +81,7 @@ architecture tx_serial_7E2_arch of tx_serial_7E2 is
     );
     end component;
 
-    signal s_reset, s_partida: std_logic;
+    signal s_reset: std_logic;
     signal s_zera, s_conta, s_carrega, s_desloca, s_tick, s_fim: std_logic;
     signal s_saida_serial: std_logic;
     signal s_dados_ascii: std_logic_vector (7 downto 0);
@@ -91,7 +91,6 @@ begin
 
     -- sinais reset e partida ativos em alto
     s_reset   <= reset;
-    s_partida <= partida;
     s_dados_ascii(6 downto 0) <= dados_ascii; -- Dados a serem enviados
     s_dados_ascii(7) <= dados_ascii(0) xor dados_ascii(1) xor dados_ascii(2) xor dados_ascii(3) -- Sinal de pareamento par
 	                    xor dados_ascii(4) xor dados_ascii(5) xor dados_ascii(6); 
@@ -100,7 +99,7 @@ begin
            port map (
                clock    => clock, 
                reset    => s_reset, 
-               partida  => s_partida, 
+               partida  => partida, 
                tick     => s_tick, 
                fim      => s_fim,
                zera     => s_zera, 

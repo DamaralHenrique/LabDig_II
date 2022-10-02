@@ -102,10 +102,19 @@ architecture fsm_arch of sonar_fd is
             meio  : out std_logic
         );
     end component;
+
+    component edge_detector 
+        port (  
+            clock     : in  std_logic;
+            signal_in : in  std_logic;
+            output    : out std_logic
+        );
+        end component;
     
     signal s_medida, s_medida: std_logic_vector (11 downto 0);
     signal s_dados_ascii: std_logic_vector (6 downto 0);
-    signal s_posicao, s_mux_sel: std_logic_vector(2 downto 0);  
+    signal s_posicao, s_mux_sel: std_logic_vector(2 downto 0); 
+    signal s_partida_ed: std_logic; 
 
 begin
     HCSR04: interface_hcsr04
@@ -126,7 +135,7 @@ begin
         port map (
             clock           => clock,
             reset           => reset,
-            partida         => partida,
+            partida         => s_partida_ed,
             dados_ascii     => s_dados_ascii,
             saida_serial    => saida_serial,
             pronto          => tx_pronto,
@@ -191,10 +200,12 @@ begin
             fim   => fim_conta_digito,
             meio  => open
         );
+
+    PARTIDA_ED: edge_detector 
+        port map (
+            clock     => clock,
+            signal_in => partida,
+            output    => s_partida_ed
+        );
     
-      -- TODO: Saída (11 downto 0) no controle servo para sair o angulo de forma a entrar no mux (Como o s_medida)
-    
-
-
-
 end architecture fsm_arch;
