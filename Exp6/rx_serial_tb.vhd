@@ -32,11 +32,16 @@ architecture tb of rx_serial_tb is
     signal paridade_recebida_out : std_logic  := '0';  -- new
     signal temdado_out           : std_logic  := '0';
     signal paridade_ok_out       : std_logic  := '0';  -- new
-  
+
+    signal dado_recebido_out     : std_logic_vector(6 downto 0) := "0000000";
+    signal db_estado_out         : std_logic_vector(3 downto 0) := "0000";
+    signal db_dado_serial_out    : std_logic := '0';
+
     -- para procedimento UART_WRITE_BYTE
     signal entrada_serial_in : std_logic := '1';
     signal serialData        : std_logic_vector(7 downto 0) := "00000000";
   
+
     -- Configuracoes do clock
     constant clockPeriod : time := 20 ns;            -- 50MHz
     -- constant bitPeriod   : time := 5208*clockPeriod; -- 5208 clocks por bit (9.600 bauds)
@@ -99,12 +104,13 @@ begin
              clock             => clock_in, 
              reset             => reset_in,
              dado_serial       => entrada_serial_in,
+             dado_recebido     => dado_recebido_out,
              paridade_recebida => paridade_recebida_out,
-             pronto_rx         => pronto_out,
              tem_dado          => temdado_out,
              paridade_ok       => paridade_ok_out,
-             dado_recebido     => open,
-             db_estado         => open
+             pronto_rx         => pronto_out,
+             db_dado_serial    => db_dado_serial_out,
+             db_estado         => db_estado_out
          );
     
     ---- Geracao dos sinais de entrada (estimulo)
