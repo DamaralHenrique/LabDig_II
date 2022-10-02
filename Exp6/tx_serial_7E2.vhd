@@ -80,8 +80,8 @@ architecture tx_serial_7E2_arch of tx_serial_7E2 is
         meio  : out std_logic
     );
     end component;
-    
-    signal s_reset, s_partida, s_partida_ed: std_logic;
+
+    signal s_reset, s_partida: std_logic;
     signal s_zera, s_conta, s_carrega, s_desloca, s_tick, s_fim: std_logic;
     signal s_saida_serial: std_logic;
     signal s_dados_ascii: std_logic_vector (7 downto 0);
@@ -100,7 +100,7 @@ begin
            port map (
                clock    => clock, 
                reset    => s_reset, 
-               partida  => s_partida_ed, 
+               partida  => s_partida, 
                tick     => s_tick, 
                fim      => s_fim,
                zera     => s_zera, 
@@ -140,7 +140,7 @@ begin
                  fim   => s_tick,
                  meio  => open
              );
-    
+
     -- saida
     saida_serial <= s_saida_serial;
 

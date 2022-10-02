@@ -32,7 +32,11 @@ architecture tb of tx_serial_tb is
         partida       : in  std_logic;
         dados_ascii   : in  std_logic_vector (6 downto 0);
         saida_serial  : out std_logic;
-        pronto        : out std_logic
+        pronto        : out std_logic;
+        -- Sinais de depuração
+        db_partida      : out std_logic;
+        db_saida_serial : out std_logic;
+        db_estado       : out std_logic_vector(3 downto 0)
     );
   end component;
   
@@ -44,6 +48,9 @@ architecture tb of tx_serial_tb is
   signal dados_ascii_7_in : std_logic_vector (6 downto 0) := "0000000";
   signal saida_serial_out : std_logic := '1';
   signal pronto_out       : std_logic := '0';
+  signal db_partida_in    : std_logic := '0';
+  signal db_saida_serial_out : std_logic := '1';
+  signal db_estado_out    : std_logic_vector (3 downto 0) := "0000";
 
   -- Configurações do clock
   signal keep_simulating : std_logic := '0'; -- delimita o tempo de geração do clock
@@ -64,7 +71,10 @@ begin
            partida      => partida_in,
            dados_ascii  => dados_ascii_7_in,
            saida_serial => saida_serial_out,
-           pronto       => pronto_out
+           pronto       => pronto_out,
+           db_partida   => db_partida_in,
+           db_saida_serial => db_saida_serial_out,
+           db_estado    => db_estado_out
       );
 
   -- geracao dos sinais de entrada (estimulos)
@@ -89,7 +99,7 @@ begin
     ---- acionamento da partida (inicio da transmissao)
     partida_in <= '1';
     wait until rising_edge(clock_in);
-    wait for 25*clockPeriod; -- pulso partida com 25 periodos de clock
+    wait for 1*clockPeriod; -- pulso partida com 25 periodo de clock
     partida_in <= '0';
 
     ---- espera final da transmissao (pulso pronto em 1)
@@ -117,20 +127,12 @@ begin
     ---- acionamento da partida (inicio da transmissao)
     partida_in <= '1';
     wait until rising_edge(clock_in);
-    wait for 25*clockPeriod; -- pulso partida com 25 periodos de clock
+    wait for 1*clockPeriod; -- pulso partida com 1 periodo de clock
     partida_in <= '0';
 
     ---- espera final da transmissao (pulso pronto em 1)
-	wait until pronto_out='1';
-
-
-
-
-
-
-
+	  wait until pronto_out='1';
     ----
-
 
     ---- final dos casos de teste da simulacao
     assert false report "Fim da simulacao" severity note;
