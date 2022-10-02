@@ -39,9 +39,11 @@ architecture rtl of controle_servo_3 is
 
   constant CONTAGEM_MAXIMA : integer := 1000000;  -- valor para frequencia da saida de 50Hz 
                                                   -- ou periodo de 20ms
+  constant ANGULO_MAXIMO : integer := 180;
   signal contagem     : integer range 0 to CONTAGEM_MAXIMA-1;
   signal posicao_pwm  : integer range 0 to CONTAGEM_MAXIMA-1;
   signal s_posicao    : integer range 0 to CONTAGEM_MAXIMA-1;
+  signal s_angle      : integer range 0 to ANGULO_MAXIMO-1;
   signal s_pwm        : std_logic;
 
 begin
@@ -83,10 +85,24 @@ begin
       when "111"  => s_posicao <= 110000;  -- pulso de   2.2 ms (160°)
       when others => s_posicao <=      0;  -- nulo (saida 0)
     end case;
+
+    case posicao is
+      when "000"  => s_angle <=  20;  -- pulso de   0.7 ms (20°)
+      when "001"  => s_angle <=  40;  -- pulso de 0.914 ms (40°)
+      when "010"  => s_angle <=  60;  -- pulso de 1.129 ms (60°)
+      when "011"  => s_angle <=  80;  -- pulso de 1.343 ms (80°)
+      when "100"  => s_angle <= 100;  -- pulso de 1.557 ms (100°)
+      when "101"  => s_angle <= 120;  -- pulso de 1.771 ms (120°)
+      when "110"  => s_angle <= 140;  -- pulso de 1.986 ms (140°)
+      when "111"  => s_angle <= 160;  -- pulso de   2.2 ms (160°)
+      when others => s_angle <=   0;  -- nulo (saida 0)
+    end case;
   end process;
 
   pwm   <= s_pwm;
-  angle <= std_logic_vector(to_unsigned(s_posicao, angle'length));
+  angle <= std_logic_vector(to_unsigned(s_angle / 100,         4)) &
+           std_logic_vector(to_unsigned((s_angle / 10) mod 10, 4)) &
+           std_logic_vector(to_unsigned(s_angle mod 10,        4));
 
   db_posicao <= posicao;
   db_reset <= reset;

@@ -83,7 +83,8 @@ architecture fsm_arch of sonar_fd is
             pwm        : out std_logic;
             db_reset   : out std_logic;
             db_pwm     : out std_logic;
-            db_posicao : out std_logic_vector(2 downto 0)
+            db_posicao : out std_logic_vector(2 downto 0);
+            angle      : out std_logic_vector(11 downto 0)
           );
     end component controle_servo_3;
     
@@ -102,7 +103,7 @@ architecture fsm_arch of sonar_fd is
         );
     end component;
     
-    signal s_medida: std_logic_vector (11 downto 0);
+    signal s_medida, s_medida: std_logic_vector (11 downto 0);
     signal s_dados_ascii: std_logic_vector (6 downto 0);
     signal s_posicao, s_mux_sel: std_logic_vector(2 downto 0);  
 
@@ -139,16 +140,16 @@ begin
             BITS => 7
         )
         port map ( 
-            D0 => open,
-            D1 => open,
-            D2 => open,
+            D0 => "011" & s_angle(11 downto 8),
+            D1 => "011" & s_angle(7 downto 4),
+            D2 => "011" & s_angle(3 downto 0),
             D3 => "0101100", -- , em hexadecimal (2CH)
             D4 => "011" & s_medida(11 downto 8), -- Adiciona "110000" = 30 em hexadecimal (Idem para os abaixo)
             D5 => "011" & s_medida(7 downto 4),
             D6 => "011" & s_medida(3 downto 0),
             D7 => "0100011", -- # em hexadecimal (23H)
             SEL     => s_mux_sel,
-            MUX_OUT => open,
+            MUX_OUT => open
         );
 
     SERVO: controle_servo_3
@@ -160,6 +161,7 @@ begin
             db_reset   => open,
             db_pwm     => open,
             db_posicao => open,
+            angle      => s_angle
         );
 
     CONT_POS: contador_m
