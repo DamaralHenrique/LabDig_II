@@ -110,10 +110,11 @@ architecture fsm_arch of sonar_fd is
         );
         end component;
     
-    signal s_medida, s_medida: std_logic_vector (11 downto 0);
+    signal s_medida: std_logic_vector (11 downto 0);
     signal s_dados_ascii: std_logic_vector (6 downto 0);
     signal s_posicao, s_mux_sel: std_logic_vector(2 downto 0); 
     signal s_partida_ed: std_logic; 
+    signal s_angle: std_logic_vector(11 downto 0);
 
 begin
     HCSR04: interface_hcsr04
@@ -176,7 +177,7 @@ begin
         generic map (
             M => 8,
             N => 3
-        );
+        )
         port map (
             clock => clock,
             zera  => zera_ang,
@@ -190,7 +191,7 @@ begin
         generic map (
             M => 8,
             N => 3
-        );
+        )
         port map (
             clock => clock,
             zera  => zera_digito,

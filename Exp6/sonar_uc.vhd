@@ -58,6 +58,7 @@ begin
         when transmite_digito => Eprox <= espera_digito;
         when espera_digito =>   if tx_pronto='1' then Eprox <= fim_digito;
                                 else                 Eprox <= espera_digito;
+                                end if;
         when fim_digito =>      if fim_conta_digito='1' then Eprox <= verifica_angulo;
                                 else                 Eprox <= proximo_digito;
                                 end if;
@@ -79,7 +80,7 @@ begin
     with Eatual select
         conta_digito <= '1' when proximo_digito, '0' when others;
     with Eatual select
-        reset_servo <= '1' when preparacao or conta_angulo, '0' when others;
+        reset_servo <= '1' when preparacao | conta_angulo, '0' when others;
     with Eatual select
         zera_ang <= '1' when preparacao, '0' when others;
     with Eatual select 
