@@ -99,7 +99,7 @@ begin
     ---- acionamento da partida (inicio da transmissao)
     partida_in <= '1';
     wait until rising_edge(clock_in);
-    wait for 1*clockPeriod; -- pulso partida com 25 periodo de clock
+    wait for 1*clockPeriod; -- pulso partida com 1 periodo de clock
     partida_in <= '0';
 
     ---- espera final da transmissao (pulso pronto em 1)
