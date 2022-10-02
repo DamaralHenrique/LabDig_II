@@ -18,6 +18,7 @@ entity sonar_uc is
         medir        : out std_logic;
         fim_posicao  : out std_logic;
         conta_ang    : out std_logic;
+        zera_digito  : out std_logic;
         db_estado    : out std_logic_vector(3 downto 0) 
     );
 end sonar_uc;
@@ -87,7 +88,9 @@ begin
         fim_posicao <= '1' when verifica_angulo, '0' when others;
     with Eatual select
         conta_ang <= '1' when conta_angulo, '0' when others;
-
+    with Eatual select
+        zera_digito <= '1' when mede_distancia, '0' when others;
+    
   with Eatual select
       db_estado <= "0000" when inicial, 
                    "0001" when preparacao, 

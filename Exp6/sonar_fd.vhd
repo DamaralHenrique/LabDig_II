@@ -13,6 +13,7 @@ entity sonar_fd is
         fim_posicao  : in std_logic;
         conta_ang    : in std_logic;
         echo         : in std_logic;
+        zera_digito  : in std_logic;
         tx_pronto        : out std_logic;
         fim_conta_digito : out std_logic;
         ligar            : out std_logic;
@@ -161,33 +162,32 @@ begin
             db_posicao => open,
         );
 
-      -- TODO: Contador para s_posicao e s_mux_sel
     CONT_POS: contador_m
         generic map (
-            M => 50, -- dummy
-            N => 6 -- dummy
+            M => 8,
+            N => 3
         );
         port map (
-            clock => ,
-            zera  => ,
-            conta => ,
-            Q     => ,
-            fim   => ,
-            meio  => 
+            clock => clock,
+            zera  => zera_ang,
+            conta => conta_ang,
+            Q     => s_posicao,
+            fim   => fim_ang,
+            meio  => open
         );
 
     CONT_MUX_SEL: contador_m
         generic map (
-            M => 50, -- dummy
-            N => 6 -- dummy
+            M => 8,
+            N => 3
         );
         port map (
-            clock => ,
-            zera  => ,
-            conta => ,
-            Q     => ,
-            fim   => ,
-            meio  => 
+            clock => clock,
+            zera  => zera_digito,
+            conta => conta_digito,
+            Q     => s_mux_sel,
+            fim   => fim_conta_digito,
+            meio  => open
         );
     
       -- TODO: Saída (11 downto 0) no controle servo para sair o angulo de forma a entrar no mux (Como o s_medida)
