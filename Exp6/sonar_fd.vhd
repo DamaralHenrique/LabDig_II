@@ -84,11 +84,27 @@ architecture fsm_arch of sonar_fd is
             db_pwm     : out std_logic;
             db_posicao : out std_logic_vector(2 downto 0)
           );
-      end controle_servo_3;
-
+    end component controle_servo_3;
+    
+    component contador_m is
+        generic (
+            constant M : integer := 50;  
+            constant N : integer := 6 
+        );
+        port (
+            clock : in  std_logic;
+            zera  : in  std_logic;
+            conta : in  std_logic;
+            Q     : out std_logic_vector (N-1 downto 0);
+            fim   : out std_logic;
+            meio  : out std_logic
+        );
+    end component;
+    
     signal s_medida: std_logic_vector (11 downto 0);
     signal s_dados_ascii: std_logic_vector (6 downto 0);
     signal s_posicao, s_mux_sel: std_logic_vector(2 downto 0);  
+
 begin
     HCSR04: interface_hcsr04
         port map (
@@ -135,7 +151,7 @@ begin
         );
 
     SERVO: controle_servo_3
-        port (
+        port map (
             clock      => clock,
             reset      => reset,
             posicao    => s_posicao,
@@ -143,10 +159,40 @@ begin
             db_reset   => open,
             db_pwm     => open,
             db_posicao => open,
-          );
-      end controle_servo_3;
+        );
 
       -- TODO: Contador para s_posicao e s_mux_sel
-      -- Saída (11 downto 0) no controle servo para sair o angulo de forma a entrar no mux (Como o s_medida)
+    CONT_POS: contador_m
+        generic map (
+            M => 50, -- dummy
+            N => 6 -- dummy
+        );
+        port map (
+            clock => ,
+            zera  => ,
+            conta => ,
+            Q     => ,
+            fim   => ,
+            meio  => 
+        );
+
+    CONT_MUX_SEL: contador_m
+        generic map (
+            M => 50, -- dummy
+            N => 6 -- dummy
+        );
+        port map (
+            clock => ,
+            zera  => ,
+            conta => ,
+            Q     => ,
+            fim   => ,
+            meio  => 
+        );
+    
+      -- TODO: Saída (11 downto 0) no controle servo para sair o angulo de forma a entrar no mux (Como o s_medida)
+    
+
+
 
 end architecture fsm_arch;
