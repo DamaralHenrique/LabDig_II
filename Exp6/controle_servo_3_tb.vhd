@@ -17,7 +17,8 @@ architecture tb of controle_servo_3_tb is
         pwm        : out std_logic;
         db_reset   : out std_logic;
         db_pwm     : out std_logic;
-        db_posicao : out std_logic_vector(2 downto 0)
+        db_posicao : out std_logic_vector(2 downto 0);
+        angle      : out std_logic_vector(11 downto 0)
     );
   end component;
   
@@ -30,6 +31,7 @@ architecture tb of controle_servo_3_tb is
   signal db_reset_out   : std_logic := '0';
   signal db_pwm_out     : std_logic := '0';
   signal db_posicao_out : std_logic_vector (2 downto 0) := "000";
+  signal db_angle       : std_logic_vector (11 downto 0) := "000000000000";
 
 
   -- Configurações do clock
@@ -51,7 +53,8 @@ begin
             pwm        => pwm_out,
             db_reset   => db_reset_out,
             db_pwm     => db_pwm_out,
-            db_posicao => db_posicao_out
+            db_posicao => db_posicao_out,
+            angle      => db_angle
         );
 
   -- geracao dos sinais de entrada (estimulos)
