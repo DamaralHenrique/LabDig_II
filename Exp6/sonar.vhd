@@ -36,7 +36,7 @@ architecture fsm_arch of sonar is
             zera_digito  : out std_logic;
             db_estado    : out std_logic_vector(3 downto 0) 
         );
-    end sonar_uc;
+    end component sonar_uc;
 
     component sonar_fd is 
         port ( 
@@ -60,7 +60,7 @@ architecture fsm_arch of sonar is
             saida_serial     : out std_logic;
             pwm              : out std_logic
         );
-    end sonar_fd;
+    end component sonar_fd;
 
     component hex7seg is
         port (
@@ -117,7 +117,6 @@ begin
             saida_serial     => saida_serial,
             pwm              => pwm
         );
-    end sonar_fd;
 
     STATE_HEX: hex7seg
         port map (
