@@ -16,7 +16,6 @@ entity sonar_fd is
         zera_digito  : in std_logic;
         tx_pronto        : out std_logic;
         fim_conta_digito : out std_logic;
-        ligar            : out std_logic;
         fim_espera_servo : out std_logic;
         hcsr_pronto      : out std_logic;
         fim_ang          : out std_logic;
