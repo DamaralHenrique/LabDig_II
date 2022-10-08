@@ -17,7 +17,7 @@ entity sonar_fd is
         conta_ang    : in std_logic;
         echo         : in std_logic;
         zera_digito  : in std_logic;
-		  entrada_serial: in std_logic;
+		entrada_serial: in std_logic;
         tx_pronto        : out std_logic;
         fim_conta_digito : out std_logic;
         fim_espera_servo : out std_logic;
@@ -25,10 +25,9 @@ entity sonar_fd is
         trigger          : out std_logic;
         saida_serial     : out std_logic;
         pwm              : out std_logic;
-		  ativo_p          : out std_logic;
-		  ativo_r          : out std_logic;
-		  db_dado_recebido  : out std_logic_vector(6 downto 0);
-		  db_estado_rx : out std_logic_vector(3 downto 0)
+		modo             : out std_logic;
+		db_dado_recebido : out std_logic_vector(6 downto 0);
+		db_estado_rx     : out std_logic_vector(3 downto 0)
     );
 end sonar_fd;
 
@@ -53,11 +52,10 @@ architecture fsm_arch of sonar_fd is
         clock             : in std_logic;
         reset             : in std_logic;
         dado_serial       : in std_logic;
-		  ativo_p 			  : out std_logic;
-		  ativo_r 			  : out std_logic;
-		  db_estado         : out std_logic_vector(3 downto 0);
-		  db_estado_rx : out std_logic_vector(3 downto 0);
-		  db_dado_recebido  : out std_logic_vector(6 downto 0)
+		modo 			  : out std_logic;
+		db_estado         : out std_logic_vector(3 downto 0);
+		db_estado_rx      : out std_logic_vector(3 downto 0);
+		db_dado_recebido  : out std_logic_vector(6 downto 0)
     );
 	 end component;
 
@@ -171,14 +169,13 @@ begin
 		  
 	 INTERFACE_RX_SERIAL : interface_rx
 		 port map (
-			  clock       => clock,
-           reset       => reset,
-			  dado_serial => entrada_serial,
-			  ativo_p 	  => ativo_p,
-			  ativo_r 	  => ativo_r,
-			  db_estado   => open,
-			  db_estado_rx => db_estado_rx,
-			  db_dado_recebido  => db_dado_recebido
+			clock       => clock,
+            reset       => reset,
+			dado_serial => entrada_serial,
+			modo 	    => modo,
+			db_estado   => open,
+			db_estado_rx => db_estado_rx,
+			db_dado_recebido  => db_dado_recebido
 		 );
 
     TX_SERIAL: tx_serial_7E2
