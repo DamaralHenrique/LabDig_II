@@ -10,7 +10,8 @@ entity interface_hcsr04_fd is
         registra   : in  std_logic;
         distancia  : out std_logic_vector(11 downto 0);
         fim_medida : out std_logic;
-        trigger    : out std_logic
+        trigger    : out std_logic;
+        db_estado_contador_cm : out std_logic_vector(3 downto 0)
     );
 end entity;
 
@@ -81,7 +82,7 @@ begin
             digito2 => s_digito2,
             fim     => open, -- usado pra testes no contador_cm
             pronto  => fim_medida,
-            db_estado => open -- usado para testes no contador_cm
+            db_estado => db_estado_contador_cm -- usado para testes no contador_cm
         );
 
     GERADOR_DE_PULSO: gerador_pulso
