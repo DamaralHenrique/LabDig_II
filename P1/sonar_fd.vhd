@@ -5,19 +5,20 @@ use ieee.math_real.all;
 
 entity sonar_fd is 
     port ( 
-        clock        : in  std_logic;
-        reset        : in  std_logic;
-        partida      : in std_logic;
-        conta_digito : in std_logic;
-        reset_servo  : in std_logic;
-        conta_servo  : in std_logic;
-        zera_ang     : in std_logic;
-        medir        : in std_logic;
-        fim_posicao  : in std_logic;
-        conta_ang    : in std_logic;
-        echo         : in std_logic;
-        zera_digito  : in std_logic;
-		  entrada_serial: in std_logic;
+        clock         : in  std_logic;
+        reset         : in  std_logic;
+        partida       : in std_logic;
+        conta_digito  : in std_logic;
+        reset_servo   : in std_logic;
+        conta_servo   : in std_logic;
+        zera_ang      : in std_logic;
+        medir         : in std_logic;
+        fim_posicao   : in std_logic;
+        conta_ang     : in std_logic;
+        echo          : in std_logic;
+        zera_digito   : in std_logic;
+		entrada_serial: in std_logic;
+        debug_sel     : in std_logic_vector(1 downto 0);
         tx_pronto        : out std_logic;
         fim_conta_digito : out std_logic;
         fim_espera_servo : out std_logic;
@@ -25,10 +26,12 @@ entity sonar_fd is
         trigger          : out std_logic;
         saida_serial     : out std_logic;
         pwm              : out std_logic;
-		  ativo_p          : out std_logic;
-		  ativo_r          : out std_logic;
-		  db_dado_recebido  : out std_logic_vector(6 downto 0);
-		  db_estado_rx : out std_logic_vector(3 downto 0)
+		modo             : out std_logic;
+        hex4      : out std_logic_vector(6 downto 0);
+        hex3      : out std_logic_vector(6 downto 0);
+        hex2      : out std_logic_vector(6 downto 0);
+        hex1      : out std_logic_vector(6 downto 0);
+        hex0      : out std_logic_vector(6 downto 0)
     );
 end sonar_fd;
 
@@ -44,7 +47,8 @@ architecture fsm_arch of sonar_fd is
             pronto    : out std_logic;
             db_reset  : out std_logic;
             db_medir  : out std_logic;
-            db_estado : out std_logic_vector(3 downto 0) -- estado da UC
+            db_estado : out std_logic_vector(3 downto 0); -- estado da UC
+            db_estado_contador_cm : out std_logic_vector(3 downto 0)
         );
     end component interface_hcsr04;
 	 
@@ -53,11 +57,10 @@ architecture fsm_arch of sonar_fd is
         clock             : in std_logic;
         reset             : in std_logic;
         dado_serial       : in std_logic;
-		  ativo_p 			  : out std_logic;
-		  ativo_r 			  : out std_logic;
-		  db_estado         : out std_logic_vector(3 downto 0);
-		  db_estado_rx : out std_logic_vector(3 downto 0);
-		  db_dado_recebido  : out std_logic_vector(6 downto 0)
+		modo 			  : out std_logic;
+		db_estado         : out std_logic_vector(3 downto 0);
+		db_estado_rx      : out std_logic_vector(3 downto 0);
+		db_dado_recebido  : out std_logic_vector(6 downto 0)
     );
 	 end component;
 
@@ -145,7 +148,28 @@ architecture fsm_arch of sonar_fd is
             signal_in : in  std_logic;
             output    : out std_logic
         );
-        end component;
+    end component;
+
+    component mux_4x1_n is
+        generic (
+            constant BITS: integer := 4
+        );
+        port( 
+            D3      : in  std_logic_vector (BITS-1 downto 0);
+            D2      : in  std_logic_vector (BITS-1 downto 0);
+            D1      : in  std_logic_vector (BITS-1 downto 0);
+            D0      : in  std_logic_vector (BITS-1 downto 0);
+            SEL     : in  std_logic_vector (1 downto 0);
+            MUX_OUT : out std_logic_vector (BITS-1 downto 0)
+        );
+    end component mux_4x1_n;
+
+    component hex7seg is
+        port (
+            hexa : in  std_logic_vector(3 downto 0);
+            sseg : out std_logic_vector(6 downto 0)
+        );
+    end component;
     
     signal s_medida: std_logic_vector (11 downto 0);
     signal s_dados_ascii: std_logic_vector (6 downto 0);
@@ -153,6 +177,10 @@ architecture fsm_arch of sonar_fd is
     signal s_partida_ed: std_logic; 
     signal s_angle: std_logic_vector(11 downto 0);
     signal s_D6, s_D5, s_D4, s_D2, s_D1, s_D0: std_logic_vector (6 downto 0);
+    signal s_hex4, s_hex3, s_hex2, s_hex1, s_hex0: std_logic_vector (3 downto 0);
+    signal s_db_estado_hcrs04, s_db_estado_contador_cm: std_logic_vector (3 downto 0);
+    signal s_db_estado_interface_rx, s_db_estado_rx, s_db_estado_tx: std_logic_vector (3 downto 0);
+    signal s_db_dado_recebido: std_logic_vector (6 downto 0);
 
 begin
     HCSR04: interface_hcsr04
@@ -166,19 +194,19 @@ begin
             pronto    => hcsr_pronto,
             db_reset  => open,
             db_medir  => open,
-            db_estado => open
+            db_estado => s_db_estado_hcrs04,
+            db_estado_contador_cm => s_db_estado_contador_cm
         );
 		  
 	 INTERFACE_RX_SERIAL : interface_rx
 		 port map (
-			  clock       => clock,
-           reset       => reset,
-			  dado_serial => entrada_serial,
-			  ativo_p 	  => ativo_p,
-			  ativo_r 	  => ativo_r,
-			  db_estado   => open,
-			  db_estado_rx => db_estado_rx,
-			  db_dado_recebido  => db_dado_recebido
+			clock       => clock,
+            reset       => reset,
+			dado_serial => entrada_serial,
+			modo 	    => modo,
+			db_estado   => s_db_estado_interface_rx,
+			db_estado_rx => s_db_estado_rx,
+			db_dado_recebido  => s_db_dado_recebido
 		 );
 
     TX_SERIAL: tx_serial_7E2
@@ -191,7 +219,7 @@ begin
             pronto          => tx_pronto,
             db_partida      => open,
             db_saida_serial => open,
-            db_estado       => open
+            db_estado       => s_db_estado_tx
         );
 
     MUX8X1: mux_8x1_n
@@ -280,6 +308,101 @@ begin
             clock     => clock,
             signal_in => partida,
             output    => s_partida_ed
+        );
+
+    MUX_4: mux_4x1_n
+        generic map (
+            BITS => 4
+        )
+        port map( 
+            D3      => s_db_estado_contador_cm, -- Interface HCRS04
+            D2      => "0000", -- Interface RX
+            D1      => "0000", -- TX serial 7E2
+            D0      => "0000", -- Controle servo
+            SEL     => debug_sel,
+            MUX_OUT => s_hex4
+        );
+
+    MUX_3: mux_4x1_n
+        generic map (
+            BITS => 4
+        )
+        port map( 
+            D3      => s_medida(11 downto 8), -- Interface HCRS04
+            D2      => s_db_estado_rx, -- Interface RX
+            D1      => "0000", -- TX serial 7E2
+            D0      => s_angle(11 downto 8), -- Controle servo
+            SEL     => debug_sel,
+            MUX_OUT => s_hex3
+        );
+
+    MUX_2: mux_4x1_n
+        generic map (
+            BITS => 4
+        )
+        port map( 
+            D3      => s_medida(7 downto 4), -- Interface HCRS04
+            D2      => "0" & s_db_dado_recebido(6 downto 4), -- Interface RX
+            D1      => "0" & s_dados_ascii(6 downto 4), -- TX serial 7E2
+            D0      => s_angle(7 downto 4), -- Controle servo
+            SEL     => debug_sel,
+            MUX_OUT => s_hex2
+        );
+
+    MUX_1: mux_4x1_n
+        generic map (
+            BITS => 4
+        )
+        port map( 
+            D3      => s_medida(3 downto 0), -- Interface HCRS04
+            D2      => s_db_dado_recebido(3 downto 0), -- Interface RX
+            D1      => s_dados_ascii(3 downto 0), -- TX serial 7E2
+            D0      => s_angle(3 downto 0), -- Controle servo
+            SEL     => debug_sel,
+            MUX_OUT => s_hex1
+        );
+
+    MUX_0: mux_4x1_n
+        generic map (
+            BITS => 4
+        )
+        port map( 
+            D3      => s_db_estado_hcrs04, -- Interface HCRS04
+            D2      => s_db_estado_interface_rx, -- Interface RX
+            D1      => s_db_estado_tx, -- TX serial 7E2
+            D0      => "0000", -- Controle servo
+            SEL     => debug_sel,
+            MUX_OUT => s_hex0
+        );
+
+    HEX_4: hex7seg
+        port map (
+            hexa => s_hex4,
+            sseg => hex4
+        );
+
+    HEX_3: hex7seg
+        port map (
+            hexa => s_hex3,
+            sseg => hex3
+        );
+
+    HEX_2: hex7seg
+        port map (
+            hexa => s_hex2,
+            sseg => hex2
+        );
+
+    HEX_1: hex7seg
+        port map (
+            hexa => s_hex1,
+            sseg => hex1
+        );
+
+    HEX_0: hex7seg
+        port map (
+            hexa => s_hex0,
+            sseg => hex0
         );
     
 end architecture fsm_arch;

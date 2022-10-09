@@ -3,24 +3,26 @@ use ieee.std_logic_1164.all;
 
 entity sonar_uc is 
     port ( 
-        clock            : in  std_logic;
-        reset            : in  std_logic;
-        tx_pronto        : in  std_logic;
-        fim_conta_digito : in  std_logic;
-        ligar            : in  std_logic;
-        fim_espera_servo : in  std_logic;
-        hcsr_pronto      : in  std_logic;
-		modo             : in  std_logic;
-        partida      : out std_logic;
-        conta_digito : out std_logic;
-        reset_servo  : out std_logic;
-        conta_servo  : out std_logic;
-        zera_ang     : out std_logic;
-        medir        : out std_logic;
-        fim_posicao  : out std_logic;
-        conta_ang    : out std_logic;
-        zera_digito  : out std_logic;
-        db_estado    : out std_logic_vector(3 downto 0)  
+         clock            : in  std_logic;
+			reset            : in  std_logic;
+			tx_pronto        : in  std_logic;
+			fim_conta_digito : in  std_logic;
+			ligar            : in  std_logic;
+			fim_espera_servo : in  std_logic;
+			hcsr_pronto      : in  std_logic;
+			ativo_p : in  std_logic;
+			ativo_r : in  std_logic;
+			partida      : out std_logic;
+			conta_digito : out std_logic;
+			reset_servo  : out std_logic;
+			conta_servo  : out std_logic;
+			zera_ang     : out std_logic;
+			medir        : out std_logic;
+			fim_posicao  : out std_logic;
+			conta_ang    : out std_logic;
+			zera_digito  : out std_logic;
+			modo         : out std_logic;
+			db_estado    : out std_logic_vector(3 downto 0)  
     );
 end sonar_uc;
 
@@ -50,12 +52,12 @@ begin
                                 else              Eprox <= inicial;
                                 end if;
         when preparacao =>      Eprox <= valida_pausa;
-		when valida_pausa =>    if modo='1' then Eprox <= pausa;
-                                else             Eprox <= aguarda_servo;
+		  when valida_pausa =>    if ativo_p='1' then Eprox <= pausa;
+                                else                Eprox <= aguarda_servo;
                                 end if;
-	    when pausa =>           if modo='0' then Eprox <= aguarda_servo;
-								else             Eprox <= pausa;
-								end if;						  
+		  when pausa =>           if ativo_r='1' then Eprox <= aguarda_servo;
+									     else                         Eprox <= pausa;
+									     end if;						  
         when aguarda_servo =>   if fim_espera_servo='1' then Eprox <= mede_distancia;
                                 else                         Eprox <= aguarda_servo;
                                 end if;
@@ -99,7 +101,9 @@ begin
     with Eatual select
         conta_ang <= '1' when conta_angulo, '0' when others;
     with Eatual select
-        zera_digito <= '1' when mede_distancia, '0' when others; 
+        zera_digito <= '1' when mede_distancia, '0' when others;
+	 with Eatual select
+        modo <= '1' when pausa, '0' when others;
     
   with Eatual select
       db_estado <= "0000" when inicial, 
@@ -113,8 +117,8 @@ begin
                    "1000" when fim_medicao, 
                    "1001" when conta_angulo,
                    "1010" when final,
-				   "1011" when valida_pausa,
-				   "1100" when pausa,
+						 "1011" when valida_pausa,
+						 "1100" when pausa,
                    "1111" when others;
 
 end architecture fsm_arch;

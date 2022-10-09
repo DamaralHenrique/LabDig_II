@@ -12,8 +12,7 @@ entity interface_hcsr04 is
         pronto    : out std_logic;
         db_reset  : out std_logic;
         db_medir  : out std_logic;
-        db_estado : out std_logic_vector(3 downto 0); -- estado da UC
-        db_estado_contador_cm : out std_logic_vector(3 downto 0)
+        db_estado : out std_logic_vector(3 downto 0) -- estado da UC
     );
 end entity interface_hcsr04;
 
@@ -44,8 +43,7 @@ architecture rtl of interface_hcsr04 is
             registra   : in  std_logic;
             distancia  : out std_logic_vector(11 downto 0);
             fim_medida : out std_logic;
-            trigger    : out std_logic;
-            db_estado_contador_cm : out std_logic_vector(3 downto 0)
+            trigger    : out std_logic
         );
     end component;
 
@@ -76,8 +74,7 @@ begin
             registra    => s_registra,
             distancia   => medida,
             fim_medida  => s_fim_medida,
-            trigger     => trigger,
-            db_estado_contador_cm => db_estado_contador_cm
+            trigger     => trigger
         );
 
         -- Sinais de depuração

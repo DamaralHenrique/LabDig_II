@@ -6,15 +6,25 @@ entity interface_rx is
         clock             : in std_logic;
         reset             : in std_logic;
         dado_serial       : in std_logic;
-		  ativo_p 			  : out std_logic;
-		  ativo_r 			  : out std_logic;
-		  db_estado         : out std_logic_vector(3 downto 0);
-		  db_estado_rx : out std_logic_vector(3 downto 0);
-		  db_dado_recebido  : out std_logic_vector(6 downto 0)
+		modo 			  : out std_logic;
+		db_estado         : out std_logic_vector(3 downto 0);
+		db_estado_rx      : out std_logic_vector(3 downto 0);
+		db_dado_recebido  : out std_logic_vector(6 downto 0)
     );
 end entity;
 
 architecture rtl of interface_rx is
+
+	component interface_rx_uc is 
+		port ( 
+			clock     : in  std_logic;
+			reset     : in  std_logic;
+			ativo_p   : in  std_logic;
+			ativo_r   : in  std_logic;
+			modo      : out std_logic;
+			db_estado : out std_logic_vector(3 downto 0) 
+		);
+	end component;
 
 	component rx_serial_7E2 is
 		 port (
@@ -41,8 +51,19 @@ architecture rtl of interface_rx is
    
 
     signal s_dado_recebido: std_logic_vector(6 downto 0);
+	signal s_ativo_p, s_ativo_r: std_logic;
 
 begin
+
+	UC: interface_rx_uc 
+		port map ( 
+			clock     => clock,
+			reset     => reset,
+			ativo_p   => s_ativo_p,
+			ativo_r   => s_ativo_r,
+			modo      => modo,
+			db_estado => db_estado 
+		);
 
     RX: rx_serial_7E2
 		 port map (
@@ -62,16 +83,16 @@ begin
 		 port map(
 			  D1    => "1110000", -- p em Ascii
 			  D2    => s_dado_recebido,
-			  igual => ativo_p
+			  igual => s_ativo_p
 		 );
 		 
 	COMPARADOR_r: comparador_7
 		 port map(
 			  D1    => "1110010", -- r em Ascii
 			  D2    => s_dado_recebido,
-			  igual => ativo_r
+			  igual => s_ativo_r
 		 );
 
-		 db_dado_recebido <= s_dado_recebido;
+	db_dado_recebido <= s_dado_recebido;
 		 
 end architecture rtl;
