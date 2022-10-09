@@ -73,7 +73,7 @@ architecture tb of sonar_tb is
         ( 5,  882),  --  15cm ( 882us)
         ( 6,  917),  --  16cm ( 917us)
         ( 7, 5929),  -- 100cm (5929us)
-        ( 8,  588),  --  10cm ( 588us)
+        ( 8,  588)  --  10cm ( 588us)
         -- inserir aqui outros posicoes de teste (inserir "," na linha anterior)
       );
 
