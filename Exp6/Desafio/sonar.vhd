@@ -90,7 +90,7 @@ architecture fsm_arch of sonar is
     signal s_db_estado: std_logic_vector(3 downto 0);
 	 signal s_ativo_p, s_ativo_r: std_logic;
 	 signal s_db_dado_recebido: std_logic_vector(6 downto 0);
-	 signal s_db_estado_rx: std_logic_vector(3 downto 0);
+	 signal s_db_estado_rx, s_aux: std_logic_vector(3 downto 0);
 begin
     UC: sonar_uc 
         port map ( 
@@ -158,9 +158,11 @@ begin
 		  
 	DADO2_HEX: hex7seg
         port map (
-            hexa => "0" & s_db_dado_recebido(6 downto 4),
+            hexa => s_aux,
             sseg => db_dado_2
         );
+
+    s_aux <= "0" & s_db_dado_recebido(6 downto 4);
 		  
 	RX_STATE_HEX: hex7seg
         port map (
