@@ -179,7 +179,7 @@ architecture fsm_arch of sonar_fd is
     signal s_D6, s_D5, s_D4, s_D2, s_D1, s_D0: std_logic_vector (6 downto 0);
     signal s_hex4, s_hex3, s_hex2, s_hex1, s_hex0: std_logic_vector (3 downto 0);
     signal s_db_estado_hcrs04, s_db_estado_contador_cm: std_logic_vector (3 downto 0);
-    signal s_db_estado_interface_rx, s_db_estado_rx, s_db_estado_tx: std_logic_vector (3 downto 0);
+    signal s_db_estado_interface_rx, s_db_estado_rx, s_db_estado_tx, s_aux_D2, s_aux_D1: std_logic_vector (3 downto 0);
     signal s_db_dado_recebido: std_logic_vector (6 downto 0);
 
 begin
@@ -342,12 +342,15 @@ begin
         )
         port map( 
             D3      => s_medida(7 downto 4), -- Interface HCRS04
-            D2      => "0" & s_db_dado_recebido(6 downto 4), -- Interface RX
-            D1      => "0" & s_dados_ascii(6 downto 4), -- TX serial 7E2
+            D2      => s_aux_D2, -- Interface RX
+            D1      => s_aux_D1, -- TX serial 7E2
             D0      => s_angle(7 downto 4), -- Controle servo
             SEL     => debug_sel,
             MUX_OUT => s_hex2
         );
+
+    s_aux_D2 <= "0" & s_db_dado_recebido(6 downto 4);
+    s_aux_D1 <= "0" & s_dados_ascii(6 downto 4);
 
     MUX_1: mux_4x1_n
         generic map (

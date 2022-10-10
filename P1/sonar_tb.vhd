@@ -26,15 +26,23 @@ architecture tb of sonar_tb is
   -- Componente a ser testado (Device Under Test -- DUT)
   component sonar
     port (
-        clock              : in  std_logic;
-        reset              : in  std_logic;
-        ligar              : in  std_logic;
-        echo               : in  std_logic;
-        trigger            : out std_logic;
-        pwm                : out std_logic;
-        saida_serial       : out std_logic;
-        fim_posicao        : out std_logic;
-        db_estado          : out std_logic_vector(6 downto 0)
+        clock        : in  std_logic;
+        reset        : in  std_logic;
+        ligar        : in  std_logic;
+        echo         : in  std_logic;
+        entrada_serial : in std_logic;
+        debug_sel    : in std_logic_vector(1 downto 0);
+        trigger      : out std_logic;
+        pwm          : out std_logic;
+        saida_serial : out std_logic;
+        fim_posicao  : out std_logic;
+        db_estado    : out std_logic_vector(6 downto 0);
+        db_modo      : out std_logic;
+        hex4      : out std_logic_vector(6 downto 0);
+        hex3      : out std_logic_vector(6 downto 0);
+        hex2      : out std_logic_vector(6 downto 0);
+        hex1      : out std_logic_vector(6 downto 0);
+        hex0      : out std_logic_vector(6 downto 0)
     );
   end component;
   
@@ -44,12 +52,19 @@ architecture tb of sonar_tb is
   signal reset_in               : std_logic := '0';
   signal ligar_in               : std_logic := '0';
   signal echo_in                : std_logic := '0';
+  signal entrada_serial_in      : std_logic := '0';
+  signal debug_sel_in           : std_logic_vector (1 downto 0) := "00";
   signal trigger_out            : std_logic := '0';
   signal pwm_out                : std_logic := '0';
   signal saida_serial_out       : std_logic := '1';
   signal fim_posicao_out        : std_logic := '0';
   signal db_estado_out          : std_logic_vector (6 downto 0) := "0000000";
-
+  signal db_modo_out            : std_logic := '0';
+  signal hex4_out               : std_logic_vector (6 downto 0) := "0000000";
+  signal hex3_out               : std_logic_vector (6 downto 0) := "0000000";
+  signal hex2_out               : std_logic_vector (6 downto 0) := "0000000";
+  signal hex1_out               : std_logic_vector (6 downto 0) := "0000000";
+  signal hex0_out               : std_logic_vector (6 downto 0) := "0000000";
 
   -- Configurações do clock
   constant clockPeriod   : time      := 20 ns; -- clock de 50MHz
@@ -93,11 +108,19 @@ begin
            reset              => reset_in,
            ligar              => ligar_in,
            echo               => echo_in,
+           entrada_serial     => entrada_serial_in,
+           debug_sel          => debug_sel_in,
            trigger            => trigger_out,
            pwm                => pwm_out,
            saida_serial       => saida_serial_out,
            fim_posicao        => fim_posicao_out,
-           db_estado          => db_estado_out
+           db_estado          => db_estado_out,
+           db_modo            => db_modo_out,
+           hex4               => hex4_out,
+           hex3               => hex3_out,
+           hex2               => hex2_out,
+           hex1               => hex1_out,
+           hex0               => hex0_out
        );
 
   -- geracao dos sinais de entrada (estimulos)
@@ -110,6 +133,13 @@ begin
     ---- valores iniciais ----------------
     ligar_in <= '0';
     echo_in  <= '0';
+
+    -- Seleção dos sinais de depuração que aparecerão nos displays hex
+    -- 00: Sinais de depuração do Servomotor
+    -- 01: Sinais de depuração do TX
+    -- 10: Sinais de depuração da Interface RX
+    -- 11: Sinais de depuração do Sensor HCRS04
+    debug_sel_in <= "10";
 
     ---- inicio: reset ----------------
     -- wait for 2*clockPeriod;

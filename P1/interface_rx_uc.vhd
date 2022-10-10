@@ -13,7 +13,7 @@ entity interface_rx_uc is
 end interface_rx_uc;
 
 architecture fsm_arch of interface_rx_uc is
-    type tipo_estado is (ativo, desativo);
+    type tipo_estado is (desativo, ativo);
     signal Eatual, Eprox: tipo_estado;
 begin
 
