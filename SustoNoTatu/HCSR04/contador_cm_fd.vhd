@@ -76,7 +76,7 @@ begin
 
     CONTADOR_TICK: contador_m 
         generic map (
-            M => 2941,
+            M => 294, -- tick a cada milímetro
             N => 12
         ) 
         port map (
@@ -89,7 +89,7 @@ begin
     
     ANALISA_MODULO_DE_ENTRADA: analisa_m
         generic map (
-            M => 2941,
+            M => 294, -- Em milímetro
             N => 12 
         )
         port map (
