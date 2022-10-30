@@ -5,11 +5,15 @@ entity medidor_jogada is
     port (
         clock     : in  std_logic;
         reset     : in  std_logic;
-        medir     : in  std_logic;
-        echo      : in  std_logic;
-        trigger   : out std_logic;
-        medida    : out std_logic_vector(11 downto 0); -- 3 digitos BCD
-        pronto    : out std_logic;
+        inicia    : in  std_logic;
+        fim_de_jogo : in  std_logic;
+        echo1     : in  std_logic;
+        echo2     : in  std_logic;
+        trigger1  : out std_logic;
+        trigger2  : out std_logic;
+        tatus     : out std_logic_vector(2 downto 0);
+        db_estado_hcsr04_1 : out std_logic_vector(3 downto 0);
+        db_estado_hcsr04_2 : out std_logic_vector(3 downto 0);
         db_estado : out std_logic_vector(3 downto 0) -- estado da UC
     );
 end entity medidor_jogada;
@@ -30,25 +34,35 @@ architecture rtl of medidor_jogada is
             zera_espera     : out std_logic;
             conta_espera    : out std_logic;
             medir           : out std_logic;
+            registra_distancia : out std_logic;
             db_estado       : out std_logic_vector(3 downto 0) 
         );
-        end medidor_jogada_uc;
+    end component;
 
-    component interface_hcsr04_fd is
+    component medidor_jogada_fd is
         port (
-            clock      : in  std_logic;
-            zera       : in  std_logic;
-            pulso      : in  std_logic; -- echo
-            gera       : in  std_logic;
-            registra   : in  std_logic;
-            distancia  : out std_logic_vector(11 downto 0);
-            fim_medida : out std_logic;
-            trigger    : out std_logic
+            clock           : in  std_logic;
+            reset           : in  std_logic;
+            zera_medida     : in std_logic;
+            zera_espera     : in std_logic;
+            conta_espera    : in std_logic;
+            medir           : in std_logic;
+            echo1           : in std_logic;
+            echo2           : in std_logic;
+            registra_distancia : in  std_logic;
+            trigger1        : out std_logic;
+            trigger2        : out std_logic;
+            pronto_hcsr04_1 : out std_logic;
+            pronto_hcsr04_2 : out std_logic;
+            fim_espera      : out std_logic;
+            tatus           : out std_logic_vector(2 downto 0);
+            db_estado_hcsr04_1 : out std_logic_vector(3 downto 0);
+            db_estado_hcsr04_2 : out std_logic_vector(3 downto 0)
         );
     end component;
 
     signal s_fim_espera, s_zera_medida, s_zera_espera, s_conta_espera, s_medir : std_logic;
-    signal s_pronto_hcsr04_1, s_pronto_hcsr04_2 : std_logic;
+    signal s_pronto_hcsr04_1, s_pronto_hcsr04_2, s_registra_distancia : std_logic;
 
 begin
 
@@ -65,19 +79,29 @@ begin
             zera_espera     => s_zera_espera,
             conta_espera    => s_conta_espera,
             medir           => s_medir,
+            registra_distancia => s_registra_distancia,
             db_estado       => db_estado
         );
 
-    FD: interface_hcsr04_fd
-        port map ( 
-            clock       => clock,
-            zera        => s_zera,
-            pulso       => echo,
-            gera        => s_gera,
-            registra    => s_registra,
-            distancia   => medida,
-            fim_medida  => s_fim_medida,
-            trigger     => trigger
+    FD: medidor_jogada_fd
+        port map (
+            clock           => clock,
+            reset           => reset,
+            zera_medida     => s_zera_medida,
+            zera_espera     => s_zera_espera,
+            conta_espera    => s_conta_espera,
+            medir           => s_medir,
+            echo1           => echo1,
+            echo2           => echo2,
+            registra_distancia => s_registra_distancia, 
+            trigger1        => trigger1,
+            trigger2        => trigger2,
+            pronto_hcsr04_1 => s_pronto_hcsr04_1,
+            pronto_hcsr04_2 => s_pronto_hcsr04_2,
+            fim_espera      => s_fim_espera,
+            tatus           => tatus,
+            db_estado_hcsr04_1 => db_estado_hcsr04_1,
+            db_estado_hcsr04_2 => db_estado_hcsr04_2
         );
 
 end architecture rtl;

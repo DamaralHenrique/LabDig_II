@@ -30,12 +30,13 @@ entity medidor_jogada_uc is
         zera_espera     : out std_logic;
         conta_espera    : out std_logic;
         medir           : out std_logic;
+        registra_distancia : out std_logic;
         db_estado       : out std_logic_vector(3 downto 0) 
     );
 end medidor_jogada_uc;
 
 architecture fsm_arch of medidor_jogada_uc is
-    type tipo_estado is (inicial, medida, espera_medida, espera);
+    type tipo_estado is (inicial, medida, pronto_parcialmente, espera_medida, registra, espera);
     signal Eatual, Eprox: tipo_estado;
 begin
 
@@ -50,18 +51,23 @@ begin
     end process;
 
     -- logica de proximo estado
-    process (medir, echo, fim_medida, Eatual) 
+    process (inicia, pronto_hcsr04_1, pronto_hcsr04_2, fim_espera, fim_de_jogo, Eatual) 
     begin
       case Eatual is
         when inicial =>         if inicia='1' then Eprox <= medida;
                                 else               Eprox <= inicial;
                                 end if;
         when medida =>          Eprox <= espera_medida;
-        when espera_medida =>   if pronto_hcsr04_1='1' and pronto_hcsr04_1='1' then Eprox <= espera;
-                                else                                                Eprox <= espera_medida;
+        when espera_medida =>   if pronto_hcsr04_1='1' and pronto_hcsr04_2='1'   then Eprox <= registra;
+                                elsif pronto_hcsr04_1='1' or pronto_hcsr04_2='1' then Eprox <= pronto_parcialmente;
+                                else                                                  Eprox <= espera_medida;
                                 end if;
+        when pronto_parcialmente => if pronto_hcsr04_1='1' or pronto_hcsr04_2='1' then Eprox <= registra;
+                                else                                                   Eprox <= pronto_parcialmente;
+                                end if;
+        when registra =>        Eprox <= espera;
         when espera =>          if fim_espera='0' and fim_de_jogo='0' then Eprox <= espera;
-                                if fim_espera='1' and fim_de_jogo='0' then Eprox <= medida;
+                                elsif fim_espera='1' and fim_de_jogo='0' then Eprox <= medida;
                                 else                                       Eprox <= inicial;
                                 end if;
         when others =>          Eprox <= inicial;
@@ -70,20 +76,22 @@ begin
 
     -- saidas de controle
     with Eatual select 
-        zera_medida <= '1' when preparacao, '0' when others;
+        zera_medida <= '1' when inicial, '0' when others;
     with Eatual select
         medir <= '1' when medida, '0' when others;
     with Eatual select
         zera_espera <= '1' when medida, '0' when others;
     with Eatual select
         conta_espera <= '1' when espera, '0' when others;
+    with Eatual select
+        registra_distancia <= '1' when registra, '0' when others;
 
     with Eatual select
         db_estado <= "0001" when inicial, 
                      "0010" when medida, 
                      "0011" when espera_medida,
-                     "0100" when processa, 
-                     "0101" when espera,
+                     "0100" when espera,
+                     "0101" when pronto_parcialmente,
                      "0000" when others;
 
 end architecture fsm_arch;

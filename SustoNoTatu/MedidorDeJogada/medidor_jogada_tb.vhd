@@ -1,50 +1,42 @@
---------------------------------------------------------------------
--- Arquivo   : interface_hcsr04_tb.vhd
--- Projeto   : Experiencia 4 - Interface com sensor de distancia
---------------------------------------------------------------------
--- Descricao : testbench para circuito de interface com HC-SR04 
---
---             1) array de casos de teste contém valores de  
---                largura de pulso de echo do sensor
--- 
---------------------------------------------------------------------
--- Revisoes  :
---     Data        Versao  Autor             Descricao
---     19/09/2021  1.0     Edson Midorikawa  versao inicial
---     12/09/2022  1.1     Edson Midorikawa  revisao
---------------------------------------------------------------------
---
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity interface_hcsr04_tb is
+entity medidor_jogada_tb is
 end entity;
 
-architecture tb of medidor_jo is
+architecture tb of medidor_jogada_tb is
   
   -- Componente a ser testado (Device Under Test -- DUT)
-  component interface_hcsr04
+  component medidor_jogada is
     port (
         clock     : in  std_logic;
         reset     : in  std_logic;
-        medir     : in  std_logic;
-        echo      : in  std_logic;
-        trigger   : out std_logic;
-        medida    : out std_logic_vector(11 downto 0);
-        pronto    : out std_logic;
-        db_estado : out std_logic_vector(3 downto 0)
+        inicia    : in  std_logic;
+        fim_de_jogo : in  std_logic;
+        echo1     : in  std_logic;
+        echo2     : in  std_logic;
+        trigger1  : out std_logic;
+        trigger2  : out std_logic;
+        tatus     : out std_logic_vector(2 downto 0);
+        db_estado_hcsr04_1 : out std_logic_vector(3 downto 0);
+        db_estado_hcsr04_2 : out std_logic_vector(3 downto 0);
+        db_estado : out std_logic_vector(3 downto 0) -- estado da UC
     );
-  end component;
+  end component medidor_jogada;
   
   -- Declaração de sinais para conectar o componente a ser testado (DUT)
   --   valores iniciais para fins de simulacao (GHDL ou ModelSim)
   signal clock_in      : std_logic := '0';
   signal reset_in      : std_logic := '0';
-  signal medir_in      : std_logic := '0';
-  signal echo_in       : std_logic := '0';
-  signal trigger_out   : std_logic := '0';
-  signal medida_out    : std_logic_vector (11 downto 0) := x"000";
-  signal pronto_out    : std_logic := '0';
+  signal inicia_in     : std_logic := '0';
+  signal fim_de_jogo_in : std_logic := '0';
+  signal echo1_in      : std_logic := '0';
+  signal echo2_in      : std_logic := '0';
+  signal trigger1_out  : std_logic := '0';
+  signal trigger2_out  : std_logic := '0';
+  signal tatus_out     : std_logic_vector(2 downto 0) := "000";
+  signal db_estado_hcsr04_1_out : std_logic_vector (3 downto 0)  := "0000";
+  signal db_estado_hcsr04_2_out : std_logic_vector (3 downto 0)  := "0000";
   signal db_estado_out : std_logic_vector (3 downto 0)  := "0000";
 
   -- Configurações do clock
@@ -57,20 +49,30 @@ architecture tb of medidor_jo is
       tempo : integer;     
   end record;
 
-  type casos_teste_array is array (natural range <>) of caso_teste_type;
-  constant casos_teste : casos_teste_array :=
+  type casos_teste_array is array (natural range <>) of caso_teste_type; -- 5882us (100cm)
+  constant casos_teste_1 : casos_teste_array :=
       (
-        (1, 5882),  -- 5882us (100cm)
-        (2, 5899),  -- 5899us (100,29cm) truncar para 100cm
-        (3, 4353),  -- 4353us (74cm)
-        (4, 4399),  -- 4399us (74,79cm)  arredondar para 75cm
-        -- inserir aqui outros casos de teste 
-        (5, 4381),  -- 4381us (74,48cm)  truncar para 74cm
-        (6, 58789), -- 58789us (999,47cm) truncar para 999cm
-        (7, 59000)  -- 59000us (1003,06cm) Valor acima do permitido (10,03m > 10m). Truncar para 999cm
+        (1,  236),   --  236us ( 40mm) tatu 0
+        (2,  676),   --  676us (115mm) sem tatu
+        (3,  765),   --  765us (130cm) tatu 1
+        (4, 1235),   -- 1235us (210cm) tatu 2
+        (5,  236),   --  236us ( 40mm) tatu 0
+        (6,  236),   --  236us ( 40mm) tatu 0
+        (7,  765)   --  765us (130cm) tatu 1
       );
 
-  signal larguraPulso: time := 1 ns;
+  constant casos_teste_2 : casos_teste_array :=
+      (
+        (1, 1235),   -- 1235us (210mm) tatu 0
+        (2, 1146),   -- 1146us (195mm) sem tatu
+        (3,  765),   --  765us (130cm) tatu 1
+        (4,  236),   --  236us ( 40cm) tatu 2
+        (5,  765),   --  765us (130cm) tatu 1
+        (6,  236),   --  236us ( 40cm) tatu 2
+        (7,  236)   --  236us ( 40cm) tatu 2
+      );
+
+  signal larguraPulso_min, larguraPulso_max: time := 1 ns;
 
 begin
   -- Gerador de clock: executa enquanto 'keep_simulating = 1', com o período
@@ -79,17 +81,21 @@ begin
   clock_in <= (not clock_in) and keep_simulating after clockPeriod/2;
   
   -- Conecta DUT (Device Under Test)
-  dut: interface_hcsr04
-       port map( 
-           clock     => clock_in,
-           reset     => reset_in,
-           medir     => medir_in,
-           echo      => echo_in,
-           medida    => medida_out,
-           trigger   => trigger_out,
-           pronto    => pronto_out,
-           db_estado => db_estado_out
-       );
+  dut: medidor_jogada
+    port map (
+        clock     => clock_in,
+        reset     => reset_in,
+        inicia    => inicia_in,
+        fim_de_jogo => fim_de_jogo_in,
+        echo1     => echo1_in,
+        echo2     => echo2_in,
+        trigger1  => trigger1_out,
+        trigger2  => trigger2_out,
+        tatus     => tatus_out,
+        db_estado_hcsr04_1 => db_estado_hcsr04_1_out,
+        db_estado_hcsr04_2 => db_estado_hcsr04_2_out,
+        db_estado => db_estado_out
+    );
 
   -- geracao dos sinais de entrada (estimulos)
   stimulus: process is
@@ -99,8 +105,9 @@ begin
     keep_simulating <= '1';
     
     ---- valores iniciais ----------------
-    medir_in <= '0';
-    echo_in  <= '0';
+    echo1_in  <= '0';
+    echo2_in  <= '0';
+    inicia_in <= '0';
 
     ---- inicio: reset ----------------
     wait for 2*clockPeriod;
@@ -109,38 +116,57 @@ begin
     reset_in <= '0';
     wait until falling_edge(clock_in);
 
+    ---- inicio ----------------
+    wait for 2*clockPeriod;
+    inicia_in <= '1'; 
+    wait for 2 us;
+    inicia_in <= '0';
+    wait until falling_edge(clock_in);
+
     ---- espera de 100us
     wait for 100 us;
 
     ---- loop pelos casos de teste
-    for i in casos_teste'range loop
+    for i in casos_teste_1'range loop
         -- 1) determina largura do pulso echo
-        assert false report "Caso de teste " & integer'image(casos_teste(i).id) & ": " &
-            integer'image(casos_teste(i).tempo) & "us" severity note;
-        larguraPulso <= casos_teste(i).tempo * 1 us; -- caso de teste "i"
-
-        -- 2) envia pulso medir
-        wait until falling_edge(clock_in);
-        medir_in <= '1';
-        wait for 5*clockPeriod;
-        medir_in <= '0';
+        assert false report "Caso de teste " & integer'image(casos_teste_1(i).id) & ": " &
+            integer'image(casos_teste_1(i).tempo) & "us" severity note;
+        larguraPulso_min <= casos_teste_1(i).tempo * 1 us;
+        larguraPulso_max <= casos_teste_2(i).tempo * 1 us;
      
         -- 3) espera por 400us (tempo entre trigger e echo)
-        wait for 400 us;
+        wait for 100 us;
      
         -- 4) gera pulso de echo (largura = larguraPulso)
-        echo_in <= '1';
-        wait for larguraPulso;
-        echo_in <= '0';
+        echo1_in <= '1';
+        echo2_in <= '1';
+        if larguraPulso_min < larguraPulso_max then
+          wait for larguraPulso_min;
+          echo1_in <= '0';
+          wait for larguraPulso_max - larguraPulso_min;
+        else
+          wait for larguraPulso_max;
+          echo2_in <= '0';
+          wait for larguraPulso_min - larguraPulso_max;
+        end if;
+        echo1_in <= '0';
+        echo2_in <= '0';
      
         -- 5) espera final da medida
-      	wait until pronto_out = '1';
-        assert false report "Fim do caso " & integer'image(casos_teste(i).id) severity note;
+      	wait for 10 us;
+        assert false report "Fim do caso " & integer'image(casos_teste_1(i).id) severity note;
      
         -- 6) espera entre casos de tese
         wait for 100 us;
 
     end loop;
+
+    ---- fim de jogo ----------------
+    wait for 2*clockPeriod;
+    fim_de_jogo_in <= '1'; 
+    wait for 2 us;
+    fim_de_jogo_in <= '0';
+    wait until falling_edge(clock_in);
 
     ---- final dos casos de teste da simulacao
     assert false report "Fim das simulacoes" severity note;
