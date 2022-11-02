@@ -65,13 +65,6 @@ architecture rtl of medidor_jogada is
         );
     end component;
 
-    component hex7seg is
-        port (
-            hexa : in  std_logic_vector(3 downto 0);
-            sseg : out std_logic_vector(6 downto 0)
-        );
-    end component;
-
     signal s_fim_espera, s_zera_medida, s_zera_espera, s_conta_espera, s_medir : std_logic;
     signal s_pronto_hcsr04_1, s_pronto_hcsr04_2, s_registra_distancia : std_logic;
     signal s_medida1, s_medida2: std_logic_vector(11 downto 0);
