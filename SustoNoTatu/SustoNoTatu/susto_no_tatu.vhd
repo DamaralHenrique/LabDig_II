@@ -12,6 +12,7 @@ entity susto_no_tatu is
         echo_12     : in  std_logic;
         dificuldade : in  std_logic;
         botoes      : in  std_logic_vector(5 downto 0);
+        debug_seletor : in  std_logic_vector(3 downto 0);
         trigger_01  : out std_logic;
         trigger_02  : out std_logic;
         trigger_11  : out std_logic;
@@ -25,7 +26,15 @@ entity susto_no_tatu is
         serial      : out std_logic;
         vidas       : out std_logic_vector (1 downto 0);
         pontuacao1  : out std_logic_vector (6 downto 0);
-        pontuacao2  : out std_logic_vector (6 downto 0)
+        pontuacao2  : out std_logic_vector (6 downto 0);
+        db_display0 : out std_logic_vector (6 downto 0);
+        db_display1 : out std_logic_vector (6 downto 0);
+        db_display2 : out std_logic_vector (6 downto 0);
+        db_display3 : out std_logic_vector (6 downto 0);
+        db_display4 : out std_logic_vector (6 downto 0);
+        db_display5 : out std_logic_vector (6 downto 0);
+        db_led8     : out std_logic;
+        db_led9     : out std_logic;
     );
 end entity susto_no_tatu;
 
@@ -77,13 +86,47 @@ architecture rtl of susto_no_tatu is
             tatus     : out std_logic_vector(2 downto 0);
             db_estado_hcsr04_1 : out std_logic_vector(3 downto 0);
             db_estado_hcsr04_2 : out std_logic_vector(3 downto 0);
+            db_pronto_estado_hcsr04_1 : out std_logic;
+            db_pronto_estado_hcsr04_2 : out std_logic;
+            db_medida1 : out std_logic_vector(11 downto 0);
+            db_medida2 : out std_logic_vector(11 downto 0);
             db_estado : out std_logic_vector(3 downto 0) -- estado da UC
         );
     end component medidor_jogada;
 
+    component mux_8x1_n is
+        generic (
+            constant BITS: integer := 4
+        );
+        port ( 
+            D0 :     in  std_logic_vector (BITS-1 downto 0);
+            D1 :     in  std_logic_vector (BITS-1 downto 0);
+            D2 :     in  std_logic_vector (BITS-1 downto 0);
+            D3 :     in  std_logic_vector (BITS-1 downto 0);
+            D4 :     in  std_logic_vector (BITS-1 downto 0);
+            D5 :     in  std_logic_vector (BITS-1 downto 0);
+            D6 :     in  std_logic_vector (BITS-1 downto 0);
+            D7 :     in  std_logic_vector (BITS-1 downto 0);
+            SEL:     in  std_logic_vector (2 downto 0);
+            MUX_OUT: out std_logic_vector (BITS-1 downto 0)
+        );
+    end component;
+
+    entity hex7seg is
+        port (
+            hexa : in  std_logic_vector(3 downto 0);
+            sseg : out std_logic_vector(6 downto 0)
+        );
+    end entity;
+
     signal s_fim_de_jogo: std_logic;
     signal s_tatus: std_logic_vector(5 downto 0);
     signal s_tatus_selecionados, s_botoes_selecionados: std_logic_vector(5 downto 0);
+    signal s_db_medida01, s_db_medida02, s_db_medida11, s_db_medida12: std_logic_vector(11 downto 0);
+    signal s_db_mux0, s_db_mux1, s_db_mux2, s_db_mux3, s_db_mux4, s_db_mux5: std_logic_vector(3 downto 0);
+    signal s_db_estado_hcsr04_01, s_db_estado_hcsr04_02, s_db_estado_hcsr04_11, s_db_estado_hcsr04_12: std_logic_vector(3 downto 0);
+    signal s_db_estado_medidor_jogada_0, s_db_estado_medidor_jogada_1: std_logic_vector(3 downto 0);
+    signal s_db_pronto_estado_hcsr04_01, s_db_pronto_estado_hcsr04_02, s_db_pronto_estado_hcsr04_11, s_db_pronto_estado_hcsr04_12: std_logic;
 
 begin
 
@@ -140,9 +183,13 @@ begin
             trigger1  => trigger_01,
             trigger2  => trigger_02,
             tatus     => s_tatus_selecionados(2 downtto 0),
-            db_estado_hcsr04_1 => open,
-            db_estado_hcsr04_2 => open,
-            db_estado => open -- estado da UC
+            db_estado_hcsr04_1 => s_db_estado_hcsr04_01,
+            db_estado_hcsr04_2 => s_db_estado_hcsr04_02,
+            db_pronto_estado_hcsr04_1 => s_db_pronto_estado_hcsr04_01,
+            db_pronto_estado_hcsr04_2 => s_db_pronto_estado_hcsr04_02,
+            db_medida1 => s_db_medida01,
+            db_medida2 => s_db_medida02,
+            db_estado => s_db_estado_medidor_jogada_0 -- estado da UC
         );
 
     MEDIDOR_JOGADA_1: medidor_jogada
@@ -156,9 +203,185 @@ begin
             trigger1  => trigger_11,
             trigger2  => trigger_12,
             tatus     => s_tatus_selecionados(5 downtto 3),
-            db_estado_hcsr04_1 => open,
-            db_estado_hcsr04_2 => open,
-            db_estado => open -- estado da UC
+            db_estado_hcsr04_1 => s_db_estado_hcsr04_11,
+            db_estado_hcsr04_2 => s_db_estado_hcsr04_12,
+            db_pronto_estado_hcsr04_1 => s_db_pronto_estado_hcsr04_11,
+            db_pronto_estado_hcsr04_2 => s_db_pronto_estado_hcsr04_12,
+            db_medida1 => s_db_medida11,
+            db_medida2 => s_db_medida12,
+            db_estado => s_db_estado_medidor_jogada_1 -- estado da UC
+        );
+
+    MUX0: mux_8x1_n
+        generic map (
+            BITS => 4
+        );
+        port map ( 
+            D0      => s_db_medida01(3 downto 0),
+            D1      => s_db_estado_hcsr04_01,
+            D2      => s_db_medida11(3 downto 0),
+            D3      => s_db_estado_hcsr04_11,
+            D4      => open,
+            D5      => open,
+            D6      => open,
+            D7      => open,
+            SEL     => debug_seletor,
+            MUX_OUT => s_db_mux0
+        );
+
+    HEX7SEG0: hex7seg
+        port (
+            hexa => s_db_mux0,
+            sseg => db_display0
+        );
+
+    MUX1: mux_8x1_n
+        generic map (
+            BITS => 4
+        );
+        port map ( 
+            D0      => s_db_medida01(7 downto 4),
+            D1      => s_db_estado_hcsr04_02,
+            D2      => s_db_medida11(7 downto 4),
+            D3      => s_db_estado_hcsr04_12,
+            D4      => open,
+            D5      => open,
+            D6      => open,
+            D7      => open,
+            SEL     => debug_seletor,
+            MUX_OUT => s_db_mux1
+        );
+
+    HEX7SEG1: hex7seg
+        port (
+            hexa => s_db_mux1,
+            sseg => db_display1
+        );
+
+    MUX2: mux_8x1_n
+        generic map (
+            BITS => 4
+        );
+        port map ( 
+            D0      => s_db_medida01(11 downto 8),
+            D1      => open,
+            D2      => s_db_medida11(11 downto 8),
+            D3      => open,
+            D4      => open,
+            D5      => open,
+            D6      => open,
+            D7      => open,
+            SEL     => debug_seletor,
+            MUX_OUT => s_db_mux2
+        );
+
+    HEX7SEG2: hex7seg
+        port (
+            hexa => s_db_mux2,
+            sseg => db_display2
+        );
+
+    MUX3: mux_8x1_n
+        generic map (
+            BITS => 4
+        );
+        port map ( 
+            D0      => s_db_medida02(3 downto 0),
+            D1      => s_db_estado_hcsr04_02,
+            D2      => s_db_medida12(3 downto 0),
+            D3      => s_db_estado_hcsr04_12,
+            D4      => open,
+            D5      => open,
+            D6      => open,
+            D7      => open,
+            SEL     => debug_seletor,
+            MUX_OUT => s_db_mux3
+        );
+
+    HEX7SEG3: hex7seg
+        port (
+            hexa => s_db_mux3,
+            sseg => db_display3
+        );
+
+    MUX4: mux_8x1_n
+        generic map (
+            BITS => 4
+        );
+        port map ( 
+            D0      => s_db_medida02(7 downto 4),
+            D1      => open,
+            D2      => s_db_medida12(7 downto 4),
+            D3      => open,
+            D4      => open,
+            D5      => open,
+            D6      => open,
+            D7      => open,
+            SEL     => debug_seletor,
+            MUX_OUT => s_db_mux4
+        );
+
+    HEX7SEG4: hex7seg
+        port (
+            hexa => s_db_mux4,
+            sseg => db_display4
+        );
+
+    MUX5: mux_8x1_n
+        generic map (
+            BITS => 4
+        );
+        port map ( 
+            D0      => s_db_medida02(11 downto 8),
+            D1      => s_db_estado_medidor_jogada_0,
+            D2      => s_db_medida12(11 downto 8),
+            D3      => s_db_estado_medidor_jogada_1,
+            D4      => open,
+            D5      => open,
+            D6      => open,
+            D7      => open,
+            SEL     => debug_seletor,
+            MUX_OUT => s_db_mux5
+        );
+
+    HEX7SEG5: hex7seg
+        port (
+            hexa => s_db_mux5,
+            sseg => db_display5
+        );
+
+    LED8: mux_8x1_n
+        generic map (
+            BITS => 1
+        );
+        port map ( 
+            D0      => "0",
+            D1      => s_db_pronto_estado_hcsr04_01,
+            D2      => "0",
+            D3      => s_db_pronto_estado_hcsr04_11,
+            D4      => open,
+            D5      => open,
+            D6      => open,
+            D7      => open,
+            SEL     => debug_seletor,
+            MUX_OUT => db_led9
+        );
+
+    LED9: mux_8x1_n
+        generic map (
+            BITS => 1
+        );
+        port map ( 
+            D0      => "0",
+            D1      => s_db_pronto_estado_hcsr04_02,
+            D2      => "0",
+            D3      => s_db_pronto_estado_hcsr04_12,
+            D4      => open,
+            D5      => open,
+            D6      => open,
+            D7      => open,
+            SEL     => debug_seletor,
+            MUX_OUT => db_led9
         );
 
     s_botoes_selecionados <= botoes or s_tatus_selecionados;
