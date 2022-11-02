@@ -34,7 +34,7 @@ entity susto_no_tatu is
         db_display4 : out std_logic_vector (6 downto 0);
         db_display5 : out std_logic_vector (6 downto 0);
         db_led8     : out std_logic;
-        db_led9     : out std_logic
+        db_led9     : out std_logic;
     );
 end entity susto_no_tatu;
 
@@ -119,21 +119,6 @@ architecture rtl of susto_no_tatu is
         );
     end component;
 
-    component mux_8x1 is
-        port ( 
-            D0 :     in  std_logic;
-            D1 :     in  std_logic;
-            D2 :     in  std_logic;
-            D3 :     in  std_logic;
-            D4 :     in  std_logic;
-            D5 :     in  std_logic;
-            D6 :     in  std_logic;
-            D7 :     in  std_logic;
-            SEL:     in  std_logic_vector (2 downto 0);
-            MUX_OUT: out std_logic
-        );
-    end component;
-
     signal s_fim_de_jogo: std_logic;
     signal s_tatus: std_logic_vector(5 downto 0);
     signal s_tatus_selecionados, s_botoes_selecionados: std_logic_vector(5 downto 0);
@@ -174,7 +159,7 @@ begin
             tatus => s_tatus(2 downto 0),
             pwm0  => pwm_tatu_00,
             pwm1  => pwm_tatu_01,
-            pwm2  => pwm_tatu_02
+            pwm2  => pwm_tatu_02,
         );
 
     SERVO_TATU_1: servo_tatu
@@ -184,7 +169,7 @@ begin
             tatus => s_tatus(5 downto 3),
             pwm0  => pwm_tatu_10,
             pwm1  => pwm_tatu_11,
-            pwm2  => pwm_tatu_12
+            pwm2  => pwm_tatu_12,
         );
 
     MEDIDOR_JOGADA_0: medidor_jogada
@@ -197,7 +182,7 @@ begin
             echo2     => echo_02,
             trigger1  => trigger_01,
             trigger2  => trigger_02,
-            tatus     => s_tatus_selecionados(2 downto 0),
+            tatus     => s_tatus_selecionados(2 downtto 0),
             db_estado_hcsr04_1 => s_db_estado_hcsr04_01,
             db_estado_hcsr04_2 => s_db_estado_hcsr04_02,
             db_pronto_estado_hcsr04_1 => s_db_pronto_estado_hcsr04_01,
@@ -217,7 +202,7 @@ begin
             echo2     => echo_12,
             trigger1  => trigger_11,
             trigger2  => trigger_12,
-            tatus     => s_tatus_selecionados(5 downto 3),
+            tatus     => s_tatus_selecionados(5 downtto 3),
             db_estado_hcsr04_1 => s_db_estado_hcsr04_11,
             db_estado_hcsr04_2 => s_db_estado_hcsr04_12,
             db_pronto_estado_hcsr04_1 => s_db_pronto_estado_hcsr04_11,
@@ -236,10 +221,10 @@ begin
             D1      => s_db_estado_hcsr04_01,
             D2      => s_db_medida11(3 downto 0),
             D3      => s_db_estado_hcsr04_11,
-            D4      => "0000",
-            D5      => "0000",
-            D6      => "0000",
-            D7      => "0000",
+            D4      => open,
+            D5      => open,
+            D6      => open,
+            D7      => open,
             SEL     => debug_seletor,
             MUX_OUT => s_db_mux0
         );
@@ -259,10 +244,10 @@ begin
             D1      => s_db_estado_hcsr04_02,
             D2      => s_db_medida11(7 downto 4),
             D3      => s_db_estado_hcsr04_12,
-            D4      => "0000",
-            D5      => "0000",
-            D6      => "0000",
-            D7      => "0000",
+            D4      => open,
+            D5      => open,
+            D6      => open,
+            D7      => open,
             SEL     => debug_seletor,
             MUX_OUT => s_db_mux1
         );
@@ -279,13 +264,13 @@ begin
         )
         port map ( 
             D0      => s_db_medida01(11 downto 8),
-            D1      => "0000",
+            D1      => open,
             D2      => s_db_medida11(11 downto 8),
-            D3      => "0000",
-            D4      => "0000",
-            D5      => "0000",
-            D6      => "0000",
-            D7      => "0000",
+            D3      => open,
+            D4      => open,
+            D5      => open,
+            D6      => open,
+            D7      => open,
             SEL     => debug_seletor,
             MUX_OUT => s_db_mux2
         );
@@ -305,10 +290,10 @@ begin
             D1      => s_db_estado_hcsr04_02,
             D2      => s_db_medida12(3 downto 0),
             D3      => s_db_estado_hcsr04_12,
-            D4      => "0000",
-            D5      => "0000",
-            D6      => "0000",
-            D7      => "0000",
+            D4      => open,
+            D5      => open,
+            D6      => open,
+            D7      => open,
             SEL     => debug_seletor,
             MUX_OUT => s_db_mux3
         );
@@ -325,13 +310,13 @@ begin
         )
         port map ( 
             D0      => s_db_medida02(7 downto 4),
-            D1      => "0000",
+            D1      => open,
             D2      => s_db_medida12(7 downto 4),
-            D3      => "0000",
-            D4      => "0000",
-            D5      => "0000",
-            D6      => "0000",
-            D7      => "0000",
+            D3      => open,
+            D4      => open,
+            D5      => open,
+            D6      => open,
+            D7      => open,
             SEL     => debug_seletor,
             MUX_OUT => s_db_mux4
         );
@@ -351,10 +336,10 @@ begin
             D1      => s_db_estado_medidor_jogada_0,
             D2      => s_db_medida12(11 downto 8),
             D3      => s_db_estado_medidor_jogada_1,
-            D4      => "0000",
-            D5      => "0000",
-            D6      => "0000",
-            D7      => "0000",
+            D4      => open,
+            D5      => open,
+            D6      => open,
+            D7      => open,
             SEL     => debug_seletor,
             MUX_OUT => s_db_mux5
         );
@@ -365,30 +350,36 @@ begin
             sseg => db_display5
         );
 
-    LED8: mux_8x1
+    LED8: mux_8x1_n
+        generic map (
+            BITS => 1
+        )
         port map ( 
-            D0      => '0',
+            D0      => "0",
             D1      => s_db_pronto_estado_hcsr04_01,
-            D2      => '0',
+            D2      => "0",
             D3      => s_db_pronto_estado_hcsr04_11,
-            D4      => '0',
-            D5      => '0',
-            D6      => '0',
-            D7      => '0',
+            D4      => open,
+            D5      => open,
+            D6      => open,
+            D7      => open,
             SEL     => debug_seletor,
             MUX_OUT => db_led9
         );
 
-    LED9: mux_8x1
+    LED9: mux_8x1_n
+        generic map (
+            BITS => 1
+        )
         port map ( 
-            D0      => '0',
+            D0      => "0",
             D1      => s_db_pronto_estado_hcsr04_02,
-            D2      => '0',
+            D2      => "0",
             D3      => s_db_pronto_estado_hcsr04_12,
-            D4      => '0',
-            D5      => '0',
-            D6      => '0',
-            D7      => '0',
+            D4      => open,
+            D5      => open,
+            D6      => open,
+            D7      => open,
             SEL     => debug_seletor,
             MUX_OUT => db_led9
         );
