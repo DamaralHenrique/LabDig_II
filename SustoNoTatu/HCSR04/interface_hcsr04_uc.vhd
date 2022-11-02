@@ -24,10 +24,13 @@ entity interface_hcsr04_uc is
         medir      : in  std_logic;
         echo       : in  std_logic;
         fim_medida : in  std_logic;
+        fim_timeout : in  std_logic;
         zera       : out std_logic;
         gera       : out std_logic;
         registra   : out std_logic;
         pronto     : out std_logic;
+        conta_timeout : out std_logic;
+        zera_timeout : out std_logic;
         db_estado  : out std_logic_vector(3 downto 0) 
     );
 end interface_hcsr04_uc;
@@ -49,22 +52,30 @@ begin
     end process;
 
     -- logica de proximo estado
-    process (medir, echo, fim_medida, Eatual) 
+    process (medir, echo, fim_medida, fim_timeout, Eatual) 
     begin
       case Eatual is
         when inicial =>         if medir='1' then Eprox <= preparacao;
                                 else              Eprox <= inicial;
                                 end if;
-        when preparacao =>      Eprox <= envia_trigger;
-        when envia_trigger =>   Eprox <= espera_echo;
+        when preparacao =>      if fim_timeout='1' then Eprox <= final;
+                                else Eprox <= envia_trigger;
+                                end if;
+        when envia_trigger =>   if fim_timeout='1' then Eprox <= final;
+                                else Eprox <= espera_echo;
+                                end if;
         when espera_echo =>     if echo='0' then Eprox <= espera_echo;
+                                elsif fim_timeout='1' then Eprox <= final;
                                 else             Eprox <= medida;
                                 end if;
         when medida =>          if fim_medida='1' then Eprox <= armazenamento;
+                                elsif fim_timeout='1' then Eprox <= final;
                                 else                   Eprox <= medida;
                                 end if;
         when armazenamento =>   Eprox <= final;
-        when final =>           Eprox <= inicial;
+        when final =>           if medir='1' then Eprox <= preparacao;
+                                else              Eprox <= final;
+                                end if;
         when others =>          Eprox <= inicial;
       end case;
     end process;
@@ -78,6 +89,10 @@ begin
       registra <= '1' when armazenamento, '0' when others;
   with Eatual select
       pronto <= '1' when final, '0' when others;
+    with Eatual select
+      conta_timeout <= '1' when preparacao | envia_trigger | espera_echo | medida, '0' when others;
+    with Eatual select
+        zera_timeout <= '1' when final, '0' when others;
 
   with Eatual select
       db_estado <= "0000" when inicial, 

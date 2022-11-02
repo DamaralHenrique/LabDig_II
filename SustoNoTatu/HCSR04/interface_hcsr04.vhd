@@ -24,10 +24,13 @@ architecture rtl of interface_hcsr04 is
             medir      : in  std_logic;
             echo       : in  std_logic;
             fim_medida : in  std_logic;
+            fim_timeout : in  std_logic;
             zera       : out std_logic;
             gera       : out std_logic;
             registra   : out std_logic;
             pronto     : out std_logic;
+            conta_timeout : out std_logic;
+            zera_timeout : out std_logic;
             db_estado  : out std_logic_vector(3 downto 0) 
         );
     end component;
@@ -39,13 +42,16 @@ architecture rtl of interface_hcsr04 is
             pulso      : in  std_logic; -- echo
             gera       : in  std_logic;
             registra   : in  std_logic;
+            conta_timeout : in std_logic;
+            zera_timeout : in std_logic;
             distancia  : out std_logic_vector(11 downto 0);
             fim_medida : out std_logic;
+            fim_timeout : out std_logic;
             trigger    : out std_logic
         );
     end component;
 
-    signal s_fim_medida, s_zera, s_gera, s_registra : std_logic;
+    signal s_fim_medida, s_zera, s_gera, s_registra, s_zera_timeout, s_conta_timeout, s_fim_timeout : std_logic;
 
 begin
 
@@ -60,6 +66,9 @@ begin
             gera       => s_gera,
             registra   => s_registra,
             pronto     => pronto,
+            conta_timeout => s_conta_timeout,
+            zera_timeout => s_zera_timeout,
+            fim_timeout => s_fim_timeout,
             db_estado  => db_estado
         );
 
@@ -72,6 +81,9 @@ begin
             registra    => s_registra,
             distancia   => medida,
             fim_medida  => s_fim_medida,
+            conta_timeout => s_conta_timeout,
+            zera_timeout => s_zera_timeout,
+            fim_timeout => s_fim_timeout,
             trigger     => trigger
         );
 

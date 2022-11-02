@@ -8,8 +8,11 @@ entity interface_hcsr04_fd is
         pulso      : in  std_logic; -- echo
         gera       : in  std_logic;
         registra   : in  std_logic;
+        conta_timeout : in std_logic;
+        zera_timeout : in std_logic;
         distancia  : out std_logic_vector(11 downto 0);
         fim_medida : out std_logic;
+        fim_timeout : out std_logic;
         trigger    : out std_logic
     );
 end entity;
@@ -61,6 +64,20 @@ architecture rtl of interface_hcsr04_fd is
         );
     end component registrador_n;
 
+    component contador_m is
+        generic (
+            constant M : integer := 50;  
+            constant N : integer := 6 
+        );
+        port (
+            clock : in  std_logic;
+            zera  : in  std_logic;
+            conta : in  std_logic;
+            Q     : out std_logic_vector (N-1 downto 0);
+            fim   : out std_logic
+        );
+    end component;
+
 
     signal s_D: std_logic_vector(11 downto 0);
     signal s_digito0, s_digito1, s_digito2 : std_logic_vector(3 downto 0);
@@ -107,6 +124,19 @@ begin
             enable => registra, 
             D      => s_D, 
             Q      => distancia
+        );
+
+    CONTADOR_timeout: contador_m
+        generic map (
+            M => 3000000, -- 60ms
+            N => 6
+        )
+        port map (
+            clock => clock,
+            zera  => zera_timeout,
+            conta => conta_timeout,
+            Q     => open,
+            fim   => fim_timeout
         );
 
     s_D <= s_digito2 & s_digito1 & s_digito0;
