@@ -26,7 +26,6 @@ entity medidor_jogada_uc is
         pronto_hcsr04_2  : in  std_logic;
         fim_espera       : in  std_logic;
         fim_de_jogo      : in  std_logic;
-        zera_medida     : out std_logic;
         zera_espera     : out std_logic;
         conta_espera    : out std_logic;
         medir           : out std_logic;
@@ -59,7 +58,7 @@ begin
                                 end if;
         when medida =>          Eprox <= espera_medida;
         when espera_medida =>   if pronto_hcsr04_1='1' and pronto_hcsr04_2='1'   then Eprox <= registra;
-                                elsif pronto_hcsr04_1='1' or pronto_hcsr04_2='1' then Eprox <= pronto_parcialmente;
+                                --elsif pronto_hcsr04_1='1' or pronto_hcsr04_2='1' then Eprox <= pronto_parcialmente;
                                 else                                                  Eprox <= espera_medida;
                                 end if;
         when pronto_parcialmente => if pronto_hcsr04_1='1' or pronto_hcsr04_2='1' then Eprox <= registra;
@@ -75,8 +74,6 @@ begin
     end process;
 
     -- saidas de controle
-    with Eatual select 
-        zera_medida <= '1' when inicial, '0' when others;
     with Eatual select
         medir <= '1' when medida, '0' when others;
     with Eatual select

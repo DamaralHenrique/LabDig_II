@@ -5,7 +5,6 @@ entity medidor_jogada_fd is
     port (
         clock           : in  std_logic;
         reset           : in  std_logic;
-        zera_medida     : in std_logic;
         zera_espera     : in std_logic;
         conta_espera    : in std_logic;
         medir           : in std_logic;
@@ -18,6 +17,8 @@ entity medidor_jogada_fd is
         pronto_hcsr04_2 : out std_logic;
         fim_espera      : out std_logic;
         tatus           : out std_logic_vector(2 downto 0);
+        medida1         : out std_logic_vector(11 downto 0);
+        medida2         : out std_logic_vector(11 downto 0);
         db_estado_hcsr04_1 : out std_logic_vector(3 downto 0);
         db_estado_hcsr04_2 : out std_logic_vector(3 downto 0)
     );
@@ -107,7 +108,7 @@ begin
     s_dist_min_2E <= "0000" & "0100" & "0000"; -- 040
     s_dist_max_2E <= "0001" & "0001" & "0000"; -- 110
 
-    s_interface_hcsr04_reset <= reset or zera_medida;
+    s_interface_hcsr04_reset <= reset;
 
     MEDIDOR_1: interface_hcsr04
         port map (
@@ -207,7 +208,7 @@ begin
 
     CONTADOR: contador_m
         generic map (
-            M => 1000,  
+            M => 3000000,  
             N => 6
         )
         port map (
@@ -221,5 +222,8 @@ begin
     tatus(0) <= s_tatu_0D or s_tatu_0E;
     tatus(1) <= s_tatu_1D or s_tatu_1E;
     tatus(2) <= s_tatu_2D or s_tatu_2E;
+
+    medida1 <= s_medida_registrada1;
+    medida2 <= s_medida_registrada2;
 
 end architecture rtl;

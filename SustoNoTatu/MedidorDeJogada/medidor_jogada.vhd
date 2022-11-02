@@ -14,6 +14,10 @@ entity medidor_jogada is
         tatus     : out std_logic_vector(2 downto 0);
         db_estado_hcsr04_1 : out std_logic_vector(3 downto 0);
         db_estado_hcsr04_2 : out std_logic_vector(3 downto 0);
+        db_pronto_estado_hcsr04_1 : out std_logic;
+        db_pronto_estado_hcsr04_2 : out std_logic;
+        db_medida1 : out std_logic_vector(11 downto 0);
+        db_medida2 : out std_logic_vector(11 downto 0);
         db_estado : out std_logic_vector(3 downto 0) -- estado da UC
     );
 end entity medidor_jogada;
@@ -30,12 +34,11 @@ architecture rtl of medidor_jogada is
             pronto_hcsr04_2  : in  std_logic;
             fim_espera       : in  std_logic;
             fim_de_jogo      : in  std_logic;
-            zera_medida     : out std_logic;
             zera_espera     : out std_logic;
             conta_espera    : out std_logic;
             medir           : out std_logic;
             registra_distancia : out std_logic;
-            db_estado       : out std_logic_vector(3 downto 0) 
+            db_estado       : out std_logic_vector(3 downto 0)
         );
     end component;
 
@@ -43,7 +46,6 @@ architecture rtl of medidor_jogada is
         port (
             clock           : in  std_logic;
             reset           : in  std_logic;
-            zera_medida     : in std_logic;
             zera_espera     : in std_logic;
             conta_espera    : in std_logic;
             medir           : in std_logic;
@@ -56,13 +58,23 @@ architecture rtl of medidor_jogada is
             pronto_hcsr04_2 : out std_logic;
             fim_espera      : out std_logic;
             tatus           : out std_logic_vector(2 downto 0);
+            medida1         : out std_logic_vector(11 downto 0);
+            medida2         : out std_logic_vector(11 downto 0);
             db_estado_hcsr04_1 : out std_logic_vector(3 downto 0);
             db_estado_hcsr04_2 : out std_logic_vector(3 downto 0)
         );
     end component;
 
+    component hex7seg is
+        port (
+            hexa : in  std_logic_vector(3 downto 0);
+            sseg : out std_logic_vector(6 downto 0)
+        );
+    end component;
+
     signal s_fim_espera, s_zera_medida, s_zera_espera, s_conta_espera, s_medir : std_logic;
     signal s_pronto_hcsr04_1, s_pronto_hcsr04_2, s_registra_distancia : std_logic;
+    signal s_medida1, s_medida2: std_logic_vector(11 downto 0);
 
 begin
 
@@ -75,7 +87,6 @@ begin
             pronto_hcsr04_2 => s_pronto_hcsr04_2,
             fim_espera      => s_fim_espera,
             fim_de_jogo     => fim_de_jogo,
-            zera_medida     => s_zera_medida,
             zera_espera     => s_zera_espera,
             conta_espera    => s_conta_espera,
             medir           => s_medir,
@@ -83,11 +94,13 @@ begin
             db_estado       => db_estado
         );
 
+    db_pronto_estado_hcsr04_1 <= s_pronto_hcsr04_1;
+    db_pronto_estado_hcsr04_2 <= s_pronto_hcsr04_2;
+
     FD: medidor_jogada_fd
         port map (
             clock           => clock,
             reset           => reset,
-            zera_medida     => s_zera_medida,
             zera_espera     => s_zera_espera,
             conta_espera    => s_conta_espera,
             medir           => s_medir,
@@ -100,6 +113,8 @@ begin
             pronto_hcsr04_2 => s_pronto_hcsr04_2,
             fim_espera      => s_fim_espera,
             tatus           => tatus,
+            medida1         => db_medida1,
+            medida2         => db_medida2,
             db_estado_hcsr04_1 => db_estado_hcsr04_1,
             db_estado_hcsr04_2 => db_estado_hcsr04_2
         );
