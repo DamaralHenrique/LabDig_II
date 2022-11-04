@@ -20,6 +20,10 @@ architecture tb of medidor_jogada_tb is
         tatus     : out std_logic_vector(2 downto 0);
         db_estado_hcsr04_1 : out std_logic_vector(3 downto 0);
         db_estado_hcsr04_2 : out std_logic_vector(3 downto 0);
+        db_pronto_estado_hcsr04_1 : out std_logic;
+        db_pronto_estado_hcsr04_2 : out std_logic;
+        db_medida1 : out std_logic_vector(11 downto 0);
+        db_medida2 : out std_logic_vector(11 downto 0);
         db_estado : out std_logic_vector(3 downto 0) -- estado da UC
     );
   end component medidor_jogada;
@@ -35,9 +39,13 @@ architecture tb of medidor_jogada_tb is
   signal trigger1_out  : std_logic := '0';
   signal trigger2_out  : std_logic := '0';
   signal tatus_out     : std_logic_vector(2 downto 0) := "000";
+  signal db_pronto_estado_hcsr04_1_out : std_logic := '0';
+  signal db_pronto_estado_hcsr04_2_out : std_logic := '0';
   signal db_estado_hcsr04_1_out : std_logic_vector (3 downto 0)  := "0000";
   signal db_estado_hcsr04_2_out : std_logic_vector (3 downto 0)  := "0000";
   signal db_estado_out : std_logic_vector (3 downto 0)  := "0000";
+  signal db_medida1_out : std_logic_vector(11 downto 0) := "000000000000";
+  signal db_medida2_out : std_logic_vector(11 downto 0) := "000000000000";
 
   -- Configurações do clock
   constant clockPeriod   : time      := 20 ns; -- clock de 50MHz
@@ -94,6 +102,10 @@ begin
         tatus     => tatus_out,
         db_estado_hcsr04_1 => db_estado_hcsr04_1_out,
         db_estado_hcsr04_2 => db_estado_hcsr04_2_out,
+        db_pronto_estado_hcsr04_1 => db_pronto_estado_hcsr04_1_out,
+        db_pronto_estado_hcsr04_2 => db_pronto_estado_hcsr04_2_out,
+        db_medida1 => db_medida1_out,
+        db_medida2 => db_medida2_out,
         db_estado => db_estado_out
     );
 
@@ -137,21 +149,22 @@ begin
         -- 3) espera por 400us (tempo entre trigger e echo)
         wait for 100 us;
      
-        -- 4) gera pulso de echo (largura = larguraPulso)
+        -- 4.1) gera pulso de echo pro sensor 1 (largura = larguraPulso)
         echo1_in <= '1';
-        echo2_in <= '1';
-        if larguraPulso_min < larguraPulso_max then
-          wait for larguraPulso_min;
-          echo1_in <= '0';
-          wait for larguraPulso_max - larguraPulso_min;
-        else
-          wait for larguraPulso_max;
-          echo2_in <= '0';
-          wait for larguraPulso_min - larguraPulso_max;
-        end if;
+        wait for larguraPulso_min;
         echo1_in <= '0';
+        -- wait for larguraPulso_max - larguraPulso_min;
+
+        -- 4.2) gera pulso de echo pro sensor 2 (largura = larguraPulso) 
+        -- espera por 400us (tempo entre trigger e echo)
+        wait until falling_edge(trigger2_out);
+        wait for 100 us;
+
+
+        echo2_in <= '1';
+        wait for larguraPulso_max;
         echo2_in <= '0';
-     
+
         -- 5) espera final da medida
       	wait for 10 us;
         assert false report "Fim do caso " & integer'image(casos_teste_1(i).id) severity note;

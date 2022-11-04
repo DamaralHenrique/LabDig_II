@@ -3,24 +3,26 @@ use IEEE.std_logic_1164.all;
 
 entity medidor_jogada_fd is
     port (
-        clock           : in  std_logic;
-        reset           : in  std_logic;
-        zera_espera     : in std_logic;
-        conta_espera    : in std_logic;
-        medir           : in std_logic;
-        echo1           : in std_logic;
-        echo2           : in std_logic;
-        registra_distancia : in  std_logic;
-        trigger1        : out std_logic;
-        trigger2        : out std_logic;
-        pronto_hcsr04_1 : out std_logic;
-        pronto_hcsr04_2 : out std_logic;
-        fim_espera      : out std_logic;
-        tatus           : out std_logic_vector(2 downto 0);
-        medida1         : out std_logic_vector(11 downto 0);
-        medida2         : out std_logic_vector(11 downto 0);
-        db_estado_hcsr04_1 : out std_logic_vector(3 downto 0);
-        db_estado_hcsr04_2 : out std_logic_vector(3 downto 0)
+        clock                : in  std_logic;
+        reset                : in  std_logic;
+        zera_espera          : in std_logic;
+        conta_espera         : in std_logic;
+        medir_1              : in std_logic;
+        medir_2              : in std_logic;
+        echo1                : in std_logic;
+        echo2                : in std_logic;
+        registra_distancia_1 : in  std_logic;
+        registra_distancia_2 : in  std_logic;
+        trigger1             : out std_logic;
+        trigger2             : out std_logic;
+        pronto_hcsr04_1      : out std_logic;
+        pronto_hcsr04_2      : out std_logic;
+        fim_espera           : out std_logic;
+        tatus                : out std_logic_vector(2 downto 0);
+        medida1              : out std_logic_vector(11 downto 0);
+        medida2              : out std_logic_vector(11 downto 0);
+        db_estado_hcsr04_1   : out std_logic_vector(3 downto 0);
+        db_estado_hcsr04_2   : out std_logic_vector(3 downto 0)
     );
 end entity;
 
@@ -114,7 +116,7 @@ begin
         port map (
             clock     => clock,
             reset     => s_interface_hcsr04_reset,
-            medir     => medir,
+            medir     => medir_1,
             echo      => echo1,
             trigger   => trigger1,
             medida    => s_medida1, -- 3 digitos BCD
@@ -126,7 +128,7 @@ begin
         port map (
             clock     => clock,
             reset     => s_interface_hcsr04_reset,
-            medir     => medir,
+            medir     => medir_2,
             echo      => echo2,
             trigger   => trigger2,
             medida    => s_medida2, -- 3 digitos BCD
@@ -141,7 +143,7 @@ begin
         port map (
             clock  => clock,
             clear  => '0',
-            enable => registra_distancia,
+            enable => registra_distancia_1,
             D      => s_medida1,
             Q      => s_medida_registrada1
         );
@@ -153,7 +155,7 @@ begin
         port map (
             clock  => clock,
             clear  => '0',
-            enable => registra_distancia,
+            enable => registra_distancia_2,
             D      => s_medida2,
             Q      => s_medida_registrada2
         );
@@ -203,12 +205,12 @@ begin
             A   => s_medida_registrada2,
             B   => s_dist_min_2E,
             C   => s_dist_max_2E,
-            btw => s_tatu_2E
+            btw =>  
         );
 
     CONTADOR: contador_m
         generic map (
-            M => 3000000,  
+            M => 3000, -- 60ms  
             N => 6
         )
         port map (
