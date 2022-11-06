@@ -43,10 +43,10 @@ architecture rtl of medidor_jogada_fd is
 
     component comparador_distancia is
         port (
-            A   : in std_logic_vector(11 downto 0);
-            B   : in std_logic_vector(11 downto 0);
-            C   : in std_logic_vector(11 downto 0); -- C > B
-            btw : out std_logic -- A está entre B e C
+            A        : in std_logic_vector(11 downto 0);
+            B        : in std_logic_vector(11 downto 0);
+            add_2    : in std_logic;
+            is_close : out std_logic -- A está proximo de B com intervalo de erro
         );
     end component;
 
@@ -80,35 +80,23 @@ architecture rtl of medidor_jogada_fd is
     signal s_medida1, s_medida2, s_medida_registrada1, s_medida_registrada2: std_logic_vector(11 downto 0);
     signal s_dist_0D, s_dist_1D, s_dist_2D: std_logic_vector(11 downto 0);
     signal s_dist_0E, s_dist_1E, s_dist_2E: std_logic_vector(11 downto 0);
-    signal s_dist_min_0D, s_dist_max_0D: std_logic_vector(11 downto 0);
-    signal s_dist_min_1D, s_dist_max_1D: std_logic_vector(11 downto 0);
-    signal s_dist_min_2D, s_dist_max_2D: std_logic_vector(11 downto 0);
-    signal s_dist_min_0E, s_dist_max_0E: std_logic_vector(11 downto 0);
-    signal s_dist_min_1E, s_dist_max_1E: std_logic_vector(11 downto 0);
-    signal s_dist_min_2E, s_dist_max_2E: std_logic_vector(11 downto 0);
     signal s_tatu_0D, s_tatu_1D, s_tatu_2D: std_logic;
     signal s_tatu_0E, s_tatu_1E, s_tatu_2E: std_logic;
     signal s_interface_hcsr04_reset: std_logic;
 
 begin
 
-    s_dist_min_0D <= "0000" & "0100" & "0000"; -- 040
-    s_dist_max_0D <= "0001" & "0001" & "0000"; -- 110
+    s_dist_0D <= "0000" & "0111" & "0101"; -- 075
 
-    s_dist_min_1D <= "0001" & "0010" & "0000"; -- 120
-    s_dist_max_1D <= "0001" & "1001" & "0000"; -- 190
+    s_dist_1D <= "0001" & "0101" & "0101"; -- 155
 
-    s_dist_min_2D <= "0010" & "0000" & "0000"; -- 200
-    s_dist_max_2D <= "0010" & "0111" & "0000"; -- 270
+    s_dist_2D <= "0010" & "0011" & "0101"; -- 235
 
-    s_dist_min_0E <= "0010" & "0000" & "0000"; -- 200
-    s_dist_max_0E <= "0010" & "0111" & "0000"; -- 270
+    s_dist_2E <= "0010" & "0011" & "0101"; -- 235
 
-    s_dist_min_1E <= "0001" & "0010" & "0000"; -- 120
-    s_dist_max_1E <= "0001" & "1001" & "0000"; -- 190
+    s_dist_1E <= "0001" & "0101" & "0101"; -- 155
 
-    s_dist_min_2E <= "0000" & "0100" & "0000"; -- 040
-    s_dist_max_2E <= "0001" & "0001" & "0000"; -- 110
+    s_dist_0E <= "0000" & "0111" & "0101"; -- 075
 
     s_interface_hcsr04_reset <= reset;
 
@@ -162,50 +150,50 @@ begin
 
     comparador_0_D: comparador_distancia
         port map (
-            A   => s_medida_registrada1,
-            B   => s_dist_min_0D,
-            C   => s_dist_max_0D,
-            btw => s_tatu_0D
+            A        => s_medida_registrada1,
+            B        => s_dist_0D,
+            add_2    => '1',
+            is_close => s_tatu_0D
         );
 
     comparador_1_D: comparador_distancia
         port map (
-            A   => s_medida_registrada1,
-            B   => s_dist_min_1D,
-            C   => s_dist_max_1D,
-            btw => s_tatu_1D
+            A        => s_medida_registrada1,
+            B        => s_dist_1D,
+            add_2    => '1',
+            is_close => s_tatu_1D
         );
 
     comparador_2_D: comparador_distancia
         port map (
-            A   => s_medida_registrada1,
-            B   => s_dist_min_2D,
-            C   => s_dist_max_2D,
-            btw => s_tatu_2D
+            A        => s_medida_registrada1,
+            B        => s_dist_2D,
+            add_2    => '1',
+            is_close => s_tatu_2D
         );
 
     comparador_0_E: comparador_distancia
         port map (
-            A   => s_medida_registrada2,
-            B   => s_dist_min_0E,
-            C   => s_dist_max_0E,
-            btw => s_tatu_0E
+            A        => s_medida_registrada2,
+            B        => s_dist_0E,
+            add_2    => '1',
+            is_close => s_tatu_0E
         );
 
     comparador_1_E: comparador_distancia
         port map (
-            A   => s_medida_registrada2,
-            B   => s_dist_min_1E,
-            C   => s_dist_max_1E,
-            btw => s_tatu_1E
+            A        => s_medida_registrada2,
+            B        => s_dist_1E,
+            add_2    => '1',
+            is_close => s_tatu_1E
         );
 
     comparador_2_E: comparador_distancia
         port map (
-            A   => s_medida_registrada2,
-            B   => s_dist_min_2E,
-            C   => s_dist_max_2E,
-            btw =>  
+            A        => s_medida_registrada2,
+            B        => s_dist_2E,
+            add_2    => '1',
+            is_close => s_tatu_2E
         );
 
     CONTADOR: contador_m

@@ -59,25 +59,34 @@ architecture tb of medidor_jogada_tb is
 
   type casos_teste_array is array (natural range <>) of caso_teste_type; -- 5882us (100cm)
   constant casos_teste_1 : casos_teste_array :=
+  -- 8  - 472
+  -- 16 - 944
+  -- 24 - 1416
       (
-        (1,  236),   --  236us ( 40mm) tatu 0
-        (2,  676),   --  676us (115mm) sem tatu
-        (3,  765),   --  765us (130cm) tatu 1
-        (4, 1235),   -- 1235us (210cm) tatu 2
-        (5,  236),   --  236us ( 40mm) tatu 0
-        (6,  236),   --  236us ( 40mm) tatu 0
-        (7,  765)   --  765us (130cm) tatu 1
+        (1,  472),   -- ( 80mm) tatu 0
+        (2,  944),   -- (160cm) tatu 1
+        (3, 1416),   -- (240cm) tatu 2
+        (4,  236),   -- ( 40mm) sem tatu
+        (5,  236),   -- ( 40mm) sem tatu
+        (6,  236),   -- ( 40mm) sem tatu
+        (7,  472),   -- ( 80mm) tatu 0
+        (8,  472),   -- ( 80mm) tatu 0
+        (9,  944),   -- (160cm) tatu 1
+        (10,  472)   -- ( 80mm) tatu 0
       );
 
   constant casos_teste_2 : casos_teste_array :=
       (
-        (1, 1235),   -- 1235us (210mm) tatu 0
-        (2, 1146),   -- 1146us (195mm) sem tatu
-        (3,  765),   --  765us (130cm) tatu 1
-        (4,  236),   --  236us ( 40cm) tatu 2
-        (5,  765),   --  765us (130cm) tatu 1
-        (6,  236),   --  236us ( 40cm) tatu 2
-        (7,  236)   --  236us ( 40cm) tatu 2
+        (1,  236),   -- ( 40mm) sem tatu
+        (2,  236),   -- ( 40mm) sem tatu
+        (3,  236),   -- ( 40mm) sem tatu
+        (4,  472),   -- ( 80mm) tatu 0
+        (5,  944),   -- (160cm) tatu 1
+        (6, 1416),   -- (240cm) tatu 2
+        (7,  944),   -- (160cm) tatu 1
+        (8, 1416),   -- (240cm) tatu 2
+        (9, 1416),   -- (240cm) tatu 2
+        (10,  236)   -- ( 40mm) sem tatu
       );
 
   signal larguraPulso_min, larguraPulso_max: time := 1 ns;
