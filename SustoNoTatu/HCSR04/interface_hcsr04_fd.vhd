@@ -134,7 +134,7 @@ begin
         port map (
             clock => clock,
             zera  => zera_timeout,
-            conta => '0',
+            conta => conta_timeout,
             Q     => open,
             fim   => fim_timeout
         );

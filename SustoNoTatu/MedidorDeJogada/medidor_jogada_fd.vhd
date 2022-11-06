@@ -198,7 +198,7 @@ begin
 
     CONTADOR: contador_m
         generic map (
-            M => 3000, -- 60ms  
+            M => 3000000,  
             N => 6
         )
         port map (
