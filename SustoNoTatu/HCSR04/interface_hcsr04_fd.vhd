@@ -129,7 +129,7 @@ begin
     CONTADOR_timeout: contador_m
         generic map (
             M => 3000000, -- 60ms
-            N => 6
+            N => 22
         )
         port map (
             clock => clock,

@@ -10,7 +10,8 @@ entity interface_hcsr04 is
         trigger   : out std_logic;
         medida    : out std_logic_vector(11 downto 0); -- 3 digitos BCD
         pronto    : out std_logic;
-        db_estado : out std_logic_vector(3 downto 0) -- estado da UC
+        db_estado : out std_logic_vector(3 downto 0); -- estado da UC
+		db_timeout: out std_logic
     );
 end entity interface_hcsr04;
 
@@ -86,5 +87,7 @@ begin
             fim_timeout => s_fim_timeout,
             trigger     => trigger
         );
+		  
+	db_timeout <= s_fim_timeout;
 
 end architecture rtl;
