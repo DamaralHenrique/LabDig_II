@@ -41,5 +41,5 @@ begin
                D2 when (SEL = "010") else
                D1 when (SEL = "001") else
                D0 when (SEL = "000") else
-               (others => '1');
+               '1';
 end architecture behav;

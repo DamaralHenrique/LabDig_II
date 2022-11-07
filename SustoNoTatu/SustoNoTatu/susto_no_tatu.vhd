@@ -12,7 +12,7 @@ entity susto_no_tatu is
         echo_12     : in  std_logic;
         dificuldade : in  std_logic;
         botoes      : in  std_logic_vector(5 downto 0);
-        debug_seletor : in  std_logic_vector(3 downto 0);
+        debug_seletor : in  std_logic_vector(2 downto 0);
         trigger_01  : out std_logic;
         trigger_02  : out std_logic;
         trigger_11  : out std_logic;
@@ -376,7 +376,7 @@ begin
             D6      => '0',
             D7      => '0',
             SEL     => debug_seletor,
-            MUX_OUT => db_led9
+            MUX_OUT => db_led8
         );
 
     LED9: mux_8x1

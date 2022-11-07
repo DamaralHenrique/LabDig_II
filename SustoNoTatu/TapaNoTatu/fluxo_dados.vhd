@@ -185,26 +185,26 @@ end component;
   end component;
 
   component edge_detector is
-    port (
-        clock  : in  std_logic;
-        reset  : in  std_logic;
-        sinal  : in  std_logic;
-        pulso  : out std_logic
+    port (  
+        clock     : in  std_logic;
+        signal_in : in  std_logic;
+        output    : out std_logic
     );
   end component;
 
   component contador_m is
     generic (
-        constant M: integer := 250000000 -- modulo do contador
+        constant M : integer := 50;  
+        constant N : integer := 6 
     );
     port (
-        clock   : in  std_logic;
-        zera_as : in  std_logic;
-        zera_s  : in  std_logic;
-        conta   : in  std_logic;
-        fim     : out std_logic
+        clock : in  std_logic;
+        zera  : in  std_logic;
+        conta : in  std_logic;
+        Q     : out std_logic_vector (N-1 downto 0);
+        fim   : out std_logic
     );
-  end component contador_m;
+end component contador_m;
 
   component subtrador_m is
     port (
@@ -313,35 +313,36 @@ begin
   );
 
   jogadaEdgeDetector: edge_detector 
-    port map (
-       clock => clock,
-	     reset => zera_ponto,
-       sinal => s_temJogada,
-       pulso => tem_jogada
-    ); 
+    port map (  
+        clock     => clock,
+        signal_in => s_temJogada,
+        output    => tem_jogada
+    );
 
   DelTMR: contador_m 
-	 generic map(
-		  M => 100000000
-	 )
-    port map(
-        clock   => clock,
-        zera_as => zeraDelTMR,
-        zera_s  => zeraDelTMR,
-        conta   => contaDelTMR,
-        fim     => fimDelTMR
+    generic map (
+        M => 100000000, 
+        N => 27
+    )
+    port map (
+        clock => clock,
+        zera  => zeraDelTMR,
+        conta => contaDelTMR,
+        Q     => open,
+        fim   => fimDelTMR
     );
 	 
   SperanoTMR: contador_m 
-	 generic map(
-		  M => (50000000/(9600)) * 10
-	 )
-    port map(
-        clock   => clock,
-        zera_as => zeraSprTMR,
-        zera_s  => zeraSprTMR,
-        conta   => contaSprTMR,
-        fim     => fimSprTMR
+    generic map (
+        M => (50000000/(9600)) * 10, 
+        N => 16
+    )
+    port map (
+        clock => clock,
+        zera  => zeraSprTMR,
+        conta => contaSprTMR,
+        Q     => open,
+        fim   => fimSprTMR
     );
 
   sub: subtrador_m

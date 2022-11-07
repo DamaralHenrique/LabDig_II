@@ -59,19 +59,16 @@ architecture tb of medidor_jogada_tb is
 
   type casos_teste_array is array (natural range <>) of caso_teste_type; -- 5882us (100cm)
   constant casos_teste_1 : casos_teste_array :=
-  -- 8  - 472
-  -- 16 - 944
-  -- 24 - 1416
       (
         (1,  472),   -- ( 80mm) tatu 0
-        (2,  944),   -- (160cm) tatu 1
-        (3, 1416),   -- (240cm) tatu 2
+        (2,  944),   -- (160mm) tatu 1
+        (3, 1416),   -- (240mm) tatu 2
         (4,  236),   -- ( 40mm) sem tatu
         (5,  236),   -- ( 40mm) sem tatu
         (6,  236),   -- ( 40mm) sem tatu
         (7,  472),   -- ( 80mm) tatu 0
         (8,  472),   -- ( 80mm) tatu 0
-        (9,  944),   -- (160cm) tatu 1
+        (9,  944),   -- (160mm) tatu 1
         (10,  472)   -- ( 80mm) tatu 0
       );
 
