@@ -100,11 +100,11 @@ begin
 
     s_dist_2D <= "0010" & "0011" & "0101"; -- 235
 
-    s_dist_2E <= "0010" & "0011" & "0101"; -- 235
+    s_dist_0E <= "0010" & "0011" & "0101"; -- 235
 
     s_dist_1E <= "0001" & "0101" & "0101"; -- 155
 
-    s_dist_0E <= "0000" & "0111" & "0101"; -- 075
+    s_dist_2E <= "0000" & "0111" & "0101"; -- 075
 
     s_interface_hcsr04_reset1 <= reset or reset_1;
 	 s_interface_hcsr04_reset2 <= reset or reset_2;
@@ -209,7 +209,7 @@ begin
 
     CONTADOR: contador_m
         generic map (
-            M => 3000000,
+            M => 300,
             N => 22
         )
         port map (

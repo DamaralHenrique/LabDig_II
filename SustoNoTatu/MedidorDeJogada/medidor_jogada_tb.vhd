@@ -77,12 +77,12 @@ architecture tb of medidor_jogada_tb is
         (1,  236),   -- ( 40mm) sem tatu
         (2,  236),   -- ( 40mm) sem tatu
         (3,  236),   -- ( 40mm) sem tatu
-        (4,  472),   -- ( 80mm) tatu 0
+        (4,  472),   -- ( 80mm) tatu 2
         (5,  944),   -- (160cm) tatu 1
-        (6, 1416),   -- (240cm) tatu 2
+        (6, 1416),   -- (240cm) tatu 0
         (7,  944),   -- (160cm) tatu 1
-        (8, 1416),   -- (240cm) tatu 2
-        (9, 1416),   -- (240cm) tatu 2
+        (8,  472),   -- ( 80cm) tatu 2
+        (9,  472),   -- ( 80cm) tatu 2
         (10,  236)   -- ( 40mm) sem tatu
       );
 
