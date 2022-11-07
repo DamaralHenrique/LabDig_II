@@ -7,8 +7,12 @@ entity medidor_jogada_fd is
         reset                : in  std_logic;
         zera_espera          : in std_logic;
         conta_espera         : in std_logic;
+		zera_timeout         : in std_logic;
+        conta_timeout        : in std_logic;
         medir_1              : in std_logic;
         medir_2              : in std_logic;
+		  reset_1              : in std_logic;
+        reset_2              : in std_logic;
         echo1                : in std_logic;
         echo2                : in std_logic;
         registra_distancia_1 : in  std_logic;
@@ -18,11 +22,14 @@ entity medidor_jogada_fd is
         pronto_hcsr04_1      : out std_logic;
         pronto_hcsr04_2      : out std_logic;
         fim_espera           : out std_logic;
+		fim_timeout          : out std_logic;
         tatus                : out std_logic_vector(2 downto 0);
         medida1              : out std_logic_vector(11 downto 0);
         medida2              : out std_logic_vector(11 downto 0);
         db_estado_hcsr04_1   : out std_logic_vector(3 downto 0);
-        db_estado_hcsr04_2   : out std_logic_vector(3 downto 0)
+        db_estado_hcsr04_2   : out std_logic_vector(3 downto 0);
+		db_timeout_1: out std_logic;
+		db_timeout_2: out std_logic
     );
 end entity;
 
@@ -37,7 +44,8 @@ architecture rtl of medidor_jogada_fd is
             trigger   : out std_logic;
             medida    : out std_logic_vector(11 downto 0); -- 3 digitos BCD
             pronto    : out std_logic;
-            db_estado : out std_logic_vector(3 downto 0) -- estado da UC
+            db_estado : out std_logic_vector(3 downto 0); -- estado da UC
+			db_timeout: out std_logic
         );
     end component interface_hcsr04;
 
@@ -82,7 +90,7 @@ architecture rtl of medidor_jogada_fd is
     signal s_dist_0E, s_dist_1E, s_dist_2E: std_logic_vector(11 downto 0);
     signal s_tatu_0D, s_tatu_1D, s_tatu_2D: std_logic;
     signal s_tatu_0E, s_tatu_1E, s_tatu_2E: std_logic;
-    signal s_interface_hcsr04_reset: std_logic;
+    signal s_interface_hcsr04_reset1, s_interface_hcsr04_reset2: std_logic;
 
 begin
 
@@ -98,30 +106,33 @@ begin
 
     s_dist_0E <= "0000" & "0111" & "0101"; -- 075
 
-    s_interface_hcsr04_reset <= reset;
+    s_interface_hcsr04_reset1 <= reset or reset_1;
+	 s_interface_hcsr04_reset2 <= reset or reset_2;
 
     MEDIDOR_1: interface_hcsr04
         port map (
             clock     => clock,
-            reset     => s_interface_hcsr04_reset,
+            reset     => s_interface_hcsr04_reset1,
             medir     => medir_1,
             echo      => echo1,
             trigger   => trigger1,
             medida    => s_medida1, -- 3 digitos BCD
             pronto    => pronto_hcsr04_1,
-            db_estado => db_estado_hcsr04_1
+            db_estado => db_estado_hcsr04_1,
+			db_timeout => db_timeout_1
         );
 
     MEDIDOR_2: interface_hcsr04
         port map (
             clock     => clock,
-            reset     => s_interface_hcsr04_reset,
+            reset     => s_interface_hcsr04_reset2,
             medir     => medir_2,
             echo      => echo2,
             trigger   => trigger2,
             medida    => s_medida2, -- 3 digitos BCD
             pronto    => pronto_hcsr04_2,
-            db_estado => db_estado_hcsr04_2
+            db_estado => db_estado_hcsr04_2,
+			db_timeout => db_timeout_2
         );
 
     REGISTRADOR_1: registrador_n
@@ -148,7 +159,7 @@ begin
             Q      => s_medida_registrada2
         );
 
-    comparador_0_D: comparador_distancia
+        comparador_0_D: comparador_distancia
         port map (
             A        => s_medida_registrada1,
             B        => s_dist_0D,
@@ -198,8 +209,8 @@ begin
 
     CONTADOR: contador_m
         generic map (
-            M => 3000000,  
-            N => 6
+            M => 3000000,
+            N => 22
         )
         port map (
             clock => clock,
@@ -208,7 +219,22 @@ begin
             Q     => open,
             fim   => fim_espera
         );
-
+		  
+	  CONTADOR_TIMEOUT: contador_m
+        generic map (
+            M => 6000000,
+            N => 22
+        )
+        port map (
+            clock => clock,
+            zera  => zera_timeout,
+            conta => conta_timeout,
+            Q     => open,
+            fim   => fim_timeout
+        );
+		  
+	 
+	 
     tatus(0) <= s_tatu_0D or s_tatu_0E;
     tatus(1) <= s_tatu_1D or s_tatu_1E;
     tatus(2) <= s_tatu_2D or s_tatu_2E;
