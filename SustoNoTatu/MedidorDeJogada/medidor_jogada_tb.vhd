@@ -9,43 +9,43 @@ architecture tb of medidor_jogada_tb is
   -- Componente a ser testado (Device Under Test -- DUT)
   component medidor_jogada is
     port (
-        clock     : in  std_logic;
-        reset     : in  std_logic;
-        inicia    : in  std_logic;
-        fim_de_jogo : in  std_logic;
-        echo1     : in  std_logic;
-        echo2     : in  std_logic;
-        trigger1  : out std_logic;
-        trigger2  : out std_logic;
-        tatus     : out std_logic_vector(2 downto 0);
-        db_estado_hcsr04_1 : out std_logic_vector(3 downto 0);
-        db_estado_hcsr04_2 : out std_logic_vector(3 downto 0);
+        clock                     : in  std_logic;
+        reset                     : in  std_logic;
+        inicia                    : in  std_logic;
+        fim_de_jogo               : in  std_logic;
+        echo1                     : in  std_logic;
+        echo2                     : in  std_logic;
+        trigger1                  : out std_logic;
+        trigger2                  : out std_logic;
+        tatus                     : out std_logic_vector(2 downto 0);
+        db_estado_hcsr04_1        : out std_logic_vector(3 downto 0);
+        db_estado_hcsr04_2        : out std_logic_vector(3 downto 0);
         db_pronto_estado_hcsr04_1 : out std_logic;
         db_pronto_estado_hcsr04_2 : out std_logic;
-        db_medida1 : out std_logic_vector(11 downto 0);
-        db_medida2 : out std_logic_vector(11 downto 0);
-        db_estado : out std_logic_vector(3 downto 0) -- estado da UC
+        db_medida1                : out std_logic_vector(11 downto 0);
+        db_medida2                : out std_logic_vector(11 downto 0);
+        db_estado                 : out std_logic_vector(3 downto 0) -- estado da UC
     );
   end component medidor_jogada;
   
   -- Declaração de sinais para conectar o componente a ser testado (DUT)
   --   valores iniciais para fins de simulacao (GHDL ou ModelSim)
-  signal clock_in      : std_logic := '0';
-  signal reset_in      : std_logic := '0';
-  signal inicia_in     : std_logic := '0';
-  signal fim_de_jogo_in : std_logic := '0';
-  signal echo1_in      : std_logic := '0';
-  signal echo2_in      : std_logic := '0';
-  signal trigger1_out  : std_logic := '0';
-  signal trigger2_out  : std_logic := '0';
-  signal tatus_out     : std_logic_vector(2 downto 0) := "000";
+  signal clock_in                      : std_logic := '0';
+  signal reset_in                      : std_logic := '0';
+  signal inicia_in                     : std_logic := '0';
+  signal fim_de_jogo_in                : std_logic := '0';
+  signal echo1_in                      : std_logic := '0';
+  signal echo2_in                      : std_logic := '0';
+  signal trigger1_out                  : std_logic := '0';
+  signal trigger2_out                  : std_logic := '0';
+  signal tatus_out                     : std_logic_vector(2 downto 0) := "000";
   signal db_pronto_estado_hcsr04_1_out : std_logic := '0';
   signal db_pronto_estado_hcsr04_2_out : std_logic := '0';
-  signal db_estado_hcsr04_1_out : std_logic_vector (3 downto 0)  := "0000";
-  signal db_estado_hcsr04_2_out : std_logic_vector (3 downto 0)  := "0000";
-  signal db_estado_out : std_logic_vector (3 downto 0)  := "0000";
-  signal db_medida1_out : std_logic_vector(11 downto 0) := "000000000000";
-  signal db_medida2_out : std_logic_vector(11 downto 0) := "000000000000";
+  signal db_estado_hcsr04_1_out        : std_logic_vector (3 downto 0)  := "0000";
+  signal db_estado_hcsr04_2_out        : std_logic_vector (3 downto 0)  := "0000";
+  signal db_estado_out                 : std_logic_vector (3 downto 0)  := "0000";
+  signal db_medida1_out                : std_logic_vector(11 downto 0) := "000000000000";
+  signal db_medida2_out                : std_logic_vector(11 downto 0) := "000000000000";
 
   -- Configurações do clock
   constant clockPeriod   : time      := 20 ns; -- clock de 50MHz

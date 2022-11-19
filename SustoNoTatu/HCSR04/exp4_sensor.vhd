@@ -3,19 +3,19 @@ use IEEE.std_logic_1164.all;
 
 entity exp4_sensor is
     port (
-        clock : in std_logic;
-        reset : in std_logic;
-        medir : in std_logic;
-        echo : in std_logic;
-        trigger : out std_logic;
-        hex0 : out std_logic_vector(6 downto 0); -- digitos da medida
-        hex1 : out std_logic_vector(6 downto 0);
-        hex2 : out std_logic_vector(6 downto 0);
-        pronto : out std_logic;
-        db_medir : out std_logic;
-        db_echo : out std_logic;
+        clock      : in  std_logic;
+        reset      : in  std_logic;
+        medir      : in  std_logic;
+        echo       : in  std_logic;
+        trigger    : out std_logic;
+        hex0       : out std_logic_vector(6 downto 0); -- digitos da medida
+        hex1       : out std_logic_vector(6 downto 0);
+        hex2       : out std_logic_vector(6 downto 0);
+        pronto     : out std_logic;
+        db_medir   : out std_logic;
+        db_echo    : out std_logic;
         db_trigger : out std_logic;
-        db_estado : out std_logic_vector(6 downto 0) -- estado da UC
+        db_estado  : out std_logic_vector(6 downto 0) -- estado da UC
     );
    end entity exp4_sensor;
 
@@ -50,8 +50,8 @@ architecture rtl of exp4_sensor is
     end component edge_detector;
 
     signal s_trigger, s_registra, s_pronto, s_medir : std_logic;
-    signal s_db_estado : std_logic_vector(3 downto 0);
-    signal s_medida : std_logic_vector(11 downto 0);
+    signal s_db_estado                              : std_logic_vector(3 downto 0);
+    signal s_medida                                 : std_logic_vector(11 downto 0);
 
 begin
 
@@ -98,9 +98,9 @@ begin
             sseg => hex2
         );
 
-    db_medir <= medir;
+    db_medir   <= medir;
     db_trigger <= s_trigger;
-    trigger <= s_trigger;
-    db_echo <= echo;
+    trigger    <= s_trigger;
+    db_echo    <= echo;
 
 end architecture rtl;

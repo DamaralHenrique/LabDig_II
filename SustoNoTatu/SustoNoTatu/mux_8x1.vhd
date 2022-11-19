@@ -18,16 +18,16 @@ use ieee.std_logic_1164.all;
 
 entity mux_8x1 is
     port ( 
-        D0 :     in  std_logic;
-        D1 :     in  std_logic;
-        D2 :     in  std_logic;
-        D3 :     in  std_logic;
-        D4 :     in  std_logic;
-        D5 :     in  std_logic;
-        D6 :     in  std_logic;
-        D7 :     in  std_logic;
-        SEL:     in  std_logic_vector (2 downto 0);
-        MUX_OUT: out std_logic
+        D0      : in  std_logic;
+        D1      : in  std_logic;
+        D2      : in  std_logic;
+        D3      : in  std_logic;
+        D4      : in  std_logic;
+        D5      : in  std_logic;
+        D6      : in  std_logic;
+        D7      : in  std_logic;
+        SEL     : in  std_logic_vector (2 downto 0);
+        MUX_OUT : out std_logic
     );
 end entity;
 

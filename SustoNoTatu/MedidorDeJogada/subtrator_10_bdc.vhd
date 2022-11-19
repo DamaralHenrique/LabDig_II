@@ -9,9 +9,9 @@ entity subtrator_10_bcd is
 end entity;
 
 architecture comportamental of subtrator_10_bcd is
-    signal dezena_in, centena_in, unidade_in: std_logic_vector(3 downto 0);
-    signal dezena_out, centena_out, unidade_out: std_logic_vector(3 downto 0);
-    signal centena_0: std_logic_vector(3 downto 0);
+    signal dezena_in, centena_in, unidade_in    : std_logic_vector(3 downto 0);
+    signal dezena_out, centena_out, unidade_out : std_logic_vector(3 downto 0);
+    signal centena_0                            : std_logic_vector(3 downto 0);
 begin
     process (dezena_in, centena_in, unidade_in, centena_0)
     begin
@@ -48,7 +48,7 @@ begin
         end if;
 
         if(centena_in = "0000" and dezena_in = "0000") then
-            dezena_out <= dezena_in;
+            dezena_out  <= dezena_in;
             unidade_out <= "0000";
         else
             unidade_out <= unidade_in;

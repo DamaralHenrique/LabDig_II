@@ -21,16 +21,16 @@ entity mux_8x1_n is
         constant BITS: integer := 4
     );
     port ( 
-        D0 :     in  std_logic_vector (BITS-1 downto 0);
-        D1 :     in  std_logic_vector (BITS-1 downto 0);
-        D2 :     in  std_logic_vector (BITS-1 downto 0);
-        D3 :     in  std_logic_vector (BITS-1 downto 0);
-        D4 :     in  std_logic_vector (BITS-1 downto 0);
-        D5 :     in  std_logic_vector (BITS-1 downto 0);
-        D6 :     in  std_logic_vector (BITS-1 downto 0);
-        D7 :     in  std_logic_vector (BITS-1 downto 0);
-        SEL:     in  std_logic_vector (2 downto 0);
-        MUX_OUT: out std_logic_vector (BITS-1 downto 0)
+        D0      : in  std_logic_vector (BITS-1 downto 0);
+        D1      : in  std_logic_vector (BITS-1 downto 0);
+        D2      : in  std_logic_vector (BITS-1 downto 0);
+        D3      : in  std_logic_vector (BITS-1 downto 0);
+        D4      : in  std_logic_vector (BITS-1 downto 0);
+        D5      : in  std_logic_vector (BITS-1 downto 0);
+        D6      : in  std_logic_vector (BITS-1 downto 0);
+        D7      : in  std_logic_vector (BITS-1 downto 0);
+        SEL     : in  std_logic_vector (2 downto 0);
+        MUX_OUT : out std_logic_vector (BITS-1 downto 0)
     );
 end entity;
 

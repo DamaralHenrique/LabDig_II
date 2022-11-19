@@ -3,38 +3,40 @@ use IEEE.std_logic_1164.all;
 
 entity susto_no_tatu is
     port (
-        clock       : in  std_logic;
-        reset       : in  std_logic;
-        iniciar     : in  std_logic;
-        echo_01     : in  std_logic;
-        echo_02     : in  std_logic;
-        echo_11     : in  std_logic;
-        echo_12     : in  std_logic;
-        dificuldade : in  std_logic;
-        botoes      : in  std_logic_vector(5 downto 0);
+        clock         : in  std_logic;
+        reset         : in  std_logic;
+        iniciar       : in  std_logic;
+        echo_01       : in  std_logic;
+        echo_02       : in  std_logic;
+        echo_11       : in  std_logic;
+        echo_12       : in  std_logic;
+        dificuldade   : in  std_logic;
+        botoes        : in  std_logic_vector(5 downto 0);
         debug_seletor : in  std_logic_vector(2 downto 0);
-        trigger_01  : out std_logic;
-        trigger_02  : out std_logic;
-        trigger_11  : out std_logic;
-        trigger_12  : out std_logic;
-        pwm_tatu_00 : out std_logic;
-        pwm_tatu_01 : out std_logic;
-        pwm_tatu_02 : out std_logic;
-        pwm_tatu_10 : out std_logic;
-        pwm_tatu_11 : out std_logic;
-        pwm_tatu_12 : out std_logic;
-        serial      : out std_logic;
-        vidas       : out std_logic_vector (1 downto 0);
-        pontuacao1  : out std_logic_vector (6 downto 0);
-        pontuacao2  : out std_logic_vector (6 downto 0);
-        db_display0 : out std_logic_vector (6 downto 0);
-        db_display1 : out std_logic_vector (6 downto 0);
-        db_display2 : out std_logic_vector (6 downto 0);
-        db_display3 : out std_logic_vector (6 downto 0);
-        db_display4 : out std_logic_vector (6 downto 0);
-        db_display5 : out std_logic_vector (6 downto 0);
-        db_led8     : out std_logic;
-        db_led9     : out std_logic
+        trigger_01    : out std_logic;
+        trigger_02    : out std_logic;
+        trigger_11    : out std_logic;
+        trigger_12    : out std_logic;
+        pwm_tatu_00   : out std_logic;
+        pwm_tatu_01   : out std_logic;
+        pwm_tatu_02   : out std_logic;
+        pwm_tatu_10   : out std_logic;
+        pwm_tatu_11   : out std_logic;
+        pwm_tatu_12   : out std_logic;
+        serial        : out std_logic;
+        vidas         : out std_logic_vector (1 downto 0);
+        pontuacao1    : out std_logic_vector (6 downto 0);
+        pontuacao2    : out std_logic_vector (6 downto 0);
+        db_display0   : out std_logic_vector (6 downto 0);
+        db_display1   : out std_logic_vector (6 downto 0);
+        db_display2   : out std_logic_vector (6 downto 0);
+        db_display3   : out std_logic_vector (6 downto 0);
+        db_display4   : out std_logic_vector (6 downto 0);
+        db_display5   : out std_logic_vector (6 downto 0);
+        db_tatus      : out std_logic_vector(5 downto 0);
+        db_led8       : out std_logic;
+        db_led9       : out std_logic;
+		fim_de_jogo   : out std_logic
     );
 end entity susto_no_tatu;
 
@@ -42,23 +44,23 @@ architecture rtl of susto_no_tatu is
 
     component circuito_tapa_no_tatu is
         port (
-        clock       : in std_logic;
-        reset       : in std_logic;
-        iniciar     : in std_logic;
-        botoes      : in std_logic_vector(5 downto 0);
-        dificuldade : in std_logic;
-        leds        : out std_logic_vector(5 downto 0);
-        fimDeJogo   : out std_logic;
-        vidas       : out std_logic_vector (1 downto 0);
-        display1    : out std_logic_vector (6 downto 0);
-        display2    : out std_logic_vector (6 downto 0);
-        serial      : out std_logic;
-        -- Sinais de depuração
-        db_estado       : out std_logic_vector (6 downto 0);
-        db_jogadaFeita  : out std_logic;
-        db_jogadaValida : out std_logic;
-        db_timeout      : out std_logic;
-        db_ini          : out std_logic
+            clock           : in  std_logic;
+            reset           : in  std_logic;
+            iniciar         : in  std_logic;
+            botoes          : in  std_logic_vector(5 downto 0);
+            dificuldade     : in  std_logic;
+            leds            : out std_logic_vector(5 downto 0);
+            fimDeJogo       : out std_logic;
+            vidas           : out std_logic_vector (1 downto 0);
+            display1        : out std_logic_vector (6 downto 0);
+            display2        : out std_logic_vector (6 downto 0);
+            serial          : out std_logic;
+            -- Sinais de depuração
+            db_estado       : out std_logic_vector (4 downto 0);
+            db_jogadaFeita  : out std_logic;
+            db_jogadaValida : out std_logic;
+            db_timeout      : out std_logic;
+            db_ini          : out std_logic
         );
     end component;
 
@@ -75,22 +77,22 @@ architecture rtl of susto_no_tatu is
 
     component medidor_jogada is
         port (
-            clock     : in  std_logic;
-            reset     : in  std_logic;
-            inicia    : in  std_logic;
-            fim_de_jogo : in  std_logic;
-            echo1     : in  std_logic;
-            echo2     : in  std_logic;
-            trigger1  : out std_logic;
-            trigger2  : out std_logic;
-            tatus     : out std_logic_vector(2 downto 0);
-            db_estado_hcsr04_1 : out std_logic_vector(3 downto 0);
-            db_estado_hcsr04_2 : out std_logic_vector(3 downto 0);
+            clock                     : in  std_logic;
+            reset                     : in  std_logic;
+            inicia                    : in  std_logic;
+            fim_de_jogo               : in  std_logic;
+            echo1                     : in  std_logic;
+            echo2                     : in  std_logic;
+            trigger1                  : out std_logic;
+            trigger2                  : out std_logic;
+            tatus                     : out std_logic_vector(2 downto 0);
+            db_estado_hcsr04_1        : out std_logic_vector(3 downto 0);
+            db_estado_hcsr04_2        : out std_logic_vector(3 downto 0);
             db_pronto_estado_hcsr04_1 : out std_logic;
             db_pronto_estado_hcsr04_2 : out std_logic;
-            db_medida1 : out std_logic_vector(11 downto 0);
-            db_medida2 : out std_logic_vector(11 downto 0);
-            db_estado : out std_logic_vector(3 downto 0) -- estado da UC
+            db_medida1                : out std_logic_vector(11 downto 0);
+            db_medida2                : out std_logic_vector(11 downto 0);
+            db_estado                 : out std_logic_vector(3 downto 0) -- estado da UC
         );
     end component medidor_jogada;
 
@@ -99,16 +101,16 @@ architecture rtl of susto_no_tatu is
             constant BITS: integer := 4
         );
         port ( 
-            D0 :     in  std_logic_vector (BITS-1 downto 0);
-            D1 :     in  std_logic_vector (BITS-1 downto 0);
-            D2 :     in  std_logic_vector (BITS-1 downto 0);
-            D3 :     in  std_logic_vector (BITS-1 downto 0);
-            D4 :     in  std_logic_vector (BITS-1 downto 0);
-            D5 :     in  std_logic_vector (BITS-1 downto 0);
-            D6 :     in  std_logic_vector (BITS-1 downto 0);
-            D7 :     in  std_logic_vector (BITS-1 downto 0);
-            SEL:     in  std_logic_vector (2 downto 0);
-            MUX_OUT: out std_logic_vector (BITS-1 downto 0)
+            D0      : in  std_logic_vector (BITS-1 downto 0);
+            D1      : in  std_logic_vector (BITS-1 downto 0);
+            D2      : in  std_logic_vector (BITS-1 downto 0);
+            D3      : in  std_logic_vector (BITS-1 downto 0);
+            D4      : in  std_logic_vector (BITS-1 downto 0);
+            D5      : in  std_logic_vector (BITS-1 downto 0);
+            D6      : in  std_logic_vector (BITS-1 downto 0);
+            D7      : in  std_logic_vector (BITS-1 downto 0);
+            SEL     : in  std_logic_vector (2 downto 0);
+            MUX_OUT : out std_logic_vector (BITS-1 downto 0)
         );
     end component;
 
@@ -121,45 +123,50 @@ architecture rtl of susto_no_tatu is
 
     component mux_8x1 is
         port ( 
-            D0 :     in  std_logic;
-            D1 :     in  std_logic;
-            D2 :     in  std_logic;
-            D3 :     in  std_logic;
-            D4 :     in  std_logic;
-            D5 :     in  std_logic;
-            D6 :     in  std_logic;
-            D7 :     in  std_logic;
-            SEL:     in  std_logic_vector (2 downto 0);
-            MUX_OUT: out std_logic
+            D0      : in  std_logic;
+            D1      : in  std_logic;
+            D2      : in  std_logic;
+            D3      : in  std_logic;
+            D4      : in  std_logic;
+            D5      : in  std_logic;
+            D6      : in  std_logic;
+            D7      : in  std_logic;
+            SEL     : in  std_logic_vector (2 downto 0);
+            MUX_OUT : out std_logic
         );
     end component;
 
-    signal s_fim_de_jogo: std_logic;
-    signal s_tatus: std_logic_vector(5 downto 0);
-    signal s_tatus_selecionados, s_botoes_selecionados: std_logic_vector(5 downto 0);
-    signal s_db_medida01, s_db_medida02, s_db_medida11, s_db_medida12: std_logic_vector(11 downto 0);
-    signal s_db_mux0, s_db_mux1, s_db_mux2, s_db_mux3, s_db_mux4, s_db_mux5: std_logic_vector(3 downto 0);
-    signal s_db_estado_hcsr04_01, s_db_estado_hcsr04_02, s_db_estado_hcsr04_11, s_db_estado_hcsr04_12: std_logic_vector(3 downto 0);
-    signal s_db_estado_medidor_jogada_0, s_db_estado_medidor_jogada_1: std_logic_vector(3 downto 0);
-    signal s_db_pronto_estado_hcsr04_01, s_db_pronto_estado_hcsr04_02, s_db_pronto_estado_hcsr04_11, s_db_pronto_estado_hcsr04_12: std_logic;
+    signal s_fim_de_jogo                                              : std_logic;
+    signal s_tatus                                                    : std_logic_vector(5 downto 0);
+    signal s_tatus_selecionados, s_botoes_selecionados                : std_logic_vector(5 downto 0);
+    signal s_db_medida01, s_db_medida02, s_db_medida11, s_db_medida12 : std_logic_vector(11 downto 0);
+    signal s_db_mux0, s_db_mux1, s_db_mux2,
+           s_db_mux3, s_db_mux4, s_db_mux5                            : std_logic_vector(3 downto 0);
+    signal s_db_estado_hcsr04_01, s_db_estado_hcsr04_02,
+           s_db_estado_hcsr04_11, s_db_estado_hcsr04_12               : std_logic_vector(3 downto 0);
+    signal s_db_estado_medidor_jogada_0, s_db_estado_medidor_jogada_1 : std_logic_vector(3 downto 0);
+    signal s_db_pronto_estado_hcsr04_01, s_db_pronto_estado_hcsr04_02,
+           s_db_pronto_estado_hcsr04_11, s_db_pronto_estado_hcsr04_12 : std_logic;
+    signal s_db_estado_tapa_no_tatu                                   : std_logic_vector(4 downto 0);
+    signal s_vidas                                                    : std_logic_vector(1 downto 0);
 
 begin
 
     TAPA_NO_TATU: circuito_tapa_no_tatu
         port map (
-        clock       => clock,
-        reset       => reset,
-        iniciar     => iniciar,
-        botoes      => s_botoes_selecionados,
-        dificuldade => dificuldade,
-        leds        => s_tatus,
-        fimDeJogo   => s_fim_de_jogo,
-        vidas       => vidas,
-        display1    => pontuacao1,
-        display2    => pontuacao2,
-        serial      => serial,
+        clock           => clock,
+        reset           => reset,
+        iniciar         => iniciar,
+        botoes          => s_botoes_selecionados,
+        dificuldade     => dificuldade,
+        leds            => s_tatus,
+        fimDeJogo       => s_fim_de_jogo,
+        vidas           => s_vidas,
+        display1        => pontuacao1,
+        display2        => pontuacao2,
+        serial          => serial,
         -- Sinais de depuração
-        db_estado       => open,
+        db_estado       => s_db_estado_tapa_no_tatu,
         db_jogadaFeita  => open,
         db_jogadaValida => open,
         db_timeout      => open,
@@ -189,42 +196,42 @@ begin
 
     MEDIDOR_JOGADA_0: medidor_jogada
         port map (
-            clock     => clock,
-            reset     => reset,
-            inicia    => iniciar,
-            fim_de_jogo => s_fim_de_jogo,
-            echo1     => echo_01,
-            echo2     => echo_02,
-            trigger1  => trigger_01,
-            trigger2  => trigger_02,
-            tatus     => s_tatus_selecionados(2 downto 0),
-            db_estado_hcsr04_1 => s_db_estado_hcsr04_01,
-            db_estado_hcsr04_2 => s_db_estado_hcsr04_02,
+            clock                     => clock,
+            reset                     => reset,
+            inicia                    => iniciar,
+            fim_de_jogo               => s_fim_de_jogo,
+            echo1                     => echo_01,
+            echo2                     => echo_02,
+            trigger1                  => trigger_01,
+            trigger2                  => trigger_02,
+            tatus                     => s_tatus_selecionados(2 downto 0),
+            db_estado_hcsr04_1        => s_db_estado_hcsr04_01,
+            db_estado_hcsr04_2        => s_db_estado_hcsr04_02,
             db_pronto_estado_hcsr04_1 => s_db_pronto_estado_hcsr04_01,
             db_pronto_estado_hcsr04_2 => s_db_pronto_estado_hcsr04_02,
-            db_medida1 => s_db_medida01,
-            db_medida2 => s_db_medida02,
-            db_estado => s_db_estado_medidor_jogada_0 -- estado da UC
+            db_medida1                => s_db_medida01,
+            db_medida2                => s_db_medida02,
+            db_estado                 => s_db_estado_medidor_jogada_0 -- estado da UC
         );
 
     MEDIDOR_JOGADA_1: medidor_jogada
         port map (
-            clock     => clock,
-            reset     => reset,
-            inicia    => iniciar,
-            fim_de_jogo => s_fim_de_jogo,
-            echo1     => echo_11,
-            echo2     => echo_12,
-            trigger1  => trigger_11,
-            trigger2  => trigger_12,
-            tatus     => s_tatus_selecionados(5 downto 3),
-            db_estado_hcsr04_1 => s_db_estado_hcsr04_11,
-            db_estado_hcsr04_2 => s_db_estado_hcsr04_12,
+            clock                     => clock,
+            reset                     => reset,
+            inicia                    => iniciar,
+            fim_de_jogo               => s_fim_de_jogo,
+            echo1                     => echo_11,
+            echo2                     => echo_12,
+            trigger1                  => trigger_11,
+            trigger2                  => trigger_12,
+            tatus                     => s_tatus_selecionados(5 downto 3),
+            db_estado_hcsr04_1        => s_db_estado_hcsr04_11,
+            db_estado_hcsr04_2        => s_db_estado_hcsr04_12,
             db_pronto_estado_hcsr04_1 => s_db_pronto_estado_hcsr04_11,
             db_pronto_estado_hcsr04_2 => s_db_pronto_estado_hcsr04_12,
-            db_medida1 => s_db_medida11,
-            db_medida2 => s_db_medida12,
-            db_estado => s_db_estado_medidor_jogada_1 -- estado da UC
+            db_medida1                => s_db_medida11,
+            db_medida2                => s_db_medida12,
+            db_estado                 => s_db_estado_medidor_jogada_1 -- estado da UC
         );
 
     MUX0: mux_8x1_n
@@ -236,7 +243,7 @@ begin
             D1      => s_db_estado_hcsr04_01,
             D2      => s_db_medida11(3 downto 0),
             D3      => s_db_estado_hcsr04_11,
-            D4      => "0000",
+            D4      => s_db_estado_tapa_no_tatu(3 downto 0),
             D5      => "0000",
             D6      => "0000",
             D7      => "0000",
@@ -259,7 +266,7 @@ begin
             D1      => s_db_estado_hcsr04_02,
             D2      => s_db_medida11(7 downto 4),
             D3      => s_db_estado_hcsr04_12,
-            D4      => "0000",
+            D4      => "000" & s_db_estado_tapa_no_tatu(4),
             D5      => "0000",
             D6      => "0000",
             D7      => "0000",
@@ -351,7 +358,7 @@ begin
             D1      => s_db_estado_medidor_jogada_0,
             D2      => s_db_medida12(11 downto 8),
             D3      => s_db_estado_medidor_jogada_1,
-            D4      => "0000",
+            D4      => "00" & s_vidas,
             D5      => "0000",
             D6      => "0000",
             D7      => "0000",
@@ -393,6 +400,9 @@ begin
             MUX_OUT => db_led9
         );
 
-    s_botoes_selecionados <= botoes or s_tatus_selecionados;
+    s_botoes_selecionados <= s_tatus_selecionados; -- or botoes;
+	fim_de_jogo           <= s_fim_de_jogo;
+    db_tatus              <= s_tatus;
+    vidas                 <= s_vidas;
 
 end architecture rtl;

@@ -14,9 +14,9 @@ end entity;
 architecture arch OF LSFR6_tb is
   component LFSR6 is
     port (
-        clk   : in  std_logic; 
-        rst   : in  std_logic;
-        output: out std_logic_vector (5 downto 0)
+        clk    : in  std_logic; 
+        rst    : in  std_logic;
+        output : out std_logic_vector (5 downto 0)
     );
   end component;
 

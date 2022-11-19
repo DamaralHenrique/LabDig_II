@@ -35,8 +35,8 @@ end entity gerador_pulso;
 architecture fsm_arch of gerador_pulso is
 
    type tipo_estado is (parado, contagem, final);
-   signal reg_estado, prox_estado: tipo_estado;
-   signal reg_cont, prox_cont: integer range 0 to largura-1;
+   signal reg_estado, prox_estado : tipo_estado;
+   signal reg_cont, prox_cont     : integer range 0 to largura-1;
 
 begin
 

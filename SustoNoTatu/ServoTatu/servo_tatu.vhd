@@ -20,7 +20,7 @@ architecture rtl of servo_tatu is
             reset      : in  std_logic;
             posicao    : in  std_logic;  
             pwm        : out std_logic
-          );
+        );
     end component;
 
 begin
@@ -31,7 +31,7 @@ begin
             reset   => reset,
             posicao => tatus(0),  
             pwm     => pwm0
-          );
+        );
 
     servo_1: controle_servo
         port map (
@@ -39,7 +39,7 @@ begin
             reset   => reset,
             posicao => tatus(1),  
             pwm     => pwm1
-          );
+        );
 
     servo_2: controle_servo
         port map (
@@ -47,6 +47,6 @@ begin
             reset   => reset,
             posicao => tatus(2),  
             pwm     => pwm2
-          );
+        );
 
 end architecture rtl;

@@ -3,17 +3,17 @@ use IEEE.std_logic_1164.all;
 
 entity interface_hcsr04_fd is
     port (
-        clock      : in  std_logic;
-        zera       : in  std_logic;
-        pulso      : in  std_logic; -- echo
-        gera       : in  std_logic;
-        registra   : in  std_logic;
-        conta_timeout : in std_logic;
-        zera_timeout : in std_logic;
-        distancia  : out std_logic_vector(11 downto 0);
-        fim_medida : out std_logic;
-        fim_timeout : out std_logic;
-        trigger    : out std_logic
+        clock         : in  std_logic;
+        zera          : in  std_logic;
+        pulso         : in  std_logic; -- echo
+        gera          : in  std_logic;
+        registra      : in  std_logic;
+        conta_timeout : in  std_logic;
+        zera_timeout  : in  std_logic;
+        distancia     : out std_logic_vector(11 downto 0);
+        fim_medida    : out std_logic;
+        fim_timeout   : out std_logic;
+        trigger       : out std_logic
     );
 end entity;
 
@@ -25,14 +25,14 @@ architecture rtl of interface_hcsr04_fd is
             constant N : integer
         );
         port (
-            clock   : in  std_logic;
-            reset   : in  std_logic;
-            pulso   : in  std_logic;
-            digito0 : out std_logic_vector(3 downto 0);
-            digito1 : out std_logic_vector(3 downto 0);
-            digito2 : out std_logic_vector(3 downto 0);
-            fim     : out std_logic;
-            pronto  : out std_logic;
+            clock     : in  std_logic;
+            reset     : in  std_logic;
+            pulso     : in  std_logic;
+            digito0   : out std_logic_vector(3 downto 0);
+            digito1   : out std_logic_vector(3 downto 0);
+            digito2   : out std_logic_vector(3 downto 0);
+            fim       : out std_logic;
+            pronto    : out std_logic;
             db_estado : out std_logic_vector(3 downto 0) 
         );
     end component contador_cm;
@@ -79,7 +79,7 @@ architecture rtl of interface_hcsr04_fd is
     end component;
 
 
-    signal s_D: std_logic_vector(11 downto 0);
+    signal s_D                             : std_logic_vector(11 downto 0);
     signal s_digito0, s_digito1, s_digito2 : std_logic_vector(3 downto 0);
 
 begin
@@ -90,14 +90,14 @@ begin
             N => 12
         )
         port map(
-            clock   => clock,
-            reset   => zera,
-            pulso   => pulso,
-            digito0 => s_digito0,
-            digito1 => s_digito1,
-            digito2 => s_digito2,
-            fim     => open, -- usado pra testes no contador_cm
-            pronto  => fim_medida,
+            clock     => clock,
+            reset     => zera,
+            pulso     => pulso,
+            digito0   => s_digito0,
+            digito1   => s_digito1,
+            digito2   => s_digito2,
+            fim       => open, -- usado pra testes no contador_cm
+            pronto    => fim_medida,
             db_estado => open -- usado para testes no contador_cm
         );
 

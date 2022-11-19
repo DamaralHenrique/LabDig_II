@@ -23,60 +23,59 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity controle_servo is
-  port (
-      clock      : in  std_logic;
-      reset      : in  std_logic;
-      posicao    : in  std_logic;  
-      pwm        : out std_logic
+    port (
+        clock   : in  std_logic;
+        reset   : in  std_logic;
+        posicao : in  std_logic;  
+        pwm     : out std_logic
     );
 end controle_servo;
 
 architecture rtl of controle_servo is
 
-  constant CONTAGEM_MAXIMA : integer := 1000000;  -- valor para frequencia da saida de 50Hz 
-                                                  -- ou periodo de 20ms
-  constant ANGULO_MAXIMO : integer := 180;
-  signal contagem     : integer range 0 to CONTAGEM_MAXIMA-1;
-  signal posicao_pwm  : integer range 0 to CONTAGEM_MAXIMA-1;
-  signal s_posicao    : integer range 0 to CONTAGEM_MAXIMA-1;
-  signal s_angle      : integer range 0 to ANGULO_MAXIMO-1;
-  signal s_pwm        : std_logic;
+    constant CONTAGEM_MAXIMA : integer := 1000000;  -- valor para frequencia da saida de 50Hz ou periodo de 20ms
+    constant ANGULO_MAXIMO   : integer := 180;
+    
+    signal contagem    : integer range 0 to CONTAGEM_MAXIMA-1;
+    signal posicao_pwm : integer range 0 to CONTAGEM_MAXIMA-1;
+    signal s_posicao   : integer range 0 to CONTAGEM_MAXIMA-1;
+    signal s_angle     : integer range 0 to ANGULO_MAXIMO-1;
+    signal s_pwm       : std_logic;
 
 begin
 
-  process(clock, reset, s_posicao)
-  begin
-    -- inicia contagem e largura
-    if(reset='1') then
-      contagem    <= 0;
-      s_pwm    <= '0';
-      posicao_pwm <= s_posicao;
-    elsif(rising_edge(clock)) then
-        -- saida
-        if(contagem < posicao_pwm) then
-          s_pwm  <= '1';
-        else
-          s_pwm  <= '0';
+    process(clock, reset, s_posicao)
+    begin
+        -- inicia contagem e largura
+        if(reset='1') then
+            contagem    <= 0;
+            s_pwm       <= '0';
+            posicao_pwm <= s_posicao;
+        elsif(rising_edge(clock)) then
+            -- saida
+            if(contagem < posicao_pwm) then
+                s_pwm  <= '1';
+            else
+                s_pwm  <= '0';
+            end if;
+            -- atualiza contagem e largura
+            if(contagem=CONTAGEM_MAXIMA-1) then
+                contagem    <= 0;
+                posicao_pwm <= s_posicao;
+            else
+                contagem   <= contagem + 1;
+            end if;
         end if;
-        -- atualiza contagem e largura
-        if(contagem=CONTAGEM_MAXIMA-1) then
-          contagem   <= 0;
-          posicao_pwm <= s_posicao;
-        else
-          contagem   <= contagem + 1;
-        end if;
-    end if;
-  end process;
+    end process;
 
-  process(posicao)
-  begin
-    case posicao is
-      when '0'  => s_posicao <=   50000;  -- pulso de 1 ms (  0°)
-      when '1'  => s_posicao <=  100000;  -- pulso de 2 ms (180°)
-      when others => s_posicao <=     0;  -- nulo (saida 0)
-    end case;
-  end process;
+    process(posicao)
+    begin
+        case posicao is
+            when '0'    => s_posicao <=  50000;  -- pulso de 1 ms (  0°)
+            when '1'    => s_posicao <= 100000;  -- pulso de 2 ms (180°)
+            when others => s_posicao <=      0;  -- nulo (saida 0)
+        end case;
+    end process;
 
-  pwm   <= s_pwm;
-  
+  pwm <= s_pwm;
 end rtl;

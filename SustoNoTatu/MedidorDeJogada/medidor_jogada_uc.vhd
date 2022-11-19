@@ -44,7 +44,7 @@ end medidor_jogada_uc;
 architecture fsm_arch of medidor_jogada_uc is
     type tipo_estado is (inicial, medida1, espera_medida1, registra1, espera1, reseta1,
                                   medida2, espera_medida2, registra2, espera2, reseta2);
-    signal Eatual, Eprox: tipo_estado;
+    signal Eatual, Eprox : tipo_estado;
 begin
 
     -- estado
@@ -60,57 +60,67 @@ begin
     -- logica de proximo estado
     process (inicia, pronto_hcsr04_1, pronto_hcsr04_2, fim_espera, fim_de_jogo, fim_timeout, Eatual) 
     begin
-      case Eatual is
-        when inicial =>         if inicia='1' then Eprox <= medida1;
-                                else               Eprox <= inicial;
-                                end if;
-        when medida1 =>         Eprox <= espera_medida1;
-        when espera_medida1 =>  if pronto_hcsr04_1='1'   then Eprox <= registra1;
-								elsif fim_timeout='1'    then Eprox <= reseta1;
-                                else                           Eprox <= espera_medida1;
-                                end if;
-		  when reseta1 =>       Eprox <= espera1;
-        when registra1 =>       Eprox <= espera1;
-        when espera1 =>         if fim_espera='0' and fim_de_jogo='0' then    Eprox <= espera1;
-                                elsif fim_espera='1' and fim_de_jogo='0' then Eprox <= medida2;
-                                else                                          Eprox <= inicial;
-                                end if;
-        when medida2 =>         Eprox <= espera_medida2;
-        when espera_medida2 =>  if pronto_hcsr04_2='1'   then Eprox <= registra2;
-								elsif fim_timeout='1'    then Eprox <= reseta2;
-                                else                          Eprox <= espera_medida2;
-                                end if;
-		  when reseta2 =>       Eprox <= espera2;
-        when registra2 =>       Eprox <= espera2;
-        when espera2 =>         if fim_espera='0' and fim_de_jogo='0' then    Eprox <= espera2;
-                                elsif fim_espera='1' and fim_de_jogo='0' then Eprox <= medida1;
-                                else                                          Eprox <= inicial;
-                                end if;
-        when others =>          Eprox <= inicial;
-      end case;
+        case Eatual is
+            when inicial        => if inicia='1'                            then Eprox <= medida1;
+                                   else                                          Eprox <= inicial;
+                                   end if;
+            when medida1        => Eprox <= espera_medida1;
+            when espera_medida1 => if    pronto_hcsr04_1='1'                then Eprox <= registra1;
+                                   elsif fim_timeout='1'                    then Eprox <= reseta1;
+                                   else                                          Eprox <= espera_medida1;
+                                   end if;
+            when reseta1        => Eprox <= espera1;
+            when registra1      => Eprox <= espera1;
+            when espera1        => if    fim_espera='0' and fim_de_jogo='0' then Eprox <= espera1;
+                                   elsif fim_espera='1' and fim_de_jogo='0' then Eprox <= medida2;
+                                   else                                          Eprox <= inicial;
+                                   end if;
+            when medida2        => Eprox <= espera_medida2;
+            when espera_medida2 => if    pronto_hcsr04_2='1'                then Eprox <= registra2;
+                                   elsif fim_timeout='1'                    then Eprox <= reseta2;
+                                   else                                          Eprox <= espera_medida2;
+                                   end if;
+            when reseta2        => Eprox <= espera2;
+            when registra2      => Eprox <= espera2;
+            when espera2        => if    fim_espera='0' and fim_de_jogo='0' then Eprox <= espera2;
+                                   elsif fim_espera='1' and fim_de_jogo='0' then Eprox <= medida1;
+                                   else                                          Eprox <= inicial;
+                                   end if;
+            when others         => Eprox <= inicial;
+        end case;
     end process;
 
     -- saidas de controle
     with Eatual select
-        medir_1 <= '1' when medida1, '0' when others;
+        medir_1              <= '1' when medida1,
+                                '0' when others;
     with Eatual select
-        medir_2 <= '1' when medida2, '0' when others;
+        medir_2              <= '1' when medida2,
+                                '0' when others;
     with Eatual select
-        zera_espera <= '1' when medida1 | medida2, '0' when others;
+        zera_espera          <= '1' when medida1 | medida2,
+                                '0' when others;
     with Eatual select
-        conta_espera <= '1' when espera1 | espera2, '0' when others;
+        conta_espera         <= '1' when espera1 | espera2,
+                                '0' when others;
 	with Eatual select
-        zera_timeout <= '1' when medida1 | medida2, '0' when others;
+        zera_timeout         <= '1' when medida1 | medida2,
+                                '0' when others;
     with Eatual select
-        conta_timeout <= '1' when espera_medida1 | espera_medida2, '0' when others;
+        conta_timeout        <= '1' when espera_medida1 | espera_medida2,
+                                '0' when others;
     with Eatual select
-        registra_distancia_1 <= '1' when registra1, '0' when others;
+        registra_distancia_1 <= '1' when registra1,
+                                '0' when others;
     with Eatual select
-        registra_distancia_2 <= '1' when registra2, '0' when others;
+        registra_distancia_2 <= '1' when registra2,
+                                '0' when others;
 	with Eatual select
-        reset_1 <= '1' when reseta1, '0' when others;
+        reset_1              <= '1' when reseta1,
+                                '0' when others;
 	with Eatual select
-        reset_2 <= '1' when reseta2, '0' when others;
+        reset_2              <= '1' when reseta2,
+                                '0' when others;
 
     with Eatual select
         db_estado <= "0001" when inicial, 

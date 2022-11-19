@@ -7,14 +7,14 @@ entity contador_cm is
         constant N : integer
     );
     port (
-        clock   : in  std_logic;
-        reset   : in  std_logic;
-        pulso   : in  std_logic;
-        digito0 : out std_logic_vector(3 downto 0);
-        digito1 : out std_logic_vector(3 downto 0);
-        digito2 : out std_logic_vector(3 downto 0);
-        fim     : out std_logic;
-        pronto  : out std_logic;
+        clock     : in  std_logic;
+        reset     : in  std_logic;
+        pulso     : in  std_logic;
+        digito0   : out std_logic_vector(3 downto 0);
+        digito1   : out std_logic_vector(3 downto 0);
+        digito2   : out std_logic_vector(3 downto 0);
+        fim       : out std_logic;
+        pronto    : out std_logic;
         db_estado : out std_logic_vector(3 downto 0) -- estado da UC
     );
 end entity;
@@ -39,17 +39,17 @@ architecture arch of contador_cm is
 
     component contador_cm_fd is
         port (
-            clock     : in  std_logic;
-            conta_bcd : in  std_logic;
-            zera_bcd  : in  std_logic;
-            conta_tick: in  std_logic;
-            zera_tick : in  std_logic;
-            digito0   : out std_logic_vector(3 downto 0);
-            digito1   : out std_logic_vector(3 downto 0);
-            digito2   : out std_logic_vector(3 downto 0);
-            fim       : out std_logic;
-            arredonda : out std_logic;
-            tick      : out std_logic
+            clock      : in  std_logic;
+            conta_bcd  : in  std_logic;
+            zera_bcd   : in  std_logic;
+            conta_tick : in  std_logic;
+            zera_tick  : in  std_logic;
+            digito0    : out std_logic_vector(3 downto 0);
+            digito1    : out std_logic_vector(3 downto 0);
+            digito2    : out std_logic_vector(3 downto 0);
+            fim        : out std_logic;
+            arredonda  : out std_logic;
+            tick       : out std_logic
         );
     end component;
 

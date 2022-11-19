@@ -37,47 +37,47 @@ begin
     -- logica de proximo estado
     process (pulso, tick, arredonda, Eatual, fim_cont_bcd) 
     begin
-      case Eatual is
-        when inicial =>             if pulso='1' then Eprox <= conta_tick;
-                                    else              Eprox <= inicial;
-                                    end if;
-        when conta_tick =>          if pulso='1' and tick='1' then Eprox <= verifica_maximo;
-                                    elsif pulso='0' then           Eprox <= verifica_arredonda;
-                                    else                           Eprox <= conta_tick;
-                                    end if;
-        when conta_bcd =>           if pulso='0' then Eprox <= final;
-                                    else              Eprox <= conta_tick;
-                                    end if;
-        when verifica_arredonda =>  if arredonda='0' then Eprox <= final;
-                                    else                  Eprox <= verifica_maximo;
-                                    end if;
-        when verifica_maximo =>     if fim_cont_bcd='0' then Eprox <= conta_bcd;
-                                    else                      Eprox <= valor_maximo;
-                                    end if;
-        when valor_maximo =>        if pulso='0' then Eprox <= final;
-                                    else              Eprox <= valor_maximo;
-                                    end if;
-        when final =>               Eprox <= inicial;
-        when others =>              Eprox <= inicial;
-      end case;
+        case Eatual is
+            when inicial            => if pulso='1'                 then Eprox <= conta_tick;
+                                       else                              Eprox <= inicial;
+                                       end if;
+            when conta_tick         => if    pulso='1' and tick='1' then Eprox <= verifica_maximo;
+                                       elsif pulso='0'              then Eprox <= verifica_arredonda;
+                                       else                              Eprox <= conta_tick;
+                                       end if;
+            when conta_bcd          => if pulso='0'                 then Eprox <= final;
+                                       else                              Eprox <= conta_tick;
+                                       end if;
+            when verifica_arredonda => if arredonda='0'             then Eprox <= final;
+                                       else                              Eprox <= verifica_maximo;
+                                       end if;
+            when verifica_maximo    => if fim_cont_bcd='0'          then Eprox <= conta_bcd;
+                                       else                              Eprox <= valor_maximo;
+                                       end if;
+            when valor_maximo       => if pulso='0'                 then Eprox <= final;
+                                       else                              Eprox <= valor_maximo;
+                                       end if;
+            when final              => Eprox <= inicial;
+            when others             => Eprox <= inicial;
+        end case;
     end process;
 
     -- saidas de controle
     with Eatual select 
-        s_zera_tick <= '1' when inicial | conta_bcd, 
-                       '0' when others;
+        s_zera_tick  <= '1' when inicial | conta_bcd, 
+                        '0' when others;
     with Eatual select
         s_conta_tick <= '1' when conta_tick, 
                         '0' when others;
     with Eatual select
-        s_zera_bcd <= '1' when inicial, 
-                      '0' when others;
+        s_zera_bcd   <= '1' when inicial, 
+                        '0' when others;
     with Eatual select
-        s_conta_bcd <= '1' when conta_bcd, 
-                       '0' when others;
+        s_conta_bcd  <= '1' when conta_bcd, 
+                        '0' when others;
     with Eatual select
-        pronto <= '1' when final, 
-                  '0' when others;
+        pronto       <= '1' when final, 
+                        '0' when others;
 
   with Eatual select
       db_estado <= "0000" when inicial, 

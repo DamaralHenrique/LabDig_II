@@ -29,14 +29,14 @@ architecture tb of contador_cm_tb is
         constant N : integer
     );
     port (
-        clock   : in  std_logic;
-        reset   : in  std_logic;
-        pulso   : in  std_logic;
-        digito0 : out std_logic_vector(3 downto 0);
-        digito1 : out std_logic_vector(3 downto 0);
-        digito2 : out std_logic_vector(3 downto 0);
-        fim     : out std_logic;
-        pronto  : out std_logic;
+        clock     : in  std_logic;
+        reset     : in  std_logic;
+        pulso     : in  std_logic;
+        digito0   : out std_logic_vector(3 downto 0);
+        digito1   : out std_logic_vector(3 downto 0);
+        digito2   : out std_logic_vector(3 downto 0);
+        fim       : out std_logic;
+        pronto    : out std_logic;
         db_estado : out std_logic_vector(3 downto 0) -- estado da UC
     );
   end component;

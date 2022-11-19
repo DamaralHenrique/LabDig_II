@@ -26,7 +26,7 @@ entity circuito_tapa_no_tatu is
     display2    : out std_logic_vector (6 downto 0);
     serial      : out std_logic;
     -- Sinais de depuração
-    db_estado       : out std_logic_vector (6 downto 0);
+    db_estado       : out std_logic_vector (4 downto 0);
     db_jogadaFeita  : out std_logic;
     db_jogadaValida : out std_logic;
     db_timeout      : out std_logic;
@@ -35,28 +35,30 @@ entity circuito_tapa_no_tatu is
 end entity;
 
 architecture estrutural of circuito_tapa_no_tatu is
-    signal s_registraM, s_limpaM, s_registraR, s_limpaR: std_logic;
-    signal s_jogada_valida, s_tem_tatu, s_en_FLSR: std_logic;
-    signal s_conta_jog_TMR, s_timeout_TMR, s_zeraJogTMR, s_zeraVida, s_apagaTatu: std_logic;
-    signal s_limite_TMR, s_contagem: integer;
-    signal s_contaDelTMR, s_timeout_Del_TMR, s_zeraDelTMR: std_logic;
-    signal s_fim_vidas, s_not_fim_vidas: std_logic;
-    signal s_conta_vida : std_logic;
-    signal s_vidas: std_logic_vector(1 downto 0);
-    signal s_conta_ponto: std_logic;
-    signal s_pontos: std_logic_vector(natural(ceil(log2(real(100)))) - 1 downto 0);
-    signal s_estado: std_logic_vector(4 downto 0);
-    signal s_fimJogo, s_tem_jogada, s_escolheuDificuldade: std_logic;
-    signal s_loadSub, s_contaSub: std_logic;
-    signal s_hexa1, s_hexa2: std_logic_vector(3 downto 0);
-    signal s_emJogo: std_logic;
-    signal s_tatus : std_logic_vector(5 downto 0);
-    signal s_enReg, s_end_ponts : std_logic;
-    signal s_dado_tatus, s_dado_tatus2 : std_logic_vector(6 downto 0);
-    signal s_whichTX : std_logic; -- Tatus (1), Pontos (0)
-    signal s_prontoTX, s_enTX, s_serial : std_logic;
-    signal s_dado_tx : std_logic_vector(7 downto 0);
-	 signal s_contaSprTMR, s_zeraSprTMR, s_fimSprTMR, s_limpa_pontos : std_logic;
+    signal s_registraM, s_limpaM, s_registraR, s_limpaR   : std_logic;
+    signal s_jogada_valida, s_tem_tatu, s_en_FLSR         : std_logic;
+    signal s_conta_jog_TMR, s_timeout_TMR,
+           s_zeraJogTMR, s_zeraVida, s_apagaTatu          : std_logic;
+    signal s_limite_TMR, s_contagem                       : integer;
+    signal s_contaDelTMR, s_timeout_Del_TMR, s_zeraDelTMR : std_logic;
+    signal s_fim_vidas, s_not_fim_vidas                   : std_logic;
+    signal s_conta_vida                                   : std_logic;
+    signal s_vidas                                        : std_logic_vector(1 downto 0);
+    signal s_conta_ponto                                  : std_logic;
+    signal s_pontos                                       : std_logic_vector(natural(ceil(log2(real(100)))) - 1 downto 0);
+    signal s_estado                                       : std_logic_vector(4 downto 0);
+    signal s_fimJogo, s_tem_jogada, s_escolheuDificuldade : std_logic;
+    signal s_loadSub, s_contaSub                          : std_logic;
+    signal s_hexa1, s_hexa2                               : std_logic_vector(3 downto 0);
+    signal s_emJogo                                       : std_logic;
+    signal s_tatus                                        : std_logic_vector(5 downto 0);
+    signal s_enReg, s_end_ponts                           : std_logic;
+    signal s_dado_tatus, s_dado_tatus2                    : std_logic_vector(6 downto 0);
+    signal s_whichTX                                      : std_logic; -- Tatus (1), Pontos (0)
+    signal s_prontoTX, s_enTX, s_serial                   : std_logic;
+    signal s_dado_tx                                      : std_logic_vector(7 downto 0);
+	signal s_contaSprTMR, s_zeraSprTMR,
+           s_fimSprTMR, s_limpa_pontos                    : std_logic;
 
     -- Fluxo de dados
     component fluxo_dados is
@@ -111,44 +113,44 @@ architecture estrutural of circuito_tapa_no_tatu is
     -- Unidade de controle
     component unidade_controle is 
     port ( 
-        clock                  : in  std_logic; 
-        reset                  : in  std_logic; 
-        iniciar                : in  std_logic;
-        EscolheuDificuldade    : in  std_logic;
-        timeout                : in  std_logic;
-        fezJogada              : in  std_logic;
-        temVida                : in  std_logic;
-		zeraVida               : out std_logic;
-        jogadaValida           : in  std_logic;
-        temTatu                : in  std_logic;
-        timeOutDelTMR          : in  std_logic;
-        end_points             : in  std_logic;
-        prontoTX               : in  std_logic;
-        fimJogo                : out std_logic; 
-        registraR              : out std_logic; 
-        limpaR                 : out std_logic; 
-        registraM              : out std_logic; 
-        limpaM                 : out std_logic; 
-        zeraJogTMR             : out std_logic; 
-        contaJogTMR            : out std_logic;
-        zeraDelTMR             : out std_logic;
-        contaDelTMR            : out std_logic;
-        loadSub                : out std_logic;
-        contaSub               : out std_logic;
-        en_FLSR                : out std_logic; 
-        emJogo                 : out std_logic;
-        contaPonto             : out std_logic;
-        contaVida              : out std_logic;
-        db_estado              : out std_logic_vector(4 downto 0);
-        en_Reg                 : out std_logic;
-        enTX                   : out std_logic;
-		whichTX                : out std_logic;
-		apagaTatu              : out std_logic;
+        clock               : in  std_logic; 
+        reset               : in  std_logic; 
+        iniciar             : in  std_logic;
+        EscolheuDificuldade : in  std_logic;
+        timeout             : in  std_logic;
+        fezJogada           : in  std_logic;
+        temVida             : in  std_logic;
+		zeraVida            : out std_logic;
+        jogadaValida        : in  std_logic;
+        temTatu             : in  std_logic;
+        timeOutDelTMR       : in  std_logic;
+        end_points          : in  std_logic;
+        prontoTX            : in  std_logic;
+        fimJogo             : out std_logic; 
+        registraR           : out std_logic; 
+        limpaR              : out std_logic; 
+        registraM           : out std_logic; 
+        limpaM              : out std_logic; 
+        zeraJogTMR          : out std_logic; 
+        contaJogTMR         : out std_logic;
+        zeraDelTMR          : out std_logic;
+        contaDelTMR         : out std_logic;
+        loadSub             : out std_logic;
+        contaSub            : out std_logic;
+        en_FLSR             : out std_logic; 
+        emJogo              : out std_logic;
+        contaPonto          : out std_logic;
+        contaVida           : out std_logic;
+        db_estado           : out std_logic_vector(4 downto 0);
+        en_Reg              : out std_logic;
+        enTX                : out std_logic;
+		whichTX             : out std_logic;
+		apagaTatu           : out std_logic;
 	    -- TMR Sperano
-		contaSprTMR            : out std_logic;
-		zeraSprTMR             : out std_logic;
-		fimSprTMR              : in std_logic;
-		limpa_pontos           : out std_logic
+		contaSprTMR         : out std_logic;
+		zeraSprTMR          : out std_logic;
+		fimSprTMR           : in std_logic;
+		limpa_pontos        : out std_logic
     );
     end component;
 
@@ -275,7 +277,7 @@ begin
         emJogo               => s_emJogo,
         contaPonto           => s_conta_ponto,
         contaVida            => s_conta_vida,
-        db_estado            => s_estado,
+        db_estado            => db_estado,
         en_Reg               => s_enReg,
         enTX                 => s_enTX,
         whichTX              => s_whichTX,
@@ -320,32 +322,32 @@ begin
         port map(
             clock		 => clock,				
             reset		 => reset,						
-            partida   => s_enTX,						
+            partida      => s_enTX,						
             dado		 => s_dado_tx,
             sout		 => s_serial,							
             out_dado	 => Open,	
-            pronto	 => s_prontoTX					
+            pronto	     => s_prontoTX					
         );
 
     displayOne: hexa7seg
         port map(
-            hexa => s_hexa1,
+            hexa   => s_hexa1,
             enable => '1',
-            sseg => display1
+            sseg   => display1
         );
 
     displayTwo: hexa7seg
         port map(
-            hexa => s_hexa2,
+            hexa   => s_hexa2,
             enable => s_fimJogo,
-            sseg => display2
+            sseg   => display2
         );
 
-    estado7s: estado7seg
-        port map(
-            estado => s_estado,
-            sseg   => db_estado
-        );
+    -- estado7s: estado7seg
+    --     port map(
+    --         estado => s_estado,
+    --         sseg   => db_estado
+    --     );
 
     -- Sinais auxiliares
     s_not_fim_vidas <= not s_fim_vidas;

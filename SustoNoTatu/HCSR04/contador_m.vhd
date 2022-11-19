@@ -41,14 +41,18 @@ begin
         if zera='1' then IQ <= 0; 
         elsif clock'event and clock='1' then
             if conta='1' then 
-                if IQ=M-1 then IQ <= 0; 
-                else IQ <= IQ + 1; 
+                if IQ=M-1 then
+                    IQ <= 0; 
+                else
+                    IQ <= IQ + 1; 
                 end if;
             end if;
         end if;
         
-        if IQ=M-1 then fim <= '1'; 
-        else fim <= '0'; 
+        if IQ=M-1 then
+            fim <= '1'; 
+        else
+            fim <= '0'; 
         end if;
 	    
         Q <= std_logic_vector(to_unsigned(IQ, Q'length));
