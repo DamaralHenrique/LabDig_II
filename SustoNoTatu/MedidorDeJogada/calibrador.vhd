@@ -1,17 +1,18 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 
-entity medidor_jogada is
+entity calibrador is
     port (
-        clock                     : in  std_logic;
-        reset                     : in  std_logic;
-        inicia                    : in  std_logic;
-        fim_de_jogo               : in  std_logic;
-        echo1                     : in  std_logic;
-        echo2                     : in  std_logic;
-        trigger1                  : out std_logic;
-        trigger2                  : out std_logic;
-        tatus                     : out std_logic_vector(2 downto 0);
+        clock     : in  std_logic;
+        reset     : in  std_logic;
+        calibrar  : in  std_logic;
+        echo1     : in  std_logic;
+        echo2     : in  std_logic;
+        trigger1  : out std_logic;
+        trigger2  : out std_logic;
+        medida1   : out std_logic_vector(11 downto 0);
+        medida2   : out std_logic_vector(11 downto 0);
+        pronto    : out std_logic;
         db_estado_hcsr04_1        : out std_logic_vector(3 downto 0);
         db_estado_hcsr04_2        : out std_logic_vector(3 downto 0);
         db_pronto_estado_hcsr04_1 : out std_logic;
@@ -22,12 +23,10 @@ entity medidor_jogada is
 		db_timeout_1              : out std_logic;
 		db_timeout_2              : out std_logic
     );
-end entity medidor_jogada;
+end entity calibrador;
 
-
-architecture rtl of medidor_jogada is
-
-    component medidor_jogada_uc is 
+architecture rtl of calibrador is
+    component calibrador_uc is 
         port ( 
             clock                : in  std_logic;
             reset                : in  std_logic;
@@ -36,7 +35,6 @@ architecture rtl of medidor_jogada is
             pronto_hcsr04_2      : in  std_logic;
             fim_espera           : in  std_logic;
             fim_timeout          : in  std_logic;
-            fim_de_jogo          : in  std_logic;
             zera_espera          : out std_logic;
             conta_espera         : out std_logic;
             zera_timeout         : out std_logic;
@@ -47,12 +45,12 @@ architecture rtl of medidor_jogada is
             reset_2              : out std_logic;
             registra_distancia_1 : out std_logic;
             registra_distancia_2 : out std_logic;
-            usa_medida_default   : out std_logic;
+            fim                  : out std_logic;
             db_estado            : out std_logic_vector(3 downto 0) 
         );
     end component;
 
-    component medidor_jogada_fd is
+    component calibrador_fd is
         port (
             clock                : in  std_logic;
             reset                : in  std_logic;
@@ -68,14 +66,6 @@ architecture rtl of medidor_jogada is
             echo2                : in  std_logic;
             registra_distancia_1 : in  std_logic;
             registra_distancia_2 : in  std_logic;
-            -- Calibração
-            usa_medida_default   : in  std_logic;
-            medida_calibrada_0_D : in  std_logic_vector(11 downto 0);
-            medida_calibrada_0_E : in  std_logic_vector(11 downto 0);
-            medida_calibrada_1_D : in  std_logic_vector(11 downto 0);
-            medida_calibrada_1_E : in  std_logic_vector(11 downto 0);
-            medida_calibrada_2_D : in  std_logic_vector(11 downto 0);
-            medida_calibrada_2_E : in  std_logic_vector(11 downto 0);
             -- Sinais de saída
             trigger1             : out std_logic;
             trigger2             : out std_logic;
@@ -83,7 +73,6 @@ architecture rtl of medidor_jogada is
             pronto_hcsr04_2      : out std_logic;
             fim_espera           : out std_logic;
             fim_timeout          : out std_logic;
-            tatus                : out std_logic_vector(2 downto 0);
             medida1              : out std_logic_vector(11 downto 0);
             medida2              : out std_logic_vector(11 downto 0);
             db_estado_hcsr04_1   : out std_logic_vector(3 downto 0);
@@ -96,8 +85,6 @@ architecture rtl of medidor_jogada is
     signal s_fim_espera, s_zera_medida, s_zera_espera, s_conta_espera, s_medir_1, s_medir_2     : std_logic;
     signal s_pronto_hcsr04_1, s_pronto_hcsr04_2, s_registra_distancia_1, s_registra_distancia_2 : std_logic;
     signal s_medida1, s_medida2                                                                 : std_logic_vector(11 downto 0);
-    signal s_medida_calibrada_0_D, s_medida_calibrada_0_E, s_medida_calibrada_1_D               : std_logic_vector(11 downto 0);
-    signal s_medida_calibrada_1_E, s_medida_calibrada_2_D, s_medida_calibrada_2_E               : std_logic_vector(11 downto 0);
 	signal s_zera_timeout, s_conta_timeout, s_fim_timeout, s_reset_1, s_reset_2                 : std_logic;
 
 begin
@@ -106,11 +93,10 @@ begin
         port map ( 
             clock                => clock,
             reset                => reset,
-            inicia               => inicia,
+            inicia               => calibrar,
             pronto_hcsr04_1      => s_pronto_hcsr04_1,
             pronto_hcsr04_2      => s_pronto_hcsr04_2,
             fim_espera           => s_fim_espera,
-            fim_de_jogo          => fim_de_jogo,
             zera_espera          => s_zera_espera,
             conta_espera         => s_conta_espera,
 			zera_timeout         => s_zera_timeout,  
@@ -121,14 +107,6 @@ begin
 			reset_2              => s_reset_2,
             registra_distancia_1 => s_registra_distancia_1,
             registra_distancia_2 => s_registra_distancia_2,
-            -- Calibração
-            usa_medida_default   => s_usa_medida_default,
-            medida_calibrada_0_D => s_medida_calibrada_0_D,
-            medida_calibrada_0_E => s_medida_calibrada_0_E,
-            medida_calibrada_1_D => s_medida_calibrada_1_D,
-            medida_calibrada_1_E => s_medida_calibrada_1_E,
-            medida_calibrada_2_D => s_medida_calibrada_2_D,
-            medida_calibrada_2_E => s_medida_calibrada_2_E,
             -- Sinais de saída
 			fim_timeout          => s_fim_timeout,
             db_estado            => db_estado

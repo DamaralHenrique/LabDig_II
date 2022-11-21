@@ -1,48 +1,39 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 
-entity medidor_jogada_fd is
+entity calibrador_fd is
     port (
         clock                : in  std_logic;
         reset                : in  std_logic;
         zera_espera          : in  std_logic;
         conta_espera         : in  std_logic;
-		zera_timeout         : in  std_logic;
+        zera_timeout         : in  std_logic;
         conta_timeout        : in  std_logic;
         medir_1              : in  std_logic;
         medir_2              : in  std_logic;
-		reset_1              : in  std_logic;
+        reset_1              : in  std_logic;
         reset_2              : in  std_logic;
         echo1                : in  std_logic;
         echo2                : in  std_logic;
         registra_distancia_1 : in  std_logic;
         registra_distancia_2 : in  std_logic;
-        -- Calibração
-        usa_medida_default   : in  std_logic;
-        medida_calibrada_0_D : in  std_logic_vector(11 downto 0);
-        medida_calibrada_0_E : in  std_logic_vector(11 downto 0);
-        medida_calibrada_1_D : in  std_logic_vector(11 downto 0);
-        medida_calibrada_1_E : in  std_logic_vector(11 downto 0);
-        medida_calibrada_2_D : in  std_logic_vector(11 downto 0);
-        medida_calibrada_2_E : in  std_logic_vector(11 downto 0);
         -- Sinais de saída
         trigger1             : out std_logic;
         trigger2             : out std_logic;
         pronto_hcsr04_1      : out std_logic;
         pronto_hcsr04_2      : out std_logic;
         fim_espera           : out std_logic;
-		fim_timeout          : out std_logic;
-        tatus                : out std_logic_vector(2 downto 0);
+        fim_timeout          : out std_logic;
         medida1              : out std_logic_vector(11 downto 0);
         medida2              : out std_logic_vector(11 downto 0);
         db_estado_hcsr04_1   : out std_logic_vector(3 downto 0);
         db_estado_hcsr04_2   : out std_logic_vector(3 downto 0);
-		db_timeout_1         : out std_logic;
-		db_timeout_2         : out std_logic
+        db_timeout_1         : out std_logic;
+        db_timeout_2         : out std_logic
     );
 end entity;
 
-architecture rtl of medidor_jogada_fd is
+architecture rtl of calibrador_fd is
 
     component interface_hcsr04 is
         port (
@@ -57,15 +48,6 @@ architecture rtl of medidor_jogada_fd is
 			db_timeout : out std_logic
         );
     end component interface_hcsr04;
-
-    component comparador_distancia is
-        port (
-            A        : in std_logic_vector(11 downto 0);
-            B        : in std_logic_vector(11 downto 0);
-            add_2    : in std_logic;
-            is_close : out std_logic -- A está proximo de B com intervalo de erro
-        );
-    end component;
 
     component contador_m is
         generic (
@@ -95,28 +77,10 @@ architecture rtl of medidor_jogada_fd is
     end component;
 
     signal s_medida1, s_medida2, s_medida_registrada1, s_medida_registrada2 : std_logic_vector(11 downto 0);
-    signal s_dist_0D, s_dist_1D, s_dist_2D                                  : std_logic_vector(11 downto 0);
-    signal s_dist_0E, s_dist_1E, s_dist_2E                                  : std_logic_vector(11 downto 0);
-    signal s_tatu_0D, s_tatu_1D, s_tatu_2D                                  : std_logic;
-    signal s_tatu_0E, s_tatu_1E, s_tatu_2E                                  : std_logic;
     signal s_interface_hcsr04_reset1, s_interface_hcsr04_reset2             : std_logic;
 
 begin
-
-    s_dist_0D <= "0000" & "0111" & "0101" when usa_medida_default else -- 075
-                  medida_calibrada_0_D;
-    s_dist_1D <= "0001" & "0101" & "0101" when usa_medida_default else -- 155
-                  medida_calibrada_1_D;
-    s_dist_2D <= "0010" & "0011" & "0101" when usa_medida_default else -- 235
-                  medida_calibrada_2_D;
-    s_dist_0E <= "0010" & "0011" & "0101" when usa_medida_default else -- 235
-                  medida_calibrada_0_E;
-    s_dist_1E <= "0001" & "0101" & "0101" when usa_medida_default else -- 155
-                  medida_calibrada_1_E;
-    s_dist_2E <= "0000" & "0111" & "0101"when usa_medida_default else -- 075
-                  medida_calibrada_2_E;
-    
-                  s_interface_hcsr04_reset1 <= reset or reset_1;
+    s_interface_hcsr04_reset1 <= reset or reset_1;
 	s_interface_hcsr04_reset2 <= reset or reset_2;
 
     MEDIDOR_1: interface_hcsr04
@@ -169,54 +133,6 @@ begin
             Q      => s_medida_registrada2
         );
 
-        comparador_0_D: comparador_distancia
-        port map (
-            A        => s_medida_registrada1,
-            B        => s_dist_0D,
-            add_2    => '1',
-            is_close => s_tatu_0D
-        );
-
-    comparador_1_D: comparador_distancia
-        port map (
-            A        => s_medida_registrada1,
-            B        => s_dist_1D,
-            add_2    => '1',
-            is_close => s_tatu_1D
-        );
-
-    comparador_2_D: comparador_distancia
-        port map (
-            A        => s_medida_registrada1,
-            B        => s_dist_2D,
-            add_2    => '1',
-            is_close => s_tatu_2D
-        );
-
-    comparador_0_E: comparador_distancia
-        port map (
-            A        => s_medida_registrada2,
-            B        => s_dist_0E,
-            add_2    => '1',
-            is_close => s_tatu_0E
-        );
-
-    comparador_1_E: comparador_distancia
-        port map (
-            A        => s_medida_registrada2,
-            B        => s_dist_1E,
-            add_2    => '1',
-            is_close => s_tatu_1E
-        );
-
-    comparador_2_E: comparador_distancia
-        port map (
-            A        => s_medida_registrada2,
-            B        => s_dist_2E,
-            add_2    => '1',
-            is_close => s_tatu_2E
-        );
-
     CONTADOR_ESPERA: contador_m
         generic map (
             M => 3000000,
@@ -242,12 +158,6 @@ begin
             Q     => open,
             fim   => fim_timeout
         );
-		  
-	 
-	 
-    tatus(0) <= s_tatu_0D or s_tatu_0E;
-    tatus(1) <= s_tatu_1D or s_tatu_1E;
-    tatus(2) <= s_tatu_2D or s_tatu_2E;
 
     medida1 <= s_medida_registrada1;
     medida2 <= s_medida_registrada2;
