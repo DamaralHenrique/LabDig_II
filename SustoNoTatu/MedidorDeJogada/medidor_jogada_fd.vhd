@@ -18,13 +18,9 @@ entity medidor_jogada_fd is
         registra_distancia_1 : in  std_logic;
         registra_distancia_2 : in  std_logic;
         -- Calibração
-        usa_medida_default   : in  std_logic;
-        medida_calibrada_0_D : in  std_logic_vector(11 downto 0);
-        medida_calibrada_0_E : in  std_logic_vector(11 downto 0);
-        medida_calibrada_1_D : in  std_logic_vector(11 downto 0);
-        medida_calibrada_1_E : in  std_logic_vector(11 downto 0);
-        medida_calibrada_2_D : in  std_logic_vector(11 downto 0);
-        medida_calibrada_2_E : in  std_logic_vector(11 downto 0);
+        calibrar             : in  std_logic;
+        atualiza_dist        : in  std_logic;
+        fim_calibracao       : out std_logic;
         -- Sinais de saída
         trigger1             : out std_logic;
         trigger2             : out std_logic;
@@ -94,29 +90,147 @@ architecture rtl of medidor_jogada_fd is
         );
     end component;
 
+    component calibrador_distancias is
+        port (
+            clock                : in  std_logic;
+            reset                : in  std_logic;
+            calibrar             : in  std_logic;
+            echo1                : in  std_logic;
+            echo2                : in  std_logic;
+            trigger1             : out std_logic;
+            trigger2             : out std_logic;
+            medida_calibrada_0_D : out std_logic_vector(11 downto 0);
+            medida_calibrada_0_E : out std_logic_vector(11 downto 0);
+            medida_calibrada_1_D : out std_logic_vector(11 downto 0);
+            medida_calibrada_1_E : out std_logic_vector(11 downto 0);
+            medida_calibrada_2_D : out std_logic_vector(11 downto 0);
+            medida_calibrada_2_E : out std_logic_vector(11 downto 0);
+            fim_calibracao       : out std_logic;
+            db_estado            : out std_logic_vector(3 downto 0) 
+        );
+    end component;
+
     signal s_medida1, s_medida2, s_medida_registrada1, s_medida_registrada2 : std_logic_vector(11 downto 0);
     signal s_dist_0D, s_dist_1D, s_dist_2D                                  : std_logic_vector(11 downto 0);
     signal s_dist_0E, s_dist_1E, s_dist_2E                                  : std_logic_vector(11 downto 0);
     signal s_tatu_0D, s_tatu_1D, s_tatu_2D                                  : std_logic;
     signal s_tatu_0E, s_tatu_1E, s_tatu_2E                                  : std_logic;
     signal s_interface_hcsr04_reset1, s_interface_hcsr04_reset2             : std_logic;
+    signal s_medida_calibrada_0_D, s_medida_calibrada_0_E                   : std_logic_vector(11 downto 0);
+    signal s_medida_calibrada_1_D, s_medida_calibrada_1_E                   : std_logic_vector(11 downto 0);
+    signal s_medida_calibrada_2_D, s_medida_calibrada_2_E                   : std_logic_vector(11 downto 0);
 
 begin
 
-    s_dist_0D <= "0000" & "0111" & "0101" when usa_medida_default else -- 075
-                  medida_calibrada_0_D;
-    s_dist_1D <= "0001" & "0101" & "0101" when usa_medida_default else -- 155
-                  medida_calibrada_1_D;
-    s_dist_2D <= "0010" & "0011" & "0101" when usa_medida_default else -- 235
-                  medida_calibrada_2_D;
-    s_dist_0E <= "0010" & "0011" & "0101" when usa_medida_default else -- 235
-                  medida_calibrada_0_E;
-    s_dist_1E <= "0001" & "0101" & "0101" when usa_medida_default else -- 155
-                  medida_calibrada_1_E;
-    s_dist_2E <= "0000" & "0111" & "0101"when usa_medida_default else -- 075
-                  medida_calibrada_2_E;
+    -- s_dist_0D <= "0000" & "0111" & "0101" when usa_medida_default else -- 075
+    --               medida_calibrada_0_D;
+    -- s_dist_1D <= "0001" & "0101" & "0101" when usa_medida_default else -- 155
+    --               medida_calibrada_1_D;
+    -- s_dist_2D <= "0010" & "0011" & "0101" when usa_medida_default else -- 235
+    --               medida_calibrada_2_D;
+    -- s_dist_0E <= "0010" & "0011" & "0101" when usa_medida_default else -- 235
+    --               medida_calibrada_0_E;
+    -- s_dist_1E <= "0001" & "0101" & "0101" when usa_medida_default else -- 155
+    --               medida_calibrada_1_E;
+    -- s_dist_2E <= "0000" & "0111" & "0101"when usa_medida_default else -- 075
+    --               medida_calibrada_2_E;
+
+    -- Calibração
+
+    CALIBRADOR_DISTANCIAS: calibrador_distancias
+    port map (
+        clock                => clock,
+        reset                => reset,
+        calibrar             => calibrar,
+        echo1                => echo1,
+        echo2                => echo2,
+        trigger1             => trigger1,
+        trigger2             => trigger2,
+        medida_calibrada_0_D => s_medida_calibrada_0_D,
+        medida_calibrada_0_E => s_medida_calibrada_0_E,
+        medida_calibrada_1_D => s_medida_calibrada_1_D,
+        medida_calibrada_1_E => s_medida_calibrada_1_E,
+        medida_calibrada_2_D => s_medida_calibrada_2_D,
+        medida_calibrada_2_E => s_medida_calibrada_2_E,
+        fim_calibracao       => fim_calibracao,
+        db_estado            => open
+    );
+
+    REG_0D: registrador_n
+    generic map (
+        N => 12 
+    )
+    port map (
+        clock  => clock,
+        clear  => '0',
+        enable => atualiza_dist,
+        D      => s_medida_calibrada_0_D,
+        Q      => s_dist_0D
+    );
+
+    REG_0E: registrador_n
+    generic map (
+        N => 12 
+    )
+    port map (
+        clock  => clock,
+        clear  => '0',
+        enable => atualiza_dist,
+        D      => s_medida_calibrada_0_E,
+        Q      => s_dist_0E
+    );
+
+    REG_1D: registrador_n
+    generic map (
+        N => 12 
+    )
+    port map (
+        clock  => clock,
+        clear  => '0',
+        enable => atualiza_dist,
+        D      => s_medida_calibrada_1_D,
+        Q      => s_dist_1D
+    );
+
+    REG_1E: registrador_n
+    generic map (
+        N => 12 
+    )
+    port map (
+        clock  => clock,
+        clear  => '0',
+        enable => atualiza_dist,
+        D      => s_medida_calibrada_1_E,
+        Q      => s_dist_1E
+    );
+
+    REG_2D: registrador_n
+    generic map (
+        N => 12 
+    )
+    port map (
+        clock  => clock,
+        clear  => '0',
+        enable => atualiza_dist,
+        D      => s_medida_calibrada_2_D,
+        Q      => s_dist_2D
+    );
+
+    REG_2E: registrador_n
+    generic map (
+        N => 12 
+    )
+    port map (
+        clock  => clock,
+        clear  => '0',
+        enable => atualiza_dist,
+        D      => s_medida_calibrada_2_E,
+        Q      => s_dist_2E
+    );
+
+    -- End Calibração
     
-                  s_interface_hcsr04_reset1 <= reset or reset_1;
+    s_interface_hcsr04_reset1 <= reset or reset_1;
 	s_interface_hcsr04_reset2 <= reset or reset_2;
 
     MEDIDOR_1: interface_hcsr04

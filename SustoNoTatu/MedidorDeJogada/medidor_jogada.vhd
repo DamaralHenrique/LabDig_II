@@ -9,6 +9,7 @@ entity medidor_jogada is
         fim_de_jogo               : in  std_logic;
         echo1                     : in  std_logic;
         echo2                     : in  std_logic;
+        calibrar                  : in  std_logic;
         trigger1                  : out std_logic;
         trigger2                  : out std_logic;
         tatus                     : out std_logic_vector(2 downto 0);
@@ -20,7 +21,8 @@ entity medidor_jogada is
         db_medida2                : out std_logic_vector(11 downto 0);
         db_estado                 : out std_logic_vector(3 downto 0); -- estado da UC
 		db_timeout_1              : out std_logic;
-		db_timeout_2              : out std_logic
+		db_timeout_2              : out std_logic;
+        db_fim_calibracao         : out std_logic
     );
 end entity medidor_jogada;
 
@@ -37,6 +39,8 @@ architecture rtl of medidor_jogada is
             fim_espera           : in  std_logic;
             fim_timeout          : in  std_logic;
             fim_de_jogo          : in  std_logic;
+            calibrar             : in  std_logic;
+            fim_calibracao       : in  std_logic;
             zera_espera          : out std_logic;
             conta_espera         : out std_logic;
             zera_timeout         : out std_logic;
@@ -47,7 +51,7 @@ architecture rtl of medidor_jogada is
             reset_2              : out std_logic;
             registra_distancia_1 : out std_logic;
             registra_distancia_2 : out std_logic;
-            usa_medida_default   : out std_logic;
+            atualiza_dist        : out std_logic;
             db_estado            : out std_logic_vector(3 downto 0) 
         );
     end component;
@@ -69,13 +73,9 @@ architecture rtl of medidor_jogada is
             registra_distancia_1 : in  std_logic;
             registra_distancia_2 : in  std_logic;
             -- Calibração
-            usa_medida_default   : in  std_logic;
-            medida_calibrada_0_D : in  std_logic_vector(11 downto 0);
-            medida_calibrada_0_E : in  std_logic_vector(11 downto 0);
-            medida_calibrada_1_D : in  std_logic_vector(11 downto 0);
-            medida_calibrada_1_E : in  std_logic_vector(11 downto 0);
-            medida_calibrada_2_D : in  std_logic_vector(11 downto 0);
-            medida_calibrada_2_E : in  std_logic_vector(11 downto 0);
+            calibrar             : in  std_logic;
+            atualiza_dist        : in  std_logic;
+            fim_calibracao       : out std_logic;
             -- Sinais de saída
             trigger1             : out std_logic;
             trigger2             : out std_logic;
@@ -99,6 +99,7 @@ architecture rtl of medidor_jogada is
     signal s_medida_calibrada_0_D, s_medida_calibrada_0_E, s_medida_calibrada_1_D               : std_logic_vector(11 downto 0);
     signal s_medida_calibrada_1_E, s_medida_calibrada_2_D, s_medida_calibrada_2_E               : std_logic_vector(11 downto 0);
 	signal s_zera_timeout, s_conta_timeout, s_fim_timeout, s_reset_1, s_reset_2                 : std_logic;
+    signal s_fim_calibracao, s_atualiza_dist                                                    : std_logic;
 
 begin
 
@@ -111,6 +112,8 @@ begin
             pronto_hcsr04_2      => s_pronto_hcsr04_2,
             fim_espera           => s_fim_espera,
             fim_de_jogo          => fim_de_jogo,
+            calibrar             => calibrar,
+            fim_calibracao       => s_fim_calibracao,
             zera_espera          => s_zera_espera,
             conta_espera         => s_conta_espera,
 			zera_timeout         => s_zera_timeout,  
@@ -121,21 +124,15 @@ begin
 			reset_2              => s_reset_2,
             registra_distancia_1 => s_registra_distancia_1,
             registra_distancia_2 => s_registra_distancia_2,
-            -- Calibração
-            usa_medida_default   => s_usa_medida_default,
-            medida_calibrada_0_D => s_medida_calibrada_0_D,
-            medida_calibrada_0_E => s_medida_calibrada_0_E,
-            medida_calibrada_1_D => s_medida_calibrada_1_D,
-            medida_calibrada_1_E => s_medida_calibrada_1_E,
-            medida_calibrada_2_D => s_medida_calibrada_2_D,
-            medida_calibrada_2_E => s_medida_calibrada_2_E,
             -- Sinais de saída
+            atualiza_dist        => s_atualiza_dist,
 			fim_timeout          => s_fim_timeout,
             db_estado            => db_estado
         );
 
     db_pronto_estado_hcsr04_1 <= s_pronto_hcsr04_1;
     db_pronto_estado_hcsr04_2 <= s_pronto_hcsr04_2;
+    db_fim_calibracao <= s_fim_calibracao;
 
     FD: medidor_jogada_fd
         port map (
@@ -153,6 +150,11 @@ begin
             echo2                => echo2,
             registra_distancia_1 => s_registra_distancia_1,
             registra_distancia_2 => s_registra_distancia_2, 
+            -- Calibração
+            calibrar             => calibrar,
+            atualiza_dist        => s_atualiza_dist,
+            fim_calibracao       => s_fim_calibracao,
+            -- Sinais de saída
             trigger1             => trigger1,
             trigger2             => trigger2,
             pronto_hcsr04_1      => s_pronto_hcsr04_1,

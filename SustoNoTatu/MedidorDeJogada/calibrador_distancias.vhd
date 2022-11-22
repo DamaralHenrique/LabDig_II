@@ -6,6 +6,10 @@ entity calibrador_distancias is
         clock                : in  std_logic;
         reset                : in  std_logic;
         calibrar             : in  std_logic;
+        echo1                : in  std_logic;
+        echo2                : in  std_logic;
+        trigger1             : out std_logic;
+        trigger2             : out std_logic;
         medida_calibrada_0_D : out std_logic_vector(11 downto 0);
         medida_calibrada_0_E : out std_logic_vector(11 downto 0);
         medida_calibrada_1_D : out std_logic_vector(11 downto 0);

@@ -27,6 +27,8 @@ entity medidor_jogada_uc is
         fim_espera           : in  std_logic;
 		fim_timeout          : in  std_logic;
         fim_de_jogo          : in  std_logic;
+        calibrar             : in  std_logic;
+        fim_calibracao       : in  std_logic;
         zera_espera          : out std_logic;
         conta_espera         : out std_logic;
 		zera_timeout         : out std_logic;
@@ -37,13 +39,15 @@ entity medidor_jogada_uc is
         reset_2              : out std_logic;
         registra_distancia_1 : out std_logic;
         registra_distancia_2 : out std_logic;
+        atualiza_dist        : out std_logic;
         db_estado            : out std_logic_vector(3 downto 0) 
     );
 end medidor_jogada_uc;
 
 architecture fsm_arch of medidor_jogada_uc is
     type tipo_estado is (inicial, medida1, espera_medida1, registra1, espera1, reseta1,
-                                  medida2, espera_medida2, registra2, espera2, reseta2);
+                                  medida2, espera_medida2, registra2, espera2, reseta2,
+                         calibrando1, calibrando2, calibrado);
     signal Eatual, Eprox : tipo_estado;
 begin
 
@@ -58,11 +62,19 @@ begin
     end process;
 
     -- logica de proximo estado
-    process (inicia, pronto_hcsr04_1, pronto_hcsr04_2, fim_espera, fim_de_jogo, fim_timeout, Eatual) 
+    process (inicia, pronto_hcsr04_1, pronto_hcsr04_2, fim_espera, fim_de_jogo, fim_timeout, 
+             calibrar, fim_calibracao, Eatual) 
     begin
         case Eatual is
             when inicial        => if inicia='1'                            then Eprox <= medida1;
+                                   elsif inicia='0' and calibrar='1'        then Eprox <= calibrando1;
                                    else                                          Eprox <= inicial;
+                                   end if;
+            when calibrando1    => if fim_calibracao='1'                    then Eprox <= calibrando2;
+                                   else Eprox <= calibrando1;
+                                   end if;
+            when calibrando2    => if fim_calibracao='1'                    then Eprox <= inicial;
+                                   else Eprox <= calibrando2;
                                    end if;
             when medida1        => Eprox <= espera_medida1;
             when espera_medida1 => if    pronto_hcsr04_1='1'                then Eprox <= registra1;
@@ -121,6 +133,9 @@ begin
 	with Eatual select
         reset_2              <= '1' when reseta2,
                                 '0' when others;
+    with Eatual select
+        atualiza_dist        <= '1' when calibrado,
+                                '0' when others;
 
     with Eatual select
         db_estado <= "0001" when inicial, 
@@ -134,6 +149,9 @@ begin
                      "1001" when espera2,
 					 "1010" when reseta1,
 					 "1011" when reseta2,
+                     "1100" when calibrando1,
+                     "1101" when calibrando2,
+                     "1110" when calibrado,
                      "0000" when others;
 
 end architecture fsm_arch;
