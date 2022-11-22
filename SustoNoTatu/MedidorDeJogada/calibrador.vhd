@@ -89,7 +89,7 @@ architecture rtl of calibrador is
 
 begin
 
-    UC: medidor_jogada_uc 
+    UC: calibrador_uc 
         port map ( 
             clock                => clock,
             reset                => reset,
@@ -115,7 +115,7 @@ begin
     db_pronto_estado_hcsr04_1 <= s_pronto_hcsr04_1;
     db_pronto_estado_hcsr04_2 <= s_pronto_hcsr04_2;
 
-    FD: medidor_jogada_fd
+    FD: calibrador_fd
         port map (
             clock                => clock,
             reset                => reset,
