@@ -116,6 +116,7 @@ architecture rtl of medidor_jogada_fd is
     signal s_tatu_0D, s_tatu_1D, s_tatu_2D                                  : std_logic;
     signal s_tatu_0E, s_tatu_1E, s_tatu_2E                                  : std_logic;
     signal s_interface_hcsr04_reset1, s_interface_hcsr04_reset2             : std_logic;
+    signal s_trigger_1, s_trigger_2                                         : std_logic;
     signal s_medida_calibrada_0_D, s_medida_calibrada_0_E                   : std_logic_vector(11 downto 0);
     signal s_medida_calibrada_1_D, s_medida_calibrada_1_E                   : std_logic_vector(11 downto 0);
     signal s_medida_calibrada_2_D, s_medida_calibrada_2_E                   : std_logic_vector(11 downto 0);
@@ -137,15 +138,15 @@ begin
 
     -- Calibração
 
-    CALIBRADOR_DISTANCIAS: calibrador_distancias
+    CALIBRADOR: calibrador_distancias
     port map (
         clock                => clock,
         reset                => reset,
         calibrar             => calibrar,
         echo1                => echo1,
         echo2                => echo2,
-        trigger1             => trigger1,
-        trigger2             => trigger2,
+        trigger1             => open,
+        trigger2             => open,
         medida_calibrada_0_D => s_medida_calibrada_0_D,
         medida_calibrada_0_E => s_medida_calibrada_0_E,
         medida_calibrada_1_D => s_medida_calibrada_1_D,
@@ -239,7 +240,7 @@ begin
             reset      => s_interface_hcsr04_reset1,
             medir      => medir_1,
             echo       => echo1,
-            trigger    => trigger1,
+            trigger    => s_trigger_1,
             medida     => s_medida1, -- 3 digitos BCD
             pronto     => pronto_hcsr04_1,
             db_estado  => db_estado_hcsr04_1,
@@ -252,7 +253,7 @@ begin
             reset      => s_interface_hcsr04_reset2,
             medir      => medir_2,
             echo       => echo2,
-            trigger    => trigger2,
+            trigger    => s_trigger_2,
             medida     => s_medida2, -- 3 digitos BCD
             pronto     => pronto_hcsr04_2,
             db_estado  => db_estado_hcsr04_2,
@@ -365,5 +366,8 @@ begin
 
     medida1 <= s_medida_registrada1;
     medida2 <= s_medida_registrada2;
+
+    trigger1 <= s_trigger_1;
+    trigger2 <= s_trigger_2;
 
 end architecture rtl;

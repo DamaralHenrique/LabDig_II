@@ -106,8 +106,8 @@ begin
             echo2                => echo2,
             registra0            => s_registra0,
             registra1            => s_registra1,
-            registra2            => s_registra2   
-            reset_calibrador     => s_registra_calibrador,        
+            registra2            => s_registra2, 
+            reset_calibrador     => s_reset_calibrador,        
             -- Sinais de saída
             trigger1             => trigger1,
             trigger2             => trigger2,

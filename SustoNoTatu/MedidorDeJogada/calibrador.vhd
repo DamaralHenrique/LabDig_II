@@ -137,7 +137,6 @@ begin
             pronto_hcsr04_2      => s_pronto_hcsr04_2,
             fim_espera           => s_fim_espera,
 			fim_timeout          => s_fim_timeout,
-            tatus                => tatus,
             medida1              => db_medida1,
             medida2              => db_medida2,
             db_estado_hcsr04_1   => db_estado_hcsr04_1,

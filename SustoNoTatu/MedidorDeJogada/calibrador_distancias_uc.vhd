@@ -22,8 +22,8 @@ entity calibrador_distancias_uc is
 end calibrador_distancias_uc;
 
 architecture fsm_arch of calibrador_distancias_uc is
-    type tipo_estado is (inicial, calibra0, registra0, espera0, calibra1, 
-                         registra1, espera1, calibra2, registra2, final);
+    type tipo_estado is (inicial, calibra0, registrando0, espera0, calibra1, 
+                         registrando1, espera1, calibra2, registrando2, final);
     signal Eatual, Eprox : tipo_estado;
 begin
 
@@ -36,30 +36,30 @@ begin
         end if;
     end process;
 
-    process (inicia, calibrar, fim0, fim1, fim2, Eatual) 
+    process (calibrar, fim0, fim1, fim2, Eatual) 
     begin
         case Eatual is
             when inicial        => if calibrar='1'                          then Eprox <= calibra0;
                                    else                                          Eprox <= inicial;
                                    end if;
-            when calibra0       => if fim0='1'                              then Eprox <= registra0;
+            when calibra0       => if fim0='1'                              then Eprox <= registrando0;
                                    else                                          Eprox <= calibra0;
                                    end if;
-            when registra0      => Eprox <= espera0;
+            when registrando0   => Eprox <= espera0;
             when espera0        => if    calibrar='1'                       then Eprox <= calibra1;
                                    else                                          Eprox <= espera0;
                                    end if;
-            when calibra1       => if fim1='1'                              then Eprox <= registra1;
+            when calibra1       => if fim1='1'                              then Eprox <= registrando1;
                                    else                                          Eprox <= calibra1;
                                    end if;
-            when registra1      => Eprox <= espera1;
+            when registrando1   => Eprox <= espera1;
             when espera1        => if    calibrar='1'                       then Eprox <= calibra2;
                                    else                                          Eprox <= espera1;
                                    end if;
-            when calibra2       => if fim2='1'                              then Eprox <= registra2;
+            when calibra2       => if fim2='1'                              then Eprox <= registrando2;
                                    else                                          Eprox <= calibra2;
                                    end if;
-            when registra2      => Eprox <= final;
+            when registrando2   => Eprox <= final;
             when final          => Eprox <= final;
             when others         => Eprox <= inicial;
         end case;
@@ -79,15 +79,15 @@ begin
                                 '0' when others;
 
     with Eatual select
-        registra0            <= '1' when registra0,
+        registra0            <= '1' when registrando0,
                                 '0' when others;
 
     with Eatual select
-        registra1            <= '1' when registra1,
+        registra1            <= '1' when registrando1,
                                 '0' when others;
 
 	with Eatual select
-        registra2            <= '1' when registra2,
+        registra2            <= '1' when registrando2,
                                 '0' when others;
 
 	with Eatual select
@@ -101,13 +101,13 @@ begin
     with Eatual select
         db_estado <= "0001" when inicial, 
                      "0010" when calibra0, 
-                     "0011" when registra0,
+                     "0011" when registrando0,
                      "0100" when espera0,
                      "0101" when calibra1,
-                     "0110" when registra1,
+                     "0110" when registrando1,
                      "0111" when espera1,
                      "1000" when calibra2,
-                     "1001" when registra2,
+                     "1001" when registrando2,
 					 "1010" when final,
                      "0000" when others;
 end architecture fsm_arch;

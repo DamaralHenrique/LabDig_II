@@ -13,6 +13,8 @@ entity susto_no_tatu is
         dificuldade   : in  std_logic;
         botoes        : in  std_logic_vector(5 downto 0);
         debug_seletor : in  std_logic_vector(2 downto 0);
+        calibrar0     : in  std_logic;
+        calibrar1     : in  std_logic;
         trigger_01    : out std_logic;
         trigger_02    : out std_logic;
         trigger_11    : out std_logic;
@@ -83,6 +85,7 @@ architecture rtl of susto_no_tatu is
             fim_de_jogo               : in  std_logic;
             echo1                     : in  std_logic;
             echo2                     : in  std_logic;
+            calibrar                  : in  std_logic;
             trigger1                  : out std_logic;
             trigger2                  : out std_logic;
             tatus                     : out std_logic_vector(2 downto 0);
@@ -92,7 +95,10 @@ architecture rtl of susto_no_tatu is
             db_pronto_estado_hcsr04_2 : out std_logic;
             db_medida1                : out std_logic_vector(11 downto 0);
             db_medida2                : out std_logic_vector(11 downto 0);
-            db_estado                 : out std_logic_vector(3 downto 0) -- estado da UC
+            db_estado                 : out std_logic_vector(3 downto 0); -- estado da UC
+            db_timeout_1              : out std_logic;
+            db_timeout_2              : out std_logic;
+            db_fim_calibracao         : out std_logic
         );
     end component medidor_jogada;
 
@@ -202,6 +208,7 @@ begin
             fim_de_jogo               => s_fim_de_jogo,
             echo1                     => echo_01,
             echo2                     => echo_02,
+            calibrar                  => calibrar0,
             trigger1                  => trigger_01,
             trigger2                  => trigger_02,
             tatus                     => s_tatus_selecionados(2 downto 0),
@@ -211,7 +218,10 @@ begin
             db_pronto_estado_hcsr04_2 => s_db_pronto_estado_hcsr04_02,
             db_medida1                => s_db_medida01,
             db_medida2                => s_db_medida02,
-            db_estado                 => s_db_estado_medidor_jogada_0 -- estado da UC
+            db_estado                 => s_db_estado_medidor_jogada_0, -- estado da UC
+            db_timeout_1              => open,
+            db_timeout_2              => open,
+            db_fim_calibracao         => open
         );
 
     MEDIDOR_JOGADA_1: medidor_jogada
@@ -222,6 +232,7 @@ begin
             fim_de_jogo               => s_fim_de_jogo,
             echo1                     => echo_11,
             echo2                     => echo_12,
+            calibrar                  => calibrar1,
             trigger1                  => trigger_11,
             trigger2                  => trigger_12,
             tatus                     => s_tatus_selecionados(5 downto 3),

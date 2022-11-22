@@ -71,7 +71,7 @@ architecture rtl of calibrador_distancias_fd is
     end component;
 
     signal s_medida1, s_medida2: std_logic_vector(11 downto 0);
-    signal s_reset_calibrador, s_pronto, s_calibrador: std_logic;
+    signal s_reset_calibrador, s_pronto, s_calibrar: std_logic;
 
 begin
     s_reset_calibrador <= reset or reset_calibrador;
@@ -172,8 +172,8 @@ begin
             Q      => medida_calibrada_2_E
         );
 
-    fim0 <= calibrar0 and s_pronto;
-    fim1 <= calibrar1 and s_pronto;
-    fim2 <= calibrar1 and s_pronto;
+    fim0 <= calibrando0 and s_pronto;
+    fim1 <= calibrando1 and s_pronto;
+    fim2 <= calibrando2 and s_pronto;
 
 end architecture rtl;
