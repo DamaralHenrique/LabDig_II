@@ -178,7 +178,7 @@ begin
         port map (
             clock => clock,
             reset => reset,
-            tatus => s_tatus(2 downto 0),
+            tatus => s_tatus(2 downto 0), -- s_tatus_selecionados
             pwm0  => pwm_tatu_00,
             pwm1  => pwm_tatu_01,
             pwm2  => pwm_tatu_02
@@ -188,7 +188,7 @@ begin
         port map (
             clock => clock,
             reset => reset,
-            tatus => s_tatus(5 downto 3),
+            tatus => s_tatus(5 downto 3), -- s_tatus_selecionados
             pwm0  => pwm_tatu_10,
             pwm1  => pwm_tatu_11,
             pwm2  => pwm_tatu_12
@@ -402,7 +402,7 @@ begin
 
     s_botoes_selecionados <= s_tatus_selecionados; -- or botoes;
 	fim_de_jogo           <= s_fim_de_jogo;
-    db_tatus              <= s_tatus;
+    db_tatus              <= s_tatus_selecionados; -- s_tatus;
     vidas                 <= s_vidas;
 
 end architecture rtl;
