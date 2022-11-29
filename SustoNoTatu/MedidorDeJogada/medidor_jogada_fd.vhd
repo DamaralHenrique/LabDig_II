@@ -163,7 +163,7 @@ begin
         port map (
             A        => s_medida_registrada1,
             B        => s_dist_0D,
-            add_2    => '1',
+            add_2    => '0',
             is_close => s_tatu_0D
         );
 
@@ -171,7 +171,7 @@ begin
         port map (
             A        => s_medida_registrada1,
             B        => s_dist_1D,
-            add_2    => '1',
+            add_2    => '0',
             is_close => s_tatu_1D
         );
 
@@ -179,7 +179,7 @@ begin
         port map (
             A        => s_medida_registrada1,
             B        => s_dist_2D,
-            add_2    => '1',
+            add_2    => '0',
             is_close => s_tatu_2D
         );
 
@@ -187,7 +187,7 @@ begin
         port map (
             A        => s_medida_registrada2,
             B        => s_dist_0E,
-            add_2    => '1',
+            add_2    => '0',
             is_close => s_tatu_0E
         );
 
@@ -195,7 +195,7 @@ begin
         port map (
             A        => s_medida_registrada2,
             B        => s_dist_1E,
-            add_2    => '1',
+            add_2    => '0',
             is_close => s_tatu_1E
         );
 
@@ -203,7 +203,7 @@ begin
         port map (
             A        => s_medida_registrada2,
             B        => s_dist_2E,
-            add_2    => '1',
+            add_2    => '0',
             is_close => s_tatu_2E
         );
 

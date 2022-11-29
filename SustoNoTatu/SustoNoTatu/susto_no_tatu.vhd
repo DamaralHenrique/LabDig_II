@@ -5,14 +5,17 @@ entity susto_no_tatu is
     port (
         clock         : in  std_logic;
         reset         : in  std_logic;
+		  reset_mqtt    : in std_logic;
         iniciar       : in  std_logic;
+		  iniciar_mqtt  : in std_logic; 
         echo_01       : in  std_logic;
         echo_02       : in  std_logic;
         echo_11       : in  std_logic;
         echo_12       : in  std_logic;
         dificuldade   : in  std_logic;
-        botoes        : in  std_logic_vector(5 downto 0);
+        botoes_mqtt        : in  std_logic_vector(5 downto 0);
         debug_seletor : in  std_logic_vector(2 downto 0);
+		  init_fpga:    out std_logic;
         trigger_01    : out std_logic;
         trigger_02    : out std_logic;
         trigger_11    : out std_logic;
@@ -36,7 +39,8 @@ entity susto_no_tatu is
         db_tatus      : out std_logic_vector(5 downto 0);
         db_led8       : out std_logic;
         db_led9       : out std_logic;
-		fim_de_jogo   : out std_logic
+		fim_de_jogo   : out std_logic;
+		fim_de_jogo_mqtt: out std_logic
     );
 end entity susto_no_tatu;
 
@@ -149,14 +153,17 @@ architecture rtl of susto_no_tatu is
            s_db_pronto_estado_hcsr04_11, s_db_pronto_estado_hcsr04_12 : std_logic;
     signal s_db_estado_tapa_no_tatu                                   : std_logic_vector(4 downto 0);
     signal s_vidas                                                    : std_logic_vector(1 downto 0);
-
+	
+	 -- sinais mqtt
+	 signal s_iniciar, s_reset: std_logic;
+	 
 begin
 
     TAPA_NO_TATU: circuito_tapa_no_tatu
         port map (
         clock           => clock,
         reset           => reset,
-        iniciar         => iniciar,
+        iniciar         => s_iniciar,
         botoes          => s_botoes_selecionados,
         dificuldade     => dificuldade,
         leds            => s_tatus,
@@ -198,7 +205,7 @@ begin
         port map (
             clock                     => clock,
             reset                     => reset,
-            inicia                    => iniciar,
+            inicia                    => s_iniciar,
             fim_de_jogo               => s_fim_de_jogo,
             echo1                     => echo_01,
             echo2                     => echo_02,
@@ -218,7 +225,7 @@ begin
         port map (
             clock                     => clock,
             reset                     => reset,
-            inicia                    => iniciar,
+            inicia                    => s_iniciar,
             fim_de_jogo               => s_fim_de_jogo,
             echo1                     => echo_11,
             echo2                     => echo_12,
@@ -400,9 +407,19 @@ begin
             MUX_OUT => db_led9
         );
 
-    s_botoes_selecionados <= s_tatus_selecionados; -- or botoes;
-	fim_de_jogo           <= s_fim_de_jogo;
+    s_botoes_selecionados(5) <= s_tatus_selecionados(5) or botoes_mqtt(5); -- or botoes;
+	 s_botoes_selecionados(4) <= s_tatus_selecionados(4) or botoes_mqtt(4); -- or botoes;
+	 s_botoes_selecionados(3) <= s_tatus_selecionados(3) or botoes_mqtt(3); -- or botoes;
+	 s_botoes_selecionados(2) <= s_tatus_selecionados(2) or botoes_mqtt(2); -- or botoes;
+	 s_botoes_selecionados(1) <= s_tatus_selecionados(1) or botoes_mqtt(1); -- or botoes;
+	 s_botoes_selecionados(0) <= s_tatus_selecionados(0) or botoes_mqtt(0); -- or botoes;
+	 fim_de_jogo           <= s_fim_de_jogo;
     db_tatus              <= s_tatus_selecionados; -- s_tatus;
     vidas                 <= s_vidas;
+	 
+	 -- sinais mqtt
+	 s_iniciar <= iniciar or iniciar_mqtt;
+	 init_fpga <= iniciar;
+	 fim_de_jogo_mqtt   <= s_fim_de_jogo;
 
 end architecture rtl;
