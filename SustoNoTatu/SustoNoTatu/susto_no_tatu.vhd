@@ -28,8 +28,9 @@ entity susto_no_tatu is
         pwm_tatu_12   : out std_logic;
         serial        : out std_logic;
         vidas         : out std_logic_vector (1 downto 0);
-        pontuacao1    : out std_logic_vector (6 downto 0);
-        pontuacao2    : out std_logic_vector (6 downto 0);
+		  vidas_hex     : out std_logic_vector (6 downto 0); -- Ativo baixo
+        pontuacao0    : out std_logic_vector (6 downto 0); -- Ativo alto
+        pontuacao1    : out std_logic_vector (6 downto 0); -- Ativo baixo
         db_display0   : out std_logic_vector (6 downto 0);
         db_display1   : out std_logic_vector (6 downto 0);
         db_display2   : out std_logic_vector (6 downto 0);
@@ -169,8 +170,8 @@ begin
         leds            => s_tatus,
         fimDeJogo       => s_fim_de_jogo,
         vidas           => s_vidas,
-        display1        => pontuacao1,
-        display2        => pontuacao2,
+        display1        => open,
+        display2        => open,
         serial          => serial,
         -- Sinais de depuração
         db_estado       => s_db_estado_tapa_no_tatu,
@@ -414,12 +415,19 @@ begin
 	 s_botoes_selecionados(1) <= s_tatus_selecionados(1) or botoes_mqtt(1); -- or botoes;
 	 s_botoes_selecionados(0) <= s_tatus_selecionados(0) or botoes_mqtt(0); -- or botoes;
 	 fim_de_jogo           <= s_fim_de_jogo;
-    db_tatus              <= s_tatus_selecionados; -- s_tatus;
+    db_tatus              <= s_botoes_selecionados; -- s_tatus;
     vidas                 <= s_vidas;
+	 
 	 
 	 -- sinais mqtt
 	 s_iniciar <= iniciar or iniciar_mqtt;
 	 init_fpga <= iniciar;
 	 fim_de_jogo_mqtt   <= s_fim_de_jogo;
+	 
+	 -- Teste
+	 
+	 vidas_hex <= "0000000";
+	 pontuacao1 <= "0000000";
+	 pontuacao0 <= "1111111";
 
 end architecture rtl;
