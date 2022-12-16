@@ -32,7 +32,10 @@ architecture tb of tx_serial_tb is
         partida       : in  std_logic;
         dados_ascii   : in  std_logic_vector (7 downto 0);
         saida_serial  : out std_logic;
-        pronto        : out std_logic
+        pronto        : out std_logic;
+        -- Sinais de depuração
+        d_tick        : out std_logic;
+        d_estado      : out integer
     );
   end component;
   
@@ -45,6 +48,11 @@ architecture tb of tx_serial_tb is
   signal dados_ascii_8_in : std_logic_vector (7 downto 0) := "00000000";
   signal saida_serial_out : std_logic := '1';
   signal pronto_out       : std_logic := '0';
+  signal d_tick_out       : std_logic := '0';
+  signal d_estado_out     : integer := 0;
+
+  -- Identificacao de casos de teste
+  signal caso     : integer := 0;
 
   -- Configurações do clock
   signal keep_simulating : std_logic := '0'; -- delimita o tempo de geração do clock
@@ -65,7 +73,9 @@ begin
            partida      => partida_in,
            dados_ascii  => dados_ascii_8_in,
            saida_serial => saida_serial_out,
-           pronto       => pronto_out
+           pronto       => pronto_out,
+           d_tick       => d_tick_out,
+           d_estado     => d_estado_out
       );
 
   -- geracao dos sinais de entrada (estimulos)
@@ -84,6 +94,7 @@ begin
     wait for 50*clockPeriod;
 
     ---- dado de entrada da simulacao (caso de teste #1)
+    caso <= 1;
     dados_ascii_8_in <= "00110101"; -- x35 = '5'	
     wait for 20*clockPeriod;
 
@@ -104,6 +115,23 @@ begin
     ----
     ---- colocar aqui outros casos de teste
     ----
+
+    ---- dado de entrada da simulacao (caso de teste #2)
+    caso <= 2;
+    dados_ascii_8_in <= "00110111"; -- x37 = '7'	
+    wait for 20*clockPeriod;
+
+    ---- acionamento da partida (inicio da transmissao)
+    partida_in <= '1';
+    wait until rising_edge(clock_in);
+    wait for 25*clockPeriod; -- pulso partida com 25 periodos de clock
+    partida_in <= '0';
+
+    ---- espera final da transmissao (pulso pronto em 1)
+	wait until pronto_out='1';
+	
+	---- final do caso de teste 2
+
 
 
     ---- final dos casos de teste da simulacao
