@@ -25,6 +25,8 @@ entity circuito_tapa_no_tatu is
     display1    : out std_logic_vector (6 downto 0);
     display2    : out std_logic_vector (6 downto 0);
     serial      : out std_logic;
+	hex_pontuacao0 : out std_logic_vector (3 downto 0);
+	hex_pontuacao1 : out std_logic_vector (3 downto 0);
     -- Sinais de depuração
     db_estado       : out std_logic_vector (4 downto 0);
     db_jogadaFeita  : out std_logic;
@@ -41,11 +43,11 @@ architecture estrutural of circuito_tapa_no_tatu is
            s_zeraJogTMR, s_zeraVida, s_apagaTatu          : std_logic;
     signal s_limite_TMR, s_contagem                       : integer;
     signal s_contaDelTMR, s_timeout_Del_TMR, s_zeraDelTMR : std_logic;
-    signal s_fim_vidas, s_not_fim_vidas                   : std_logic;
+    signal s_fim_vidas, s_not_fim_vidas, s_anulaTatus     : std_logic;
     signal s_conta_vida                                   : std_logic;
     signal s_vidas                                        : std_logic_vector(1 downto 0);
     signal s_conta_ponto                                  : std_logic;
-    signal s_pontos                                       : std_logic_vector(natural(ceil(log2(real(100)))) - 1 downto 0);
+    signal s_pontos                                       : std_logic_vector(6 downto 0);
     signal s_estado                                       : std_logic_vector(4 downto 0);
     signal s_fimJogo, s_tem_jogada, s_escolheuDificuldade : std_logic;
     signal s_loadSub, s_contaSub                          : std_logic;
@@ -64,6 +66,7 @@ architecture estrutural of circuito_tapa_no_tatu is
     component fluxo_dados is
         port (
           clock         : in  std_logic;
+		  anulaTatus    : in  std_logic;
           -- Registrador 6 bits
           registraM     : in  std_logic;
           limpaM        : in  std_logic;
@@ -88,7 +91,7 @@ architecture estrutural of circuito_tapa_no_tatu is
           -- Pontuacao
           zera_ponto    : in  std_logic;
           conta_ponto   : in  std_logic;
-          pontos        : out std_logic_vector (natural(ceil(log2(real(100)))) - 1 downto 0);
+          pontos        : out std_logic_vector (6 downto 0);
 		  end_ponts     : out std_logic;
           -- LFSR6
           zera_LFSR6    : in  std_logic;
@@ -144,6 +147,7 @@ architecture estrutural of circuito_tapa_no_tatu is
         db_estado           : out std_logic_vector(4 downto 0);
         en_Reg              : out std_logic;
         enTX                : out std_logic;
+		anulaTatus          : out std_logic;
 		whichTX             : out std_logic;
 		apagaTatu           : out std_logic;
 	    -- TMR Sperano
@@ -202,6 +206,7 @@ begin
     fd: fluxo_dados
     port map (
         clock         => clock,
+		anulaTatus    => s_anulaTatus,
         -- Registrador 6 bits
         registraM     => s_registraM,
         limpaM        => s_limpaM,
@@ -280,6 +285,7 @@ begin
         db_estado            => db_estado,
         en_Reg               => s_enReg,
         enTX                 => s_enTX,
+		anulaTatus           => s_anulaTatus,
         whichTX              => s_whichTX,
 		apagaTatu            => s_apagaTatu,
 		-- TMR Sperano
@@ -298,6 +304,9 @@ begin
             s_hexa1 <= std_logic_vector(to_unsigned(to_integer(unsigned(s_pontos)) rem 10, 4));
             s_hexa2 <= std_logic_vector(to_unsigned(to_integer(unsigned(s_pontos)) / 10, 4));
         end if;
+		  
+		  hex_pontuacao0 <= std_logic_vector(to_unsigned(to_integer(unsigned(s_pontos)) rem 10, 4));
+		  hex_pontuacao1 <= std_logic_vector(to_unsigned(to_integer(unsigned(s_pontos)) / 10, 4));
 	end process;
 	 
     process(s_apagaTatu, s_dado_tatus) 

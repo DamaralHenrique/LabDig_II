@@ -5,7 +5,6 @@ entity susto_no_tatu is
     port (
         clock         : in  std_logic;
         reset         : in  std_logic;
-		  reset_mqtt    : in std_logic;
         iniciar       : in  std_logic;
 		  iniciar_mqtt  : in std_logic; 
         echo_01       : in  std_logic;
@@ -13,9 +12,11 @@ entity susto_no_tatu is
         echo_11       : in  std_logic;
         echo_12       : in  std_logic;
         dificuldade   : in  std_logic;
+		dificuldade_mqtt   : in  std_logic;
         botoes_mqtt        : in  std_logic_vector(5 downto 0);
         debug_seletor : in  std_logic_vector(2 downto 0);
 		  init_fpga:    out std_logic;
+		reset_mqtt    : out std_logic;
         trigger_01    : out std_logic;
         trigger_02    : out std_logic;
         trigger_11    : out std_logic;
@@ -60,6 +61,8 @@ architecture rtl of susto_no_tatu is
             display1        : out std_logic_vector (6 downto 0);
             display2        : out std_logic_vector (6 downto 0);
             serial          : out std_logic;
+			hex_pontuacao0  : out std_logic_vector (3 downto 0);
+			hex_pontuacao1  : out std_logic_vector (3 downto 0);
             -- Sinais de depuração
             db_estado       : out std_logic_vector (4 downto 0);
             db_jogadaFeita  : out std_logic;
@@ -143,6 +146,7 @@ architecture rtl of susto_no_tatu is
 
     signal s_fim_de_jogo                                              : std_logic;
     signal s_tatus                                                    : std_logic_vector(5 downto 0);
+    signal s_tatus_aux0, s_tatus_aux1                                 : std_logic_vector(2 downto 0);
     signal s_tatus_selecionados, s_botoes_selecionados                : std_logic_vector(5 downto 0);
     signal s_db_medida01, s_db_medida02, s_db_medida11, s_db_medida12 : std_logic_vector(11 downto 0);
     signal s_db_mux0, s_db_mux1, s_db_mux2,
@@ -153,6 +157,8 @@ architecture rtl of susto_no_tatu is
     signal s_db_pronto_estado_hcsr04_01, s_db_pronto_estado_hcsr04_02,
            s_db_pronto_estado_hcsr04_11, s_db_pronto_estado_hcsr04_12 : std_logic;
     signal s_db_estado_tapa_no_tatu                                   : std_logic_vector(4 downto 0);
+	signal s_pontuacao0                                               : std_logic_vector(6 downto 0);
+	signal s_hex_pontuacao0, s_hex_pontuacao1                         : std_logic_vector(3 downto 0);
     signal s_vidas                                                    : std_logic_vector(1 downto 0);
 	
 	 -- sinais mqtt
@@ -166,13 +172,15 @@ begin
         reset           => reset,
         iniciar         => s_iniciar,
         botoes          => s_botoes_selecionados,
-        dificuldade     => dificuldade,
+        dificuldade     => dificuldade or dificuldade_mqtt,
         leds            => s_tatus,
         fimDeJogo       => s_fim_de_jogo,
         vidas           => s_vidas,
         display1        => open,
         display2        => open,
         serial          => serial,
+		hex_pontuacao0  => s_hex_pontuacao0,
+		hex_pontuacao1  => s_hex_pontuacao1,
         -- Sinais de depuração
         db_estado       => s_db_estado_tapa_no_tatu,
         db_jogadaFeita  => open,
@@ -181,12 +189,14 @@ begin
         db_ini          => open
         );
 
-
+	s_tatus_aux0 <= s_tatus(2 downto 0) when s_fim_de_jogo = '0' else "000";
+	s_tatus_aux1 <= s_tatus(5 downto 3) when s_fim_de_jogo = '0' else "000";
+		  
     SERVO_TATU_0: servo_tatu
         port map (
             clock => clock,
             reset => reset,
-            tatus => s_tatus(2 downto 0), -- s_tatus_selecionados
+            tatus => s_tatus_aux0, -- s_tatus_selecionados
             pwm0  => pwm_tatu_00,
             pwm1  => pwm_tatu_01,
             pwm2  => pwm_tatu_02
@@ -196,7 +206,7 @@ begin
         port map (
             clock => clock,
             reset => reset,
-            tatus => s_tatus(5 downto 3), -- s_tatus_selecionados
+            tatus => s_tatus_aux1, -- s_tatus_selecionados
             pwm0  => pwm_tatu_10,
             pwm1  => pwm_tatu_11,
             pwm2  => pwm_tatu_12
@@ -320,7 +330,7 @@ begin
             D1      => s_db_estado_hcsr04_02,
             D2      => s_db_medida12(3 downto 0),
             D3      => s_db_estado_hcsr04_12,
-            D4      => "0000",
+            D4      => s_hex_pontuacao0,
             D5      => "0000",
             D6      => "0000",
             D7      => "0000",
@@ -343,7 +353,7 @@ begin
             D1      => "0000",
             D2      => s_db_medida12(7 downto 4),
             D3      => "0000",
-            D4      => "0000",
+            D4      => s_hex_pontuacao1,
             D5      => "0000",
             D6      => "0000",
             D7      => "0000",
@@ -386,7 +396,7 @@ begin
             D1      => s_db_pronto_estado_hcsr04_01,
             D2      => '0',
             D3      => s_db_pronto_estado_hcsr04_11,
-            D4      => '0',
+            D4      => reset,
             D5      => '0',
             D6      => '0',
             D7      => '0',
@@ -400,34 +410,56 @@ begin
             D1      => s_db_pronto_estado_hcsr04_02,
             D2      => '0',
             D3      => s_db_pronto_estado_hcsr04_12,
-            D4      => '0',
+            D4      => iniciar,
             D5      => '0',
             D6      => '0',
             D7      => '0',
             SEL     => debug_seletor,
             MUX_OUT => db_led9
         );
+		  
+	 -- Sinais displays
+    displayVidas: hex7seg
+        port map(
+            hexa   => "00" & s_vidas,
+            sseg   => vidas_hex
+        );
+		  
+	displayPontuacao0: hex7seg
+        port map(
+            hexa   => s_hex_pontuacao0,
+            sseg   => s_pontuacao0
+        );
 
+	pontuacao0 <= not s_pontuacao0; -- catodo, precisa inverter
+		  
+    displayPontuacao1: hex7seg
+        port map(
+            hexa   => s_hex_pontuacao1,
+            sseg   => pontuacao1
+        );
+
+	 -- Sinais de saída
     s_botoes_selecionados(5) <= s_tatus_selecionados(5) or botoes_mqtt(5); -- or botoes;
-	 s_botoes_selecionados(4) <= s_tatus_selecionados(4) or botoes_mqtt(4); -- or botoes;
-	 s_botoes_selecionados(3) <= s_tatus_selecionados(3) or botoes_mqtt(3); -- or botoes;
-	 s_botoes_selecionados(2) <= s_tatus_selecionados(2) or botoes_mqtt(2); -- or botoes;
-	 s_botoes_selecionados(1) <= s_tatus_selecionados(1) or botoes_mqtt(1); -- or botoes;
-	 s_botoes_selecionados(0) <= s_tatus_selecionados(0) or botoes_mqtt(0); -- or botoes;
-	 fim_de_jogo           <= s_fim_de_jogo;
-    db_tatus              <= s_botoes_selecionados; -- s_tatus;
+	s_botoes_selecionados(4) <= s_tatus_selecionados(4) or botoes_mqtt(4); -- or botoes;
+	s_botoes_selecionados(3) <= s_tatus_selecionados(3) or botoes_mqtt(3); -- or botoes;
+	s_botoes_selecionados(2) <= s_tatus_selecionados(2) or botoes_mqtt(2); -- or botoes;
+	s_botoes_selecionados(1) <= s_tatus_selecionados(1) or botoes_mqtt(1); -- or botoes;
+	s_botoes_selecionados(0) <= s_tatus_selecionados(0) or botoes_mqtt(0); -- or botoes;
+	fim_de_jogo           <= s_fim_de_jogo;
+    db_tatus              <= s_tatus; -- s_botoes_selecionados;
     vidas                 <= s_vidas;
-	 
 	 
 	 -- sinais mqtt
 	 s_iniciar <= iniciar or iniciar_mqtt;
 	 init_fpga <= iniciar;
 	 fim_de_jogo_mqtt   <= s_fim_de_jogo;
 	 
-	 -- Teste
+	reset_mqtt <= reset;
 	 
-	 vidas_hex <= "0000000";
-	 pontuacao1 <= "0000000";
-	 pontuacao0 <= "1111111";
+	-- Teste displays
+	--vidas_hex <= "0000000";
+	--pontuacao1 <= "0000000";
+	--pontuacao0 <= "1111111";
 
 end architecture rtl;

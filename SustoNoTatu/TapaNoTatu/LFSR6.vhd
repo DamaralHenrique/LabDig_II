@@ -28,7 +28,7 @@ begin
 
   StateReg: process (clk, rst)
   begin
-    if (rst = '1') then
+    if (rst = '1') and nextstate = "000000" then
       currstate <= (0 => '1', others =>'0');
     elsif (clk = '1' and clk'EVENT and en='1') then
       currstate <= nextstate;

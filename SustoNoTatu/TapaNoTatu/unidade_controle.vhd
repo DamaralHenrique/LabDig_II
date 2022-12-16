@@ -52,6 +52,7 @@ entity unidade_controle is
         contaVida              : out std_logic;
         db_estado              : out std_logic_vector(4 downto 0);
         en_Reg                 : out std_logic;
+		anulaTatus             : out std_logic;
 		enTX                   : out std_logic;
 		whichTX                : out std_logic;
 		apagaTatu              : out std_logic;
@@ -225,7 +226,7 @@ begin
                    '0' when others;
 	 
 	 with Eatual select
-        zeraVida <= '1' when preparacaoGeral,
+        zeraVida <= '1' when preparacaoGeral | inicial,
                     '0' when others;
     
 	 with Eatual select
@@ -241,7 +242,11 @@ begin
                       '0' when others;
 						  
 	 with Eatual select
-        limpa_pontos <= '1' when preparacaoGeral,
+        limpa_pontos <= '1' when preparacaoGeral | inicial,
+                        '0' when others;
+								
+	 with Eatual select
+        anulaTatus <= '1' when inicial,
                         '0' when others;
 
     -- Saída de depuração (db_estado)

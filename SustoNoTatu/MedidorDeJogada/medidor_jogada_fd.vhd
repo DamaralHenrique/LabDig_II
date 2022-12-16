@@ -94,17 +94,17 @@ architecture rtl of medidor_jogada_fd is
 
 begin
 
-    s_dist_0D <= "0000" & "0111" & "0000"; -- 070
+    s_dist_0D <= "0000" & "0110" & "1000"; -- 068
 
-    s_dist_1D <= "0001" & "1000" & "0000"; -- 180
+    s_dist_1D <= "0001" & "0111" & "0000"; -- 170
 
     s_dist_2D <= "0011" & "0000" & "0000"; -- 300
 
-    s_dist_0E <= "0010" & "1001" & "0000"; -- 290
+    s_dist_0E <= "0010" & "1000" & "0000"; -- 280
 
     s_dist_1E <= "0001" & "0111" & "0101"; -- 175
 
-    s_dist_2E <= "0000" & "0111" & "0101"; -- 075
+    s_dist_2E <= "0000" & "0110" & "0111"; -- 067
 
     s_interface_hcsr04_reset1 <= reset or reset_1;
 	s_interface_hcsr04_reset2 <= reset or reset_2;
@@ -235,9 +235,9 @@ begin
 		  
 	 
 	 
-    tatus(0) <= s_tatu_0D or s_tatu_0E;
+    tatus(0) <= s_tatu_0D; --or s_tatu_0E;
     tatus(1) <= s_tatu_1D or s_tatu_1E;
-    tatus(2) <= s_tatu_2D or s_tatu_2E;
+    tatus(2) <= s_tatu_2E; -- s_tatu_2D or s_tatu_2E;
 
     medida1 <= s_medida_registrada1;
     medida2 <= s_medida_registrada2;

@@ -11,6 +11,7 @@ use ieee.math_real.all;
 entity fluxo_dados is
   port (
     clock         : in  std_logic;
+	  anulaTatus    : in  std_logic;
     -- Registrador 6 bits
     registraM     : in  std_logic;
     limpaM        : in  std_logic;
@@ -231,7 +232,7 @@ begin
   geradorJogadas: LFSR6
   port map (
     clk    => clock,
-    rst    => zera_LFSR6,
+    rst    => '0', --zera_LFSR6,
     en     => en_LFSR,
     output => s_jogada
   );
@@ -239,7 +240,7 @@ begin
   registraTatus: regis2
   port map (
     clock => clock,
-    clear => limpaM,
+    clear => limpaM or anulaTatus,
     en1   => s_not_registraM,
     en2   => en_reg,
     D1    => s_jogada,
